@@ -70,7 +70,7 @@
         .btn-limpar-campo {
             background: none;
             border: none;
-            font-size: 18px; /* Tamanho bom para tocar no celular */
+            font-size: 18px;
             cursor: pointer;
             padding: 2px 8px;
             opacity: 0.7;
@@ -81,14 +81,62 @@
             opacity: 1;
         }
 
-        .instruction {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 5px;
-            line-height: 1.4;
+        .itens-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        input[type="text"], input[type="number"], textarea {
+        .item-linha {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #fafafa;
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .col-qtd { width: 15%; }
+        .col-desc { width: 45%; }
+        .col-valor { width: 20%; }
+        .col-total { 
+            width: 15%; 
+            font-size: 13px; 
+            font-weight: bold; 
+            color: #555;
+            text-align: right;
+            white-space: nowrap;
+        }
+        .col-acao { width: 5%; text-align: center; }
+
+        .btn-add-item {
+            background-color: #fff;
+            border: 1px solid #000;
+            color: #000;
+            padding: 8px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: bold;
+            width: auto;
+            margin-bottom: 20px;
+        }
+
+        .btn-add-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .btn-remover-linha {
+            background: none;
+            border: none;
+            color: #cc0000;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 0 4px;
+        }
+
+        input[type="text"], input[type="number"] {
             width: 100%;
             padding: 8px;
             border: 1px solid #999;
@@ -96,11 +144,6 @@
             font-size: 15px;
             box-sizing: border-box;
             font-family: inherit;
-        }
-
-        textarea {
-            font-family: monospace;
-            resize: vertical;
         }
 
         .totais-container {
@@ -146,29 +189,30 @@
         <div class="form-group">
             <div class="header-field">
                 <label for="cliente">Cliente</label>
-                <button class="btn-limpar-campo" onclick="limparCampo('cliente')" title="Limpar Nome">🗑️</button>
+                <button class="btn-limpar-campo" onclick="limparCliente()" title="Limpar Nome">🗑️</button>
             </div>
             <input type="text" id="cliente" placeholder="">
         </div>
 
         <div class="form-group">
             <div class="header-field">
-                <label>Digite um item por linha no formato:</label>
-                <button class="btn-limpar-campo" onclick="limparCampo('itens')" title="Limpar Itens">🗑️</button>
+                <label>Serviços / Produtos</label>
+                <button class="btn-limpar-campo" onclick="limparTodosItens()" title="Limpar Todos os Itens">🗑️</button>
             </div>
-            <div class="instruction">
-                Quantidade x Descrição = Valor Unitário<br>
-                Ex.: 20x Camiseta = 35
+            
+            <div class="itens-lista" id="conteudoItens">
+                <!-- Linhas inseridas dinamicamente -->
             </div>
-            <textarea id="itensInput" rows="8"></textarea>
+
+            <button type="button" class="btn-add-item" onclick="adicionarNovaLinha()">➕ Adicionar Item</button>
         </div>
 
         <div class="form-group">
             <div class="header-field">
                 <label for="desconto">Desconto</label>
-                <button class="btn-limpar-campo" onclick="limparCampo('desconto')" title="Limpar Desconto">🗑️</button>
+                <button class="btn-limpar-campo" onclick="limparDesconto()" title="Limpar Desconto">🗑️</button>
             </div>
-            <input type="number" id="desconto" value="0" min="0" step="any">
+            <input type="number" id="desconto" value="0" min="0" step="any" oninput="calcularOrcamento()">
         </div>
 
         <div class="totais-container" id="painelTotais">
@@ -183,15 +227,13 @@
             localStorage.setItem('numeroOrcamento', '1');
         }
 
-        const itensInput = document.getElementById('itensInput');
+        const conteudoItens = document.getElementById('conteudoItens');
         const descontoInput = document.getElementById('desconto');
         const painelTotais = document.getElementById('painelTotais');
         const clienteInput = document.getElementById('cliente');
 
-        itensInput.addEventListener('input', calcularOrcamento);
-        descontoInput.addEventListener('input', calcularOrcamento);
-
-        calcularOrcamento();
+        // Inicializa o site com apenas UMA única linha totalmente em BRANCO
+        adicionarNovaLinha();
 
         function formatarNumeroOrcamento(num) {
             return String(num).padStart(4, '0');
@@ -201,25 +243,49 @@
             return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
 
+        function adicionarNovaLinha(qtd = '', desc = '', valor = '') {
+            const linha = document.createElement('div');
+            linha.className = 'item-linha';
+            linha.innerHTML = `
+                <div class="col-qtd"><input type="number" class="ipt-qtd" value="${qtd}" placeholder="Qtd" min="1" oninput="atualizarSubtotalLinha(this)"></div>
+                <div class="col-desc"><input type="text" class="ipt-desc" value="${desc}" placeholder="Serviço / Produto"></div>
+                <div class="col-valor"><input type="number" class="ipt-valor" value="${valor}" placeholder="Valor Unit." min="0" step="any" oninput="atualizarSubtotalLinha(this)"></div>
+                <div class="col-total">R$ 0,00</div>
+                <div class="col-acao"><button type="button" class="btn-remover-linha" onclick="removerLinha(this)">❌</button></div>
+            `;
+            conteudoItens.appendChild(linha);
+            
+            if(qtd && valor) {
+                const iptQtd = linha.querySelector('.ipt-qtd');
+                atualizarSubtotalLinha(iptQtd);
+            } else {
+                calcularOrcamento();
+            }
+        }
+
+        function removerLinha(botao) {
+            botao.closest('.item-linha').remove();
+            calcularOrcamento();
+        }
+
+        function atualizarSubtotalLinha(input) {
+            const linha = input.closest('.item-linha');
+            const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
+            const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
+            const totalLinhaElemento = linha.querySelector('.col-total');
+            
+            totalLinhaElemento.innerText = formatarMoeda(qtd * valor);
+            calcularOrcamento();
+        }
+
         function calcularOrcamento() {
-            const texto = itensInput.value;
-            const linhas = texto.split('\n');
             let subtotalOriginal = 0;
+            const linhas = conteudoItens.querySelectorAll('.item-linha');
 
             linhas.forEach(linha => {
-                if (linha.trim() === '') return;
-
-                const regex = /^(\d+)\s*[xX]\s*([^=]+)=\s*([\d.,]+)/;
-                const match = linha.match(regex);
-
-                if (match) {
-                    const qtd = parseInt(match[1], 10);
-                    const valorUnitario = parseFloat(match[3].replace(',', '.'));
-
-                    if (!isNaN(qtd) && !isNaN(valorUnitario)) {
-                        subtotalOriginal += (qtd * valorUnitario);
-                    }
-                }
+                const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
+                const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
+                subtotalOriginal += (qtd * valor);
             });
 
             const desconto = parseFloat(descontoInput.value) || 0;
@@ -237,6 +303,22 @@
             painelTotais.innerHTML = htmlTotais;
         }
 
+        function limparCliente() {
+            clienteInput.value = '';
+            clienteInput.focus();
+        }
+
+        function limparTodosItens() {
+            conteudoItens.innerHTML = '';
+            adicionarNovaLinha();
+            calcularOrcamento();
+        }
+
+        function limparDesconto() {
+            descontoInput.value = '0';
+            calcularOrcamento();
+        }
+
         function obterDataHoraAtual() {
             const agora = new Date();
             const data = agora.toLocaleDateString('pt-BR');
@@ -244,23 +326,8 @@
             return { data, hora };
         }
 
-        function limparCampo(tipo) {
-            if (tipo === 'cliente') {
-                clienteInput.value = '';
-                clienteInput.focus();
-            } else if (tipo === 'itens') {
-                itensInput.value = '';
-                itensInput.focus();
-            } else if (tipo === 'desconto') {
-                descontoInput.value = '0';
-                descontoInput.focus();
-            }
-            calcularOrcamento();
-        }
-
         function copiarParaWhatsApp() {
             const cliente = clienteInput.value.trim() || "Não informado";
-            const textoItens = itensInput.value.split('\n');
             const desconto = parseFloat(descontoInput.value) || 0;
             const incluirDados = document.getElementById('incluirDadosLoja').checked;
             
@@ -274,23 +341,17 @@
             mensagem += `----------------------------------------\n`;
             
             let subtotalOriginal = 0;
+            const linhas = conteudoItens.querySelectorAll('.item-linha');
 
-            textoItens.forEach(linha => {
-                if (linha.trim() === '') return;
-                
-                const regex = /^(\d+)\s*[xX]\s*([^=]+)=\s*([\d.,]+)/;
-                const match = linha.match(regex);
+            linhas.forEach(linha => {
+                const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
+                const descricao = linha.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
+                const valorUnitario = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
 
-                if (match) {
-                    const qtd = parseInt(match[1], 10);
-                    const descricao = match[2].trim();
-                    const valorUnitario = parseFloat(match[3].replace(',', '.'));
-
-                    if (!isNaN(qtd) && !isNaN(valorUnitario)) {
-                        const totalItem = qtd * valorUnitario;
-                        subtotalOriginal += totalItem;
-                        mensagem += `${qtd}x ${descricao} (${formatarMoeda(valorUnitario)} cada) = ${formatarMoeda(totalItem)}\n`;
-                    }
+                if (qtd > 0 && valorUnitario > 0) {
+                    const totalItem = qtd * valorUnitario;
+                    subtotalOriginal += totalItem;
+                    mensagem += `${qtd}x ${descricao} (${formatarMoeda(valorUnitario)} cada) = ${formatarMoeda(totalItem)}\n`;
                 }
             });
 
@@ -316,6 +377,11 @@
             navigator.clipboard.writeText(mensagem).then(() => {
                 alert(`Orçamento #${orcamentoFormatado} copiado com sucesso!`);
                 localStorage.setItem('numeroOrcamento', numAtual + 1);
+                
+                clienteInput.value = '';
+                descontoInput.value = '0';
+                conteudoItens.innerHTML = '';
+                adicionarNovaLinha();
                 calcularOrcamento(); 
             }).catch(err => {
                 alert('Erro ao copiar o texto.');
