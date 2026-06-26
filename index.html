@@ -232,7 +232,6 @@
         const painelTotais = document.getElementById('painelTotais');
         const clienteInput = document.getElementById('cliente');
 
-        // Inicializa o site com apenas UMA única linha totalmente em BRANCO
         adicionarNovaLinha();
 
         function formatarNumeroOrcamento(num) {
@@ -244,19 +243,19 @@
         }
 
         function adicionarNovaLinha(qtd = '', desc = '', valor = '') {
-            const linha = document.createElement('div');
-            linha.className = 'item-linha';
-            linha.innerHTML = `
+            const containerLinha = document.createElement('div');
+            containerLinha.className = 'item-linha';
+            containerLinha.innerHTML = `
                 <div class="col-qtd"><input type="number" class="ipt-qtd" value="${qtd}" placeholder="Qtd" min="1" oninput="atualizarSubtotalLinha(this)"></div>
                 <div class="col-desc"><input type="text" class="ipt-desc" value="${desc}" placeholder="Serviço / Produto"></div>
                 <div class="col-valor"><input type="number" class="ipt-valor" value="${valor}" placeholder="Valor Unit." min="0" step="any" oninput="atualizarSubtotalLinha(this)"></div>
                 <div class="col-total">R$ 0,00</div>
                 <div class="col-acao"><button type="button" class="btn-remover-linha" onclick="removerLinha(this)">❌</button></div>
             `;
-            conteudoItens.appendChild(linha);
+            conteudoItens.appendChild(containerLinha);
             
             if(qtd && valor) {
-                const iptQtd = linha.querySelector('.ipt-qtd');
+                const iptQtd = containerLinha.querySelector('.ipt-qtd');
                 atualizarSubtotalLinha(iptQtd);
             } else {
                 calcularOrcamento();
@@ -378,11 +377,8 @@
                 alert(`Orçamento #${orcamentoFormatado} copiado com sucesso!`);
                 localStorage.setItem('numeroOrcamento', numAtual + 1);
                 
-                clienteInput.value = '';
-                descontoInput.value = '0';
-                conteudoItens.innerHTML = '';
-                adicionarNovaLinha();
-                calcularOrcamento(); 
+                // MUDANÇA AQUI: Removido o código que limpava as caixas de texto.
+                // Agora o texto continua aparecendo na tela após a cópia.
             }).catch(err => {
                 alert('Erro ao copiar o texto.');
             });
