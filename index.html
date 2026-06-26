@@ -17,13 +17,13 @@
             min-height: 100vh;
             box-sizing: border-box;
             
-            /* CONFIGURAÇÃO DO PLANO DE FUNDO (Efeito Marca d'água) */
+            /* CONFIGURAÇÃO DA SUA NOVA IMAGEM DE FUNDO */
             background-color: #f5f5f5;
-            background-image: linear-gradient(rgba(245, 245, 245, 0.92), rgba(245, 245, 245, 0.92)), url('logo.png');
+            background-image: url('fundo.png');
             background-repeat: no-repeat;
             background-position: center center;
             background-attachment: fixed;
-            background-size: 400px; /* Tamanho discreto da logo no fundo */
+            background-size: cover; /* Faz a imagem cobrir toda a área cinza perfeitamente */
         }
 
         .container {
@@ -31,7 +31,7 @@
             width: 100%;
             max-width: 650px;
             padding: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Sombra leve para destacar do fundo */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             box-sizing: border-box;
             margin-bottom: 20px;
             position: relative;
@@ -194,13 +194,12 @@
         @media (max-width: 600px) {
             body {
                 padding: 10px;
-                /* Remove a imagem de fundo no celular para ficar mais limpo */
-                background-image: none; 
+                background-image: none; /* Mantém limpo no celular */
                 background-color: #f5f5f5;
             }
             .container {
                 padding: 15px;
-                box-shadow: none; /* Remove a sombra pesada no celular */
+                box-shadow: none;
             }
             .item-linha {
                 display: grid;
@@ -277,7 +276,7 @@
             <!-- Gerado dinamicamente via JS -->
         </div>
 
-        <button class="btn-copiar" onclick="copiarParaWhatsApp()">Copiar para WhatsApp</button>
+        <button class="btn-copiar" onclick="copyToWhatsApp()">Copiar para WhatsApp</button>
     </div>
 
     <script>
@@ -331,7 +330,7 @@
             const linha = input.closest('.item-linha');
             const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
             const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
-            const totalLinhaElemento = Finder = linha.querySelector('.col-total');
+            const totalLinhaElemento = linha.querySelector('.col-total');
             
             totalLinhaElemento.innerText = 'Total: ' + formatarMoeda(qtd * valor);
             calcularOrcamento();
@@ -339,9 +338,9 @@
 
         function calcularOrcamento() {
             let subtotalOriginal = 0;
-            const linhas = conteudoItens.querySelectorAll('.item-linha');
+            const lines = conteudoItens.querySelectorAll('.item-linha');
 
-            linhas.forEach(linha => {
+            lines.forEach(linha => {
                 const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
                 const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
                 subtotalOriginal += (qtd * valor);
@@ -385,7 +384,7 @@
             return { data, hora };
         }
 
-        function copiarParaWhatsApp() {
+        function copyToWhatsApp() {
             const cliente = clienteInput.value.trim() || "Não informado";
             const desconto = parseFloat(descontoInput.value) || 0;
             const incluirDados = document.getElementById('incluirDadosLoja').checked;
@@ -400,9 +399,9 @@
             mensagem += `----------------------------------------\n`;
             
             let subtotalOriginal = 0;
-            const linhas = conteudoItens.querySelectorAll('.item-linha');
+            const lines = conteudoItens.querySelectorAll('.item-linha');
 
-            linhas.forEach(linha => {
+            lines.forEach(linha => {
                 const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
                 const descricao = linha.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
                 const valorUnitario = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
