@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARTSCREEN CORURIPE - Orçamentos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 650px;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            user-select: none;
+        }
+
+        .checkbox-group input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        label {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .instruction {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #999;
+            border-radius: 0px;
+            font-size: 15px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        textarea {
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        .totais-container {
+            margin-top: 15px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .total-destaque {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        button {
+            width: 100%;
+            background-color: #e0e0e0;
+            border: 1px solid #999;
+            color: #000;
+            padding: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #d4d4d4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>ARTSCREEN CORURIPE</h1>
+
+        <label class="checkbox-group">
+            <input type="checkbox" id="incluirDadosLoja">
+            Inserir informações da loja (CNPJ e Endereço)
+        </label>
+
+        <div class="form-group">
+            <label for="cliente">Cliente</label>
+            <input type="text" id="cliente" placeholder="">
+        </div>
+
+        <div class="form-group">
+            <label>Digite um item por linha no formato:</label>
+            <div class="instruction">
+                Quantidade x Descrição = Valor Unitário<br>
+                Ex.: 20x Camiseta = 35
+            </div>
+            <textarea id="itensInput" rows="8">20x Camiseta = 35
+2x Fachada = 850
+1x Instalação = 150</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="desconto">Desconto</label>
+            <input type="number" id="desconto" value="0" min="0" step="any">
+        </div>
+
+        <div class="totais-container" id="painelTotais">
+            </div>
+
+        <button onclick="copiarParaWhatsApp()">Copiar para WhatsApp</button>
+    </div>
+
+    <script>
+        if (!localStorage.getItem('numeroOrcamento')) {
+            localStorage.setItem('numeroOrcamento', '1');
+        }
+
+        const itensInput = document.getElementById('itensInput');
+        const descontoInput = document.getElementById('desconto');
+        const painelTotais = document.getElementById('painelTotais');
+
+        itensInput.addEventListener('input', calcularOrcamento);
+        descontoInput.addEventListener('input', calcularOrcamento);
+
+        calcularOrcamento();
+
+        function formatarNumeroOrcamento(num) {
+            return String(num).padStart(4, '0');
+        }
+
+        function formatarMoeda(valor) {
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function calcularOrcamento() {
+            const texto = itensInput.value;
+            const linhas = texto.split('\n');
+            let subtotalOriginal = 0;
+
+            linhas.forEach(linha => {
+                if (linha.trim() === '') return;
+
+                const regex = /^(\d+)\s*[xX]\s*([^=]+)=\s*([\d.,]+)/;
+                const match = linha.match(regex);
+
+                if (match) {
+                    const qtd = parseInt(match[1], 10);
+                    const valorUnitario = parseFloat(match[3].replace(',', '.'));
+
+                    if (!isNaN(qtd) && !isNaN(valorUnitario)) {
+                        subtotalOriginal += (qtd * valorUnitario);
+                    }
+                }
+            });
+
+            const desconto = parseFloat(descontoInput.value) || 0;
+            let htmlTotais = '';
+
+            if (desconto > 0) {
+                const totalComDesconto = Math.max(0, subtotalOriginal - desconto);
+                htmlTotais += `<div>VALOR SEM DESCONTO: ${formatarMoeda(subtotalOriginal)}</div>`;
+                htmlTotais += `<div>DESCONTO: ${formatarMoeda(desconto)}</div>`;
+                htmlTotais += `<div class="total-destaque">TOTAL COM DESCONTO: ${formatarMoeda(totalComDesconto)}</div>`;
+            } else {
+                htmlTotais += `<div class="total-destaque">TOTAL: ${formatarMoeda(subtotalOriginal)}</div>`;
+            }
+
+            painelTotais.innerHTML = htmlTotais;
+        }
+
+        function obterDataHoraAtual() {
+            const agora = new Date();
+            const data = agora.toLocaleDateString('pt-BR');
+            const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            return { data, hora };
+        }
+
+        function copiarParaWhatsApp() {
+            const cliente = document.getElementById('cliente').value.trim() || "Não informado";
+            const textoItens = itensInput.value.split('\n');
+            const desconto = parseFloat(descontoInput.value) || 0;
+            const incluirDados = document.getElementById('incluirDadosLoja').checked;
+            
+            const numAtual = parseInt(localStorage.getItem('numeroOrcamento'), 10);
+            const orcamentoFormatado = formatarNumeroOrcamento(numAtual);
+            const { data, hora } = obterDataHoraAtual();
+
+            // Nome removido do cabeçalho
+            let mensagem = `*Orçamento:* #${orcamentoFormatado}\n`;
+            mensagem += `*Data:* ${data} às ${hora}\n`;
+            mensagem += `*Cliente:* ${cliente}\n`;
+            mensagem += `----------------------------------------\n`;
+            
+            let subtotalOriginal = 0;
+
+            textoItens.forEach(linha => {
+                if (linha.trim() === '') return;
+                
+                const regex = /^(\d+)\s*[xX]\s*([^=]+)=\s*([\d.,]+)/;
+                const match = linha.match(regex);
+
+                if (match) {
+                    const qtd = parseInt(match[1], 10);
+                    const descricao = match[2].trim();
+                    const valorUnitario = parseFloat(match[3].replace(',', '.'));
+
+                    if (!isNaN(qtd) && !isNaN(valorUnitario)) {
+                        const totalItem = qtd * valorUnitario;
+                        subtotalOriginal += totalItem;
+                        mensagem += `${qtd}x ${descricao} (${formatarMoeda(valorUnitario)} cada) = ${formatarMoeda(totalItem)}\n`;
+                    }
+                }
+            });
+
+            mensagem += `----------------------------------------\n`;
+
+            if (desconto > 0) {
+                const totalComDesconto = Math.max(0, subtotalOriginal - desconto);
+                mensagem += `*VALOR SEM DESCONTO:* ${formatarMoeda(subtotalOriginal)}\n`;
+                mensagem += `*DESCONTO:* ${formatarMoeda(desconto)}\n`;
+                mensagem += `*TOTAL COM DESCONTO:* ${formatarMoeda(totalComDesconto)}\n`;
+            } else {
+                mensagem += `*TOTAL:* ${formatarMoeda(subtotalOriginal)}\n`;
+            }
+
+            // Divisória antes das assinaturas fixas da loja
+            mensagem += `----------------------------------------\n`;
+            mensagem += `*ARTSCREEN CORURIPE*\n`;
+
+            // Caso selecionado, inclui apenas o número do CNPJ e o endereço limpo (sem rótulo)
+            if (incluirDados) {
+                mensagem += `CNPJ: 25.974.730/0001-14\n`;
+                mensagem += `Av. Floriano Peixoto, 138, Centro, Coruripe - AL\n`;
+            }
+
+            navigator.clipboard.writeText(mensagem).then(() => {
+                alert(`Orçamento #${orcamentoFormatado} copiado com sucesso!`);
+                localStorage.setItem('numeroOrcamento', numAtual + 1);
+                calcularOrcamento(); 
+            }).catch(err => {
+                alert('Erro ao copiar o texto.');
+            });
+        }
+    </script>
+</body>
+</html>
