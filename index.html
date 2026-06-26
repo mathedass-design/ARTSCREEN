@@ -22,6 +22,7 @@
             max-width: 650px;
             padding: 30px;
             box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            box-sizing: border-box;
         }
 
         h1 {
@@ -88,13 +89,15 @@
             margin-bottom: 15px;
         }
 
+        /* Estrutura flexível para computador */
         .item-linha {
             display: flex;
             align-items: center;
             gap: 8px;
             background-color: #fafafa;
-            padding: 8px;
+            padding: 10px;
             border: 1px solid #ddd;
+            box-sizing: border-box;
         }
 
         .col-qtd { width: 15%; }
@@ -102,9 +105,9 @@
         .col-valor { width: 20%; }
         .col-total { 
             width: 15%; 
-            font-size: 13px; 
+            font-size: 14px; 
             font-weight: bold; 
-            color: #555;
+            color: #333;
             text-align: right;
             white-space: nowrap;
         }
@@ -131,9 +134,9 @@
             border: none;
             color: #cc0000;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
-            padding: 0 4px;
+            padding: 4px;
         }
 
         input[type="text"], input[type="number"] {
@@ -173,6 +176,45 @@
 
         button.btn-copiar:hover {
             background-color: #d4d4d4;
+        }
+
+        /* REGRAS EXCLUSIVAS PARA CELULAR (Telas de até 600px) */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 15px;
+            }
+            .item-linha {
+                display: grid;
+                grid-template-columns: 1fr 1fr; /* Divide em 2 colunas */
+                gap: 10px;
+                padding: 12px;
+            }
+            .col-desc { 
+                grid-column: span 2; /* Serviço ganha a largura inteira */
+                width: 100%; 
+            }
+            .col-qtd { width: 100%; }
+            .col-valor { width: 100%; }
+            
+            .linha-mobile-total-remover {
+                grid-column: span 2;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-top: 1px dashed #ddd;
+                padding-top: 8px;
+                margin-top: 2px;
+            }
+            .col-total { 
+                width: auto; 
+                text-align: left;
+            }
+            .col-acao { 
+                width: auto; 
+            }
         }
     </style>
 </head>
@@ -246,11 +288,13 @@
             const containerLinha = document.createElement('div');
             containerLinha.className = 'item-linha';
             containerLinha.innerHTML = `
-                <div class="col-qtd"><input type="number" class="ipt-qtd" value="${qtd}" placeholder="Qtd" min="1" oninput="atualizarSubtotalLinha(this)"></div>
                 <div class="col-desc"><input type="text" class="ipt-desc" value="${desc}" placeholder="Serviço / Produto"></div>
+                <div class="col-qtd"><input type="number" class="ipt-qtd" value="${qtd}" placeholder="Qtd" min="1" oninput="atualizarSubtotalLinha(this)"></div>
                 <div class="col-valor"><input type="number" class="ipt-valor" value="${valor}" placeholder="Valor Unit." min="0" step="any" oninput="atualizarSubtotalLinha(this)"></div>
-                <div class="col-total">R$ 0,00</div>
-                <div class="col-acao"><button type="button" class="btn-remover-linha" onclick="removerLinha(this)">❌</button></div>
+                <div class="linha-mobile-total-remover">
+                    <div class="col-total">Total: R$ 0,00</div>
+                    <div class="col-acao"><button type="button" class="btn-remover-linha" onclick="removerLinha(this)">❌</button></div>
+                </div>
             `;
             conteudoItens.appendChild(containerLinha);
             
@@ -273,7 +317,7 @@
             const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
             const totalLinhaElemento = linha.querySelector('.col-total');
             
-            totalLinhaElemento.innerText = formatarMoeda(qtd * valor);
+            totalLinhaElemento.innerText = 'Total: ' + formatarMoeda(qtd * valor);
             calcularOrcamento();
         }
 
@@ -376,9 +420,6 @@
             navigator.clipboard.writeText(mensagem).then(() => {
                 alert(`Orçamento #${orcamentoFormatado} copiado com sucesso!`);
                 localStorage.setItem('numeroOrcamento', numAtual + 1);
-                
-                // MUDANÇA AQUI: Removido o código que limpava as caixas de texto.
-                // Agora o texto continua aparecendo na tela após a cópia.
             }).catch(err => {
                 alert('Erro ao copiar o texto.');
             });
