@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <link class="favicon" rel="icon" type="image/png" href="logo.png">
-    <link rel="apple-touch-icon" href="logo.png">
+    <link class="apple-touch-icon" href="logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARTSCREEN CORURIPE - Sistema</title>
     
-    <!-- Script essencial para transformar o HTML em Imagem PNG -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -264,11 +263,11 @@
             cursor: pointer;
         }
 
-        /* MODELO DA FICHA DA NOTA EM TAMANHO PADRÃO A6 */
+        /* REESTRUTURAÇÃO COMPLETA ANTI-ERRO DO BLOCO A6 (SEM FLEXBOX) */
         #bloco-nota-a6 {
             position: absolute;
             left: -9999px;
-            top: -9999px;
+            top: 0;
             width: 395px; 
             min-height: 560px; 
             background-color: #ffffff;
@@ -277,14 +276,7 @@
             font-family: 'Courier New', Courier, monospace;
             color: #000000;
             border: 3px double #000000;
-            
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-        }
-
-        .nota-conteudo-dinamico {
-            flex-grow: 1;
+            display: block; /* Força compatibilidade total com html2canvas */
         }
 
         .nota-header {
@@ -325,16 +317,18 @@
             font-weight: bold;
             margin-top: 6px;
             line-height: 1.4;
+            margin-bottom: 15px;
         }
         
         .nota-rodape {
             text-align: center;
             font-size: 10px;
-            margin-top: auto; 
+            margin-top: 25px; 
             padding-top: 10px;
             border-top: 1px dashed #000;
             line-height: 1.4;
             color: #333333;
+            display: block;
         }
 
         /* REGRAS PARA CELULAR */
@@ -359,18 +353,15 @@
 </head>
 <body>
 
-    <!-- Menu Superior -->
     <div class="menu-sistema">
         <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Orçamento</button>
         <button class="btn-sistema" onclick="alternarPainel('entrada')">Pedido</button>
         <button class="btn-sistema btn-portfolio" onclick="window.open('portfolio.pdf', '_blank')">Portfólio</button>
     </div>
 
-    <!-- PAINEL 1: ORÇAMENTOS -->
     <div class="container ativo" id="tela-orcamento">
         <h1>ARTSCREEN CORURIPE</h1>
         
-        <!-- ALTERAÇÃO: Nome alterado para "Nº ORÇAMENTO" -->
         <div class="codigo-os-destaque" id="exibicaoCodigoOrcamento">Nº ORÇAMENTO: #ART00100</div>
 
         <div class="form-group">
@@ -415,11 +406,10 @@
         </div>
     </div>
 
-    <!-- PAINEL 2: PEDIDO -->
     <div class="container" id="tela-entrada">
         <h1>ARTSCREEN CORURIPE</h1>
         
-        <div class="codigo-os-destaque" id="exibicaoCodigoOS">Nº PEDIDO: #E00100</div>
+        <div class="codigo-os-destaque" id="exibicaoCodigoOS">Nº PEDIDO: #ART00100</div>
 
         <div class="form-group">
             <div class="header-field">
@@ -510,31 +500,28 @@
         </div>
     </div>
 
-    <!-- AREA UNIFICADA DO MODELO DE NOTA A6 -->
     <div id="bloco-nota-a6">
-        <div class="nota-conteudo-dinamico">
-            <div class="nota-header">
-                <div class="nota-titulo">ARTSCREEN CORURIPE</div>
-                <div class="nota-sub" id="tipoNotaA6">FICHA</div>
-            </div>
-            <div class="nota-secao" id="dadosGeraisNotaA6"></div>
+        <div class="nota-header">
+            <div class="nota-titulo">ARTSCREEN CORURIPE</div>
+            <div class="nota-sub" id="tipoNotaA6">FICHA</div>
+        </div>
+        <div class="nota-secao" id="dadosGeraisNotaA6"></div>
+        <div class="nota-linha-divisoria"></div>
+        <table class="nota-tabela">
+            <thead>
+                <tr>
+                    <th style="width: 15%;">Qtd</th>
+                    <th style="width: 60%;">Descrição</th>
+                    <th style="width: 25%; text-align: right;">Total</th>
+                </tr>
+            </thead>
+            <tbody id="itensNotaA6"></tbody>
+        </table>
+        <div class="nota-linha-divisoria"></div>
+        <div class="nota-financeiro-direita" id="financeiroNotaA6"></div>
+        <div id="blocoObsNotaA6" style="display:none;">
             <div class="nota-linha-divisoria"></div>
-            <table class="nota-tabela">
-                <thead>
-                    <tr>
-                        <th style="width: 15%;">Qtd</th>
-                        <th style="width: 60%;">Descrição</th>
-                        <th style="width: 25%; text-align: right;">Total</th>
-                    </tr>
-                </thead>
-                <tbody id="itensNotaA6"></tbody>
-            </table>
-            <div class="nota-linha-divisoria"></div>
-            <div class="nota-financeiro-direita" id="financeiroNotaA6"></div>
-            <div id="blocoObsNotaA6" style="display:none;">
-                <div class="nota-linha-divisoria"></div>
-                <div class="nota-secao" style="font-size: 11px;" id="obsNotaA6"></div>
-            </div>
+            <div class="nota-secao" style="font-size: 11px;" id="obsNotaA6"></div>
         </div>
         
         <div class="nota-rodape">
@@ -545,12 +532,16 @@
     </div>
 
     <script>
-        // ALTERAÇÃO: Inicialização forçada começando sempre a partir do número 100
-        if (!localStorage.getItem('numeroOrcamento') || localStorage.getItem('numeroOrcamento') === 'NaN') {
-            localStorage.setItem('numeroOrcamento', '100');
+        let numOrcamentoAtual = parseInt(localStorage.getItem('numOrcamentoPuro'), 10);
+        if (isNaN(numOrcamentoAtual) || numOrcamentoAtual < 100) {
+            numOrcamentoAtual = 100;
+            localStorage.setItem('numOrcamentoPuro', '100');
         }
-        if (!localStorage.getItem('numeroOS') || localStorage.getItem('numeroOS') === 'NaN') {
-            localStorage.setItem('numeroOS', '100');
+
+        let numOSAtual = parseInt(localStorage.getItem('numOSPuro'), 10);
+        if (isNaN(numOSAtual) || numOSAtual < 100) {
+            numOSAtual = 100;
+            localStorage.setItem('numOSPuro', '100');
         }
 
         const conteudoItensOrcamento = document.getElementById('conteudoItensOrcamento');
@@ -574,11 +565,8 @@
             atualizarCodigosVisiveisDinamicos();
         }
 
-        // ALTERAÇÃO: Formatação no modelo fixo consecutivo (Ex: ART00100, ART00101)
-        function formatarCodigoDinamico(prefixo, num) {
-            let n = parseInt(num, 10);
-            if (isNaN(n) || n < 100) n = 100;
-            return `${prefixo}${String(n).padStart(5, '0')}`;
+        function gerarTextoCodigo(prefixo, numero) {
+            return `${prefixo}${String(numero).padStart(5, '0')}`;
         }
 
         function formatarMoeda(valor) {
@@ -586,12 +574,11 @@
         }
 
         function atualizarCodigosVisiveisDinamicos() {
-            const numOrc = parseInt(localStorage.getItem('numeroOrcamento'), 10) || 100;
-            const numOS = parseInt(localStorage.getItem('numeroOS'), 10) || 100;
+            const nOrc = parseInt(localStorage.getItem('numOrcamentoPuro'), 10) || 100;
+            const nOS = parseInt(localStorage.getItem('numOSPuro'), 10) || 100;
             
-            // Exibição idêntica e padronizada em ambos os lados
-            document.getElementById('exibicaoCodigoOrcamento').innerText = `Nº ORÇAMENTO: #${formatarCodigoDinamico('ART', numOrc)}`;
-            document.getElementById('exibicaoCodigoOS').innerText = `Nº PEDIDO: #${formatarCodigoDinamico('ARTE', numOS)}`;
+            document.getElementById('exibicaoCodigoOrcamento').innerText = `Nº ORÇAMENTO: #${gerarTextoCodigo('ART', nOrc)}`;
+            document.getElementById('exibicaoCodigoOS').innerText = `Nº PEDIDO: #${gerarTextoCodigo('ART', nOS)}`;
         }
 
         function verificarFormaPagamento() {
@@ -636,7 +623,7 @@
         function calcularGenerico(tipo) {
             const container = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
             const painel = (tipo === 'orcamento') ? document.getElementById('painelTotaisOrcamento') : document.getElementById('painelTotaisOS');
-            const descontoInput = (tipo === 'orcamento') ? document.getElementById('desconto') : document.getElementById('descontoOS');
+            const toggle_descontoInput = (tipo === 'orcamento') ? document.getElementById('desconto') : document.getElementById('descontoOS');
 
             let subtotal = 0;
             container.querySelectorAll('.item-linha').forEach(linha => {
@@ -645,7 +632,7 @@
                 subtotal += (qtd * valor);
             });
 
-            const desconto = parseFloat(descontoInput.value) || 0;
+            const desconto = parseFloat(toggle_descontoInput.value) || 0;
             const totalGeral = Math.max(0, subtotal - desconto);
 
             if (tipo === 'orcamento') {
@@ -688,7 +675,7 @@
             if (tipo === 'orcamento') {
                 document.getElementById('tipoNotaA6').innerText = "ORÇAMENTO";
                 const cliente = document.getElementById('cliente').value.trim() || "Não informado";
-                const numAtual = parseInt(localStorage.getItem('numeroOrcamento'), 10) || 100;
+                const numAtual = parseInt(localStorage.getItem('numOrcamentoPuro'), 10) || 100;
                 const desconto = parseFloat(document.getElementById('desconto').value) || 0;
                 const checkedValidade = document.getElementById('validade30Dias').checked;
 
@@ -701,7 +688,7 @@
                 }
 
                 htmlGerais = `
-                    <b>Nº ORÇAMENTO:</b> #${formatarCodigoDinamico('ART', numAtual)}<br>
+                    <b>Nº ORÇAMENTO:</b> #${gerarTextoCodigo('ART', numAtual)}<br>
                     <b>Data:</b> ${dataStr} às ${horaStr}<br>
                     <b>Entrega:</b> ${prazoOrcamento}<br>
                     <b>Cliente:</b> ${cliente}
@@ -710,7 +697,7 @@
                 let subtotal = 0;
                 conteudoItensOrcamento.querySelectorAll('.item-linha').forEach(linha => {
                     const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
-                    const desc = linha.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
+                    const desc = static_linha = linha.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
                     const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
                     if (qtd > 0 && valor > 0) {
                         subtotal += (qtd * valor);
@@ -739,7 +726,7 @@
                 const formaPagto = document.getElementById('formaPagamentoOS').value;
                 const parcelas = document.getElementById('parcelasOS').value;
                 const obs = document.getElementById('obsOS').value.trim() || "Nenhuma";
-                const numOS = parseInt(localStorage.getItem('numeroOS'), 10) || 100;
+                const numOS = parseInt(localStorage.getItem('numOSPuro'), 10) || 100;
                 
                 let dataEntrega = document.getElementById('dataEntregaOS').value;
                 if(dataEntrega) {
@@ -750,7 +737,7 @@
                 }
 
                 htmlGerais = `
-                    <b>Nº PEDIDO:</b> #${formatarCodigoDinamico('ARTE', numOS)}<br>
+                    <b>Nº PEDIDO:</b> #${gerarTextoCodigo('ART', numOS)}<br>
                     <b>Entrada:</b> ${dataStr} às ${horaStr}<br>
                     <b>Entrega:</b> ${dataEntrega}<br>
                     <b>Cliente:</b> ${cliente}<br>
@@ -800,45 +787,47 @@
             montarEstruturaNotaA6HTML(tipo);
             
             const alvo = document.getElementById('bloco-nota-a6');
-            const numAtualSálvo = (tipo === 'orcamento') ? parseInt(localStorage.getItem('numeroOrcamento'), 10) : parseInt(localStorage.getItem('numeroOS'), 10);
+            const numPuroSalvo = (tipo === 'orcamento') ? parseInt(localStorage.getItem('numOrcamentoPuro'), 10) : parseInt(localStorage.getItem('numOSPuro'), 10);
+            const numTextoFormatado = gerarTextoCodigo('ART', numPuroSalvo);
             
-            const numFormatadoImagem = (tipo === 'orcamento') ? formatarCodigoDinamico('ART', numAtualSálvo) : formatarCodigoDinamico('ARTE', numAtualSálvo);
-            const prefixoArquivo = (tipo === 'orcamento') ? 'orcamento_' : 'pedido_';
+            // TRATAMENTO DA DATA DO DIA ATUAL PARA O NOME DO ARQUIVO (DD_MM_AAAA)
+            const agora = new Date();
+            const diaStr = String(agora.getDate()).padStart(2, '0');
+            const mesStr = String(agora.getMonth() + 1).padStart(2, '0');
+            const anoStr = agora.getFullYear();
+            const dataFinalNome = `${diaStr}_${mesStr}_${anoStr}`;
 
-            alvo.style.position = 'static';
-            alvo.style.left = '0';
-            alvo.style.top = '0';
+            // FORMATAÇÃO: TIPO + CODIGO + DATA
+            const nomeDoArquivoFinal = (tipo === 'orcamento') 
+                ? `ORCAMENTO_${numTextoFormatado}_${dataFinalNome}` 
+                : `PEDIDO_${numTextoFormatado}_${dataFinalNome}`;
 
+            // MOTOR DE CAPTURA SEGURO: Sem quebras de ciclo ou renderização instável
             setTimeout(() => {
                 html2canvas(alvo, {
                     scale: 2, 
-                    logging: false
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true
                 }).then(canvas => {
-                    alvo.style.position = 'absolute';
-                    alvo.style.left = '-9999px';
-                    alvo.style.top = '-9999px';
-
                     const link = document.createElement('a');
-                    link.download = `${prefixoArquivo}${numFormatadoImagem}.png`;
+                    link.download = `${nomeDoArquivoFinal}.png`;
                     link.href = canvas.toDataURL('image/png');
                     link.click();
 
-                    // Incrementa de forma consecutiva
                     if (tipo === 'orcamento') {
-                        localStorage.setItem('numeroOrcamento', numAtualSálvo + 1);
+                        localStorage.setItem('numOrcamentoPuro', String(numPuroSalvo + 1));
                     } else {
-                        localStorage.setItem('numeroOS', numAtualSálvo + 1);
+                        localStorage.setItem('numOSPuro', String(numPuroSalvo + 1));
                     }
                     
                     atualizarCodigosVisiveisDinamicos();
 
                 }).catch(err => {
-                    alert('Erro ao processar imagem.');
-                    alvo.style.position = 'absolute';
-                    alvo.style.left = '-9999px';
-                    alvo.style.top = '-9999px';
+                    console.error("Erro na captura de imagem:", err);
+                    alert('Erro ao processar imagem. Verifique os campos e tente novamente.');
                 });
-            }, 100);
+            }, 50);
         }
 
         function limparPainelOrcamentoManual() {
