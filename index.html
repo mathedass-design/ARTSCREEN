@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARTSCREEN CORURIPE - Sistema</title>
     
-    <!-- Script essencial para transformar o HTML em Imagem PNG -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -232,19 +231,21 @@
 
         .grupo-botoes-acao button {
             flex: 1;
-            border: 1px solid #999;
-            color: #000;
-            padding: 14px 6px;
-            font-size: 15px;
+            border: 1px solid #000;
+            color: #ffffff;
+            padding: 16px 6px;
+            font-size: 16px;
             cursor: pointer;
             transition: background 0.2s;
             font-weight: bold;
-            background-color: #e0e0e0;
+            background-color: #000000;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .grupo-botoes-acao button:hover {
-            background-color: #d4d4d4;
+            background-color: #222222;
         }
 
         .checkbox-group {
@@ -351,30 +352,27 @@
             .col-total, .col-acao { width: auto; }
             .grid-financeiro { grid-template-columns: 1fr; gap: 10px; }
             .grupo-botoes-acao { flex-direction: column; gap: 8px; }
-            .grupo-botoes-acao button { width: 100%; padding: 12px; }
+            .grupo-botoes-acao button { width: 100%; padding: 14px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Menu Superior com o novo botão Portfólio -->
     <div class="menu-sistema">
         <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Orçamento</button>
         <button class="btn-sistema" onclick="alternarPainel('entrada')">Pedido</button>
         <button class="btn-sistema btn-portfolio" onclick="window.open('portfolio.pdf', '_blank')">Portfólio</button>
     </div>
 
-    <!-- PAINEL 1: ORÇAMENTOS -->
     <div class="container ativo" id="tela-orcamento">
         <h1>ARTSCREEN CORURIPE</h1>
         
-        <!-- Código automático de orçamento visível -->
         <div class="codigo-os-destaque" id="exibicaoCodigoOrcamento">ORÇAMENTO: #0001</div>
 
         <div class="form-group">
             <div class="header-field">
                 <label for="cliente">Cliente</label>
-                <button class="btn-limpar-campo" onclick="avancarEProximoOrcamento()" title="Novo Orçamento (Avançar Número)">🗑️</button>
+                <button class="btn-limpar-campo" onclick="limparPainelOrcamentoManual()" title="Limpar Campos">🗑️</button>
             </div>
             <input type="text" id="cliente" placeholder="Nome do cliente">
         </div>
@@ -401,7 +399,6 @@
             <input type="date" id="dataEntregaOrcamento">
         </div>
 
-        <!-- Nova caixa de seleção: Validade de 30 dias -->
         <label class="checkbox-group">
             <input type="checkbox" id="validade30Dias">
             Orçamento válido por 30 dias
@@ -410,22 +407,19 @@
         <div class="totais-container" id="painelTotaisOrcamento"></div>
         
         <div class="grupo-botoes-acao">
-            <button type="button" onclick="copiarOrcamento()">Copiar</button>
-            <button type="button" onclick="baixarNotaComoImagem('orcamento')">Baixar PNG (A6)</button>
+            <button type="button" onclick="processarEBaixarNota('orcamento')">ENVIAR / BAIXAR</button>
         </div>
     </div>
 
-    <!-- PAINEL 2: PEDIDO -->
     <div class="container" id="tela-entrada">
         <h2>Pedido</h2>
         
-        <!-- Código automático de pedido visível -->
         <div class="codigo-os-destaque" id="exibicaoCodigoOS">ORDEM DE SERVIÇO: #E0001</div>
 
         <div class="form-group">
             <div class="header-field">
                 <label for="clienteOS">Cliente</label>
-                <button class="btn-limpar-campo" onclick="avancarEProximaOS()" title="Novo Pedido (Avançar Número)">🗑️</button>
+                <button class="btn-limpar-campo" onclick="limparPainelPedidoManual()" title="Limpar Campos">🗑️</button>
             </div>
             <input type="text" id="clienteOS" placeholder="Nome do cliente">
         </div>
@@ -507,12 +501,10 @@
         <div class="totais-container" id="painelTotaisOS"></div>
         
         <div class="grupo-botoes-acao">
-            <button type="button" onclick="copiarEntradaServico()">Copiar</button>
-            <button type="button" onclick="baixarNotaComoImagem('entrada')">Baixar PNG (A6)</button>
+            <button type="button" onclick="processarEBaixarNota('entrada')">ENVIAR / BAIXAR</button>
         </div>
     </div>
 
-    <!-- AREA UNIFICADA DO MODELO DE NOTA A6 PARA IMAGEM -->
     <div id="bloco-nota-a6">
         <div class="nota-conteudo-dinamico">
             <div class="nota-header">
@@ -547,7 +539,7 @@
     </div>
 
     <script>
-        // Correção de inicialização forçada da numeração automática
+        // Inicialização de memória segura
         if (!localStorage.getItem('numeroOrcamento') || localStorage.getItem('numeroOrcamento') === 'NaN') {
             localStorage.setItem('numeroOrcamento', '1');
         }
@@ -586,7 +578,6 @@
             return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
 
-        // Nova função centralizada para carregar os códigos salvos na memória
         function atualizarCodigosVisiveisDinamicos() {
             const numOrc = parseInt(localStorage.getItem('numeroOrcamento'), 10) || 1;
             const numOS = parseInt(localStorage.getItem('numeroOS'), 10) || 1;
@@ -678,7 +669,10 @@
         }
 
         function montarEstruturaNotaA6HTML(tipo) {
-            const { data, hora } = obterDataHoraAtual();
+            const agora = new Date();
+            const dataStr = agora.toLocaleDateString('pt-BR');
+            const horaStr = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            
             let htmlGerais = '';
             let htmlItens = '';
             let htmlFinanceiro = '';
@@ -700,7 +694,7 @@
 
                 htmlGerais = `
                     <b>ORÇAMENTO:</b> #${formatarCodigo(numAtual)}<br>
-                    <b>Data:</b> ${data} às ${hora}<br>
+                    <b>Data:</b> ${dataStr} às ${horaStr}<br>
                     <b>Entrega:</b> ${prazoOrcamento}<br>
                     <b>Cliente:</b> ${cliente}
                 `;
@@ -708,7 +702,7 @@
                 let subtotal = 0;
                 conteudoItensOrcamento.querySelectorAll('.item-linha').forEach(linha => {
                     const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
-                    const desc = linha.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
+                    const desc = static_desc = linha.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
                     const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
                     if (qtd > 0 && valor > 0) {
                         subtotal += (qtd * valor);
@@ -721,7 +715,6 @@
                 if(desconto > 0) htmlFinanceiro += `Desconto: - ${formatarMoeda(desconto)}<br>`;
                 htmlFinanceiro += `Total Geral: ${formatarMoeda(totalGeral)}`;
                 
-                // Gerencia a caixa de texto de validade dentro das Observações na Imagem
                 if (checkedValidade) {
                     document.getElementById('blocoObsNotaA6').style.display = 'block';
                     document.getElementById('obsNotaA6').innerHTML = `Este orçamento possui validade de 30 dias.`;
@@ -750,7 +743,7 @@
 
                 htmlGerais = `
                     <b>PEDIDO O.S:</b> #E${formatarCodigo(numOS)}<br>
-                    <b>Entrada:</b> ${data} às ${hora}<br>
+                    <b>Entrada:</b> ${dataStr} às ${horaStr}<br>
                     <b>Entrega:</b> ${dataEntrega}<br>
                     <b>Cliente:</b> ${cliente}<br>
                     <b>Contato:</b> ${whatsapp}
@@ -795,12 +788,16 @@
             document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
         }
 
-        function baixarNotaComoImagem(tipo) {
+        function processarEBaixarNota(tipo) {
+            // 1. Monta o HTML estruturado com o código atual antes do avanço
             montarEstruturaNotaA6HTML(tipo);
+            
             const alvo = document.getElementById('bloco-nota-a6');
-            const num = (tipo === 'orcamento') ? formatarCodigo(parseInt(localStorage.getItem('numeroOrcamento'), 10)) : formatarCodigo(parseInt(localStorage.getItem('numeroOS'), 10));
+            const numAtualSálvo = (tipo === 'orcamento') ? parseInt(localStorage.getItem('numeroOrcamento'), 10) : parseInt(localStorage.getItem('numeroOS'), 10);
+            const numFormatado = formatarCodigo(numAtualSálvo);
             const prefixo = (tipo === 'orcamento') ? 'orcamento_' : 'pedido_E';
 
+            // Torna o bloco visível temporariamente para renderização
             alvo.style.position = 'static';
             alvo.style.left = '0';
             alvo.style.top = '0';
@@ -810,14 +807,27 @@
                     scale: 2, 
                     logging: false
                 }).then(canvas => {
+                    // Oculta novamente o elemento
                     alvo.style.position = 'absolute';
                     alvo.style.left = '-9999px';
                     alvo.style.top = '-9999px';
 
+                    // Faz o download automático da imagem
                     const link = document.createElement('a');
-                    link.download = `${prefixo}${num}.png`;
+                    link.download = `${prefixo}${numFormatado}.png`;
                     link.href = canvas.toDataURL('image/png');
                     link.click();
+
+                    // 2. AVANÇA O CÓDIGO AUTOMATICAMENTE APENAS APÓS O SUCESSO DO DOWNLOAD
+                    if (tipo === 'orcamento') {
+                        localStorage.setItem('numeroOrcamento', numAtualSálvo + 1);
+                    } else {
+                        localStorage.setItem('numeroOS', numAtualSálvo + 1);
+                    }
+                    
+                    // Atualiza a visualização do painel instantaneamente
+                    atualizarCodigosVisiveisDinamicos();
+
                 }).catch(err => {
                     alert('Erro ao processar imagem.');
                     alvo.style.position = 'absolute';
@@ -827,130 +837,15 @@
             }, 100);
         }
 
-        function copiarOrcamento() {
-            const cliente = document.getElementById('cliente').value.trim() || "Não informado";
-            const desconto = parseFloat(document.getElementById('desconto').value) || 0;
-            const numAtual = parseInt(localStorage.getItem('numeroOrcamento'), 10) || 1;
-            const checkedValidade = document.getElementById('validade30Dias').checked;
-            const { data, hora } = obterDataHoraAtual();
-
-            let prazoOrcamento = document.getElementById('dataEntregaOrcamento').value;
-            if(prazoOrcamento) {
-                const [ano, mes, dia] = prazoOrcamento.split('-');
-                prazoOrcamento = `${dia}/${mes}/${ano}`;
-            } else {
-                prazoOrcamento = "Não definido";
-            }
-
-            let msg = `*Orçamento:* #${formatarCodigo(numAtual)}\n*Data:* ${data} às ${hora}\n*Previsão de Entrega:* ${prazoOrcamento}\n*Cliente:* ${cliente}\n----------------------------------------\n`;
-            let subtotal = 0;
-
-            conteudoItensOrcamento.querySelectorAll('.item-linha').forEach(linha => {
-                const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
-                const desc = linha.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
-                const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
-                if (qtd > 0 && valor > 0) {
-                    subtotal += (qtd * valor);
-                    msg += `${qtd}x ${desc} (${formatarMoeda(valor)} cada) = ${formatarMoeda(qtd * valor)}\n`;
-                }
-            });
-
-            msg += `----------------------------------------\n`;
-            if (desconto > 0) {
-                msg += `*VALOR SEM DESCONTO:* ${formatarMoeda(subtotal)}\n*DESCONTO:* ${formatarMoeda(desconto)}\n*TOTAL COM DESCONTO:* ${formatarMoeda(Math.max(0, subtotal - desconto))}\n`;
-            } else {
-                msg += `*TOTAL:* ${formatarMoeda(subtotal)}\n`;
-            }
-            
-            if (checkedValidade) {
-                msg += `----------------------------------------\n*OBSERVAÇÃO:* Este orçamento possui validade de 30 dias.\n`;
-            }
-
-            msg += `----------------------------------------\n*ARTSCREEN CORURIPE*\nCNPJ: 25.974.730/0001-14\n(82) 99628-4867 | @ARTSCREENCORURIPE\nAv. Floriano Peixoto, 138, Centro, Coruripe - AL\n`;
-
-            navigator.clipboard.writeText(msg).then(() => {
-                alert(`Orçamento #${formatarCodigo(numAtual)} copiado! (Dados mantidos)`);
-            });
-        }
-
-        function copiarEntradaServico() {
-            montarEstruturaNotaA6HTML('entrada');
-            const cliente = document.getElementById('clienteOS').value.trim() || "Não informado";
-            const whatsapp = document.getElementById('whatsappOS').value.trim() || "Não informado";
-            const desconto = parseFloat(document.getElementById('descontoOS').value) || 0;
-            const valorEntrada = parseFloat(document.getElementById('valorEntradaOS').value) || 0;
-            const formaPagto = document.getElementById('formaPagamentoOS').value;
-            const parcelas = document.getElementById('parcelasOS').value;
-            const obs = document.getElementById('obsOS').value.trim() || "Nenhuma";
-            
-            let dataEntrega = document.getElementById('dataEntregaOS').value;
-            if(dataEntrega) {
-                const [ano, mes, dia] = dataEntrega.split('-');
-                dataEntrega = `${dia}/${mes}/${ano}`;
-            } else {
-                dataEntrega = "Não definido";
-            }
-
-            const numOS = parseInt(localStorage.getItem('numeroOS'), 10) || 1;
-            const { data, hora } = obterDataHoraAtual();
-
-            let msg = `📌 *PEDIDO - ARTSCREEN*\n*CÓDIGO O.S:* #E${formatarCodigo(numOS)}\n*Data de Entrada:* ${data} às ${hora}\n*Previsão de Entrega:* ${dataEntrega}\n----------------------------------------\n*CLIENTE:* ${cliente}\n*CONTATO:* ${whatsapp}\n----------------------------------------\n*ITENS DO SERVIÇO:*\n`;
-
-            let subtotal = 0;
-            conteudoItensOS.querySelectorAll('.item-linha').forEach(linha => {
-                const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
-                const desc = linha.querySelector('.ipt-desc').value.trim() || "Sem descrição";
-                const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
-                if (qtd > 0 && valor > 0) {
-                    subtotal += (qtd * valor);
-                    msg += `- ${qtd}x ${desc} (${formatarMoeda(valor)} cada) = ${formatarMoeda(qtd * valor)}\n`;
-                }
-            });
-
-            const totalGeral = Math.max(0, subtotal - desconto);
-            const restante = Math.max(0, totalGeral - valorEntrada);
-            let detalhePagto = formaPagto;
-            if(formaPagto === 'Crédito') detalhePagto += ` (${parcelas})`;
-
-            msg += `----------------------------------------\n*VALOR TOTAL DOS ITENS:* ${formatarMoeda(subtotal)}\n`;
-            if (desconto > 0) msg += `*DESCONTO:* ${formatarMoeda(desconto)}\n`;
-            msg += `*VALOR LÍQUIDO COBRADO:* ${formatarMoeda(totalGeral)}\n*VALOR DE ENTRADA PAGO:* ${formatarMoeda(valorEntrada)}\n*FORMA DE PAGAMENTO:* ${detalhePagto}\n`;
-            
-            if (restante > 0) {
-                msg += `*VALOR RESTANTE A PAGAR:* ${formatarMoeda(restante)}\n`;
-            } else {
-                msg += `*SITUAÇÃO FINANCEIRA:* TOTALMENTE PAGO JÁ NA ENTRADA\n`;
-            }
-            msg += `----------------------------------------\n*OBSERVAÇÕES:*\n${obs}\n----------------------------------------\n*ARTSCREEN CORURIPE*\nCNPJ: 25.974.730/0001-14\n(82) 99628-4867 | @ARTSCREENCORURIPE\nAv. Floriano Peixoto, 138, Centro, Coruripe - AL\n`;
-
-            navigator.clipboard.writeText(msg).then(() => {
-                alert(`Pedido O.S. #E${formatarCodigo(numOS)} copiado com sucesso! (Dados mantidos)`);
-            });
-        }
-
-        function obterDataHoraAtual() {
-            const agora = new Date();
-            return {
-                data: agora.toLocaleDateString('pt-BR'),
-                hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-            };
-        }
-
-        function avancarEProximoOrcamento() {
-            const numAtual = parseInt(localStorage.getItem('numeroOrcamento'), 10) || 1;
-            localStorage.setItem('numeroOrcamento', numAtual + 1);
+        function limparPainelOrcamentoManual() {
             document.getElementById('cliente').value = '';
             document.getElementById('desconto').value = '0';
             document.getElementById('dataEntregaOrcamento').value = '';
             document.getElementById('validade30Dias').checked = false;
             limparTodosItens('orcamento');
-            atualizarCodigosVisiveisDinamicos();
-            alert("Número do orçamento avançado! Tela limpa para o próximo cliente.");
         }
 
-        function avancarEProximaOS() {
-            const numOS = parseInt(localStorage.getItem('numeroOS'), 10) || 1;
-            localStorage.setItem('numeroOS', numOS + 1);
+        function limparPainelPedidoManual() {
             document.getElementById('clienteOS').value = '';
             document.getElementById('whatsappOS').value = '';
             document.getElementById('descontoOS').value = '0';
@@ -958,8 +853,18 @@
             document.getElementById('dataEntregaOS').value = '';
             document.getElementById('obsOS').value = '';
             limparTodosItens('entrada');
-            atualizarCodigosVisiveisDinamicos();
-            alert("Número do pedido avançado! Tela limpa para o próximo serviço.");
+        }
+
+        function limparTodosItens(tipo) {
+            const container = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
+            container.innerHTML = '';
+            adicionarLinhaGenerico(tipo);
+        }
+
+        function limparDesconto(tipo) {
+            const input = (tipo === 'orcamento') ? document.getElementById('desconto') : document.getElementById('descontoOS');
+            input.value = '0';
+            calcularGenerico(tipo);
         }
     </script>
 </body>
