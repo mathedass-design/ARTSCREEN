@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARTSCREEN CORURIPE - Sistema</title>
     
+    <!-- Script essencial para transformar o HTML em Imagem PNG -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -249,12 +250,6 @@
             font-family: 'Courier New', Courier, monospace;
             color: #000000;
             border: 3px double #000000;
-            
-            /* CONFIGURAÇÃO DA LOGO COMO MARCA D'ÁGUA NO FUNDO COMPLETO */
-            background-image: linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)), url('logo.png');
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-size: 220px; /* Tamanho discreto no meio da nota */
         }
 
         .nota-header {
@@ -264,7 +259,6 @@
             padding-bottom: 8px;
             margin-bottom: 10px;
         }
-
         .nota-titulo { font-size: 18px; letter-spacing: 1px; }
         .nota-sub { font-size: 14px; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
 
@@ -333,6 +327,7 @@
         <button class="btn-sistema" onclick="alternarPainel('entrada')">Entrada de Serviço</button>
     </div>
 
+    <!-- PAINEL 1: ORÇAMENTOS -->
     <div class="container ativo" id="tela-orcamento">
         <h1>ARTSCREEN CORURIPE</h1>
 
@@ -374,6 +369,7 @@
         </div>
     </div>
 
+    <!-- PAINEL 2: ENTRADA DE SERVIÇO -->
     <div class="container" id="tela-entrada">
         <h2>Entrada de Serviço</h2>
         
@@ -469,6 +465,7 @@
         </div>
     </div>
 
+    <!-- AREA UNIFICADA DO MODELO DE NOTA A6 PARA IMAGEM -->
     <div id="bloco-nota-a6">
         <div class="nota-header">
             <div class="nota-titulo">ARTSCREEN CORURIPE</div>
@@ -565,10 +562,10 @@
         }
 
         function atualizarSubtotalLinha(input, tipo) {
-            const static_linha = input.closest('.item-linha');
-            const qtd = parseFloat(static_linha.querySelector('.ipt-qtd').value) || 0;
-            const valor = parseFloat(static_linha.querySelector('.ipt-valor').value) || 0;
-            static_linha.querySelector('.col-total').innerText = 'Total: ' + formatarMoeda(qtd * valor);
+            const linha = input.closest('.item-linha');
+            const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
+            const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
+            linha.querySelector('.col-total').innerText = 'Total: ' + formatarMoeda(qtd * valor);
             calcularGenerico(tipo);
         }
 
@@ -690,11 +687,11 @@
                 let subtotal = 0;
                 conteudoItensOS.querySelectorAll('.item-linha').forEach(linha => {
                     const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
-                    const desc = static_desc = linha.querySelector('.ipt-desc').value.trim() || "Sem descrição";
+                    const desc = linha.querySelector('.ipt-desc').value.trim() || "Sem descrição";
                     const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
                     if (qtd > 0 && valor > 0) {
                         subtotal += (qtd * valor);
-                        htmlItens += `<tr><td>${qtd}x</td><td>${static_desc}</td><td style="text-align: right;">${formatarMoeda(qtd * valor)}</td></tr>`;
+                        htmlItens += `<tr><td>${qtd}x</td><td>${desc}</td><td style="text-align: right;">${formatarMoeda(qtd * valor)}</td></tr>`;
                     }
                 });
 
@@ -736,28 +733,25 @@
             alvo.style.left = '0';
             alvo.style.top = '0';
 
-            setTimeout(() => {
-                html2canvas(alvo, {
-                    scale: 2, 
-                    logging: false,
-                    useCORS: true,      
-                    allowTaint: true    
-                }).then(canvas => {
-                    alvo.style.position = 'absolute';
-                    alvo.style.left = '-9999px';
-                    alvo.style.top = '-9999px';
+            html2canvas(alvo, {
+                scale: 2, 
+                logging: false,
+                useCORS: true
+            }).then(canvas => {
+                alvo.style.position = 'absolute';
+                alvo.style.left = '-9999px';
+                alvo.style.top = '-9999px';
 
-                    const link = document.createElement('a');
-                    link.download = `${prefixo}${num}.png`;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                }).catch(err => {
-                    alert('Erro ao processar imagem.');
-                    alvo.style.position = 'absolute';
-                    alvo.style.left = '-9999px';
-                    alvo.style.top = '-9999px';
-                });
-            }, 100);
+                const link = document.createElement('a');
+                link.download = `${prefixo}${num}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                alert('Erro ao gerar a imagem.');
+                alvo.style.position = 'absolute';
+                alvo.style.left = '-9999px';
+                alvo.style.top = '-9999px';
+            });
         }
 
         function copiarOrcamento() {
@@ -788,4 +782,104 @@
             });
 
             msg += `----------------------------------------\n`;
-            if (desconto
+            if (desconto > 0) {
+                msg += `*VALOR SEM DESCONTO:* ${formatarMoeda(subtotal)}\n*DESCONTO:* ${formatarMoeda(desconto)}\n*TOTAL COM DESCONTO:* ${formatarMoeda(Math.max(0, subtotal - desconto))}\n`;
+            } else {
+                msg += `*TOTAL:* ${formatarMoeda(subtotal)}\n`;
+            }
+            msg += `----------------------------------------\n*ARTSCREEN CORURIPE*\nCNPJ: 25.974.730/0001-14\nAv. Floriano Peixoto, 138, Centro, Coruripe - AL\n`;
+
+            navigator.clipboard.writeText(msg).then(() => {
+                alert(`Orçamento #${formatarCodigo(numAtual)} copiado! (Dados mantidos)`);
+            });
+        }
+
+        function copiarEntradaServico() {
+            montarEstruturaNotaA6HTML('entrada');
+            const cliente = document.getElementById('clienteOS').value.trim() || "Não informado";
+            const whatsapp = document.getElementById('whatsappOS').value.trim() || "Não informado";
+            const desconto = parseFloat(document.getElementById('descontoOS').value) || 0;
+            const valorEntrada = parseFloat(document.getElementById('valorEntradaOS').value) || 0;
+            const formaPagto = document.getElementById('formaPagamentoOS').value;
+            const parcelas = document.getElementById('parcelasOS').value;
+            const obs = document.getElementById('obsOS').value.trim() || "Nenhuma";
+            
+            let dataEntrega = document.getElementById('dataEntregaOS').value;
+            if(dataEntrega) {
+                const [ano, mes, dia] = dataEntrega.split('-');
+                dataEntrega = `${dia}/${mes}/${ano}`;
+            } else {
+                dataEntrega = "Não definido";
+            }
+
+            const numOS = parseInt(localStorage.getItem('numeroOS'), 10);
+            const { data, hora } = obterDataHoraAtual();
+
+            let msg = `📌 *PEDIDO - ARTSCREEN*\n*CÓDIGO O.S:* #E${formatarCodigo(numOS)}\n*Data de Entrada:* ${data} às ${hora}\n*Previsão de Entrega:* ${dataEntrega}\n----------------------------------------\n*CLIENTE:* ${cliente}\n*CONTATO:* ${whatsapp}\n----------------------------------------\n*ITENS DO SERVIÇO:*\n`;
+
+            let subtotal = 0;
+            conteudoItensOS.querySelectorAll('.item-linha').forEach(linha => {
+                const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
+                const desc = linha.querySelector('.ipt-desc').value.trim() || "Sem descrição";
+                const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
+                if (qtd > 0 && valor > 0) {
+                    subtotal += (qtd * valor);
+                    msg += `- ${qtd}x ${desc} (${formatarMoeda(valor)} cada) = ${formatarMoeda(qtd * valor)}\n`;
+                }
+            });
+
+            const totalGeral = Math.max(0, subtotal - desconto);
+            const restante = Math.max(0, totalGeral - valorEntrada);
+            let detalhePagto = formaPagto;
+            if(formaPagto === 'Crédito') detalhePagto += ` (${parcelas})`;
+
+            msg += `----------------------------------------\n*VALOR TOTAL DOS ITENS:* ${formatarMoeda(subtotal)}\n`;
+            if (desconto > 0) msg += `*DESCONTO:* ${formatarMoeda(desconto)}\n`;
+            msg += `*VALOR LÍQUIDO COBRADO:* ${formatarMoeda(totalGeral)}\n*VALOR DE ENTRADA PAGO:* ${formatarMoeda(valorEntrada)}\n*FORMA DE PAGAMENTO:* ${detalhePagto}\n`;
+            
+            if (restante > 0) {
+                msg += `*VALOR RESTANTE A PAGAR:* ${formatarMoeda(restante)}\n`;
+            } else {
+                msg += `*SITUAÇÃO FINANCEIRA:* TOTALMENTE PAGO JÁ NA ENTRADA\n`;
+            }
+            msg += `----------------------------------------\n*OBSERVAÇÕES:*\n${obs}\n----------------------------------------\n*ARTSCREEN CORURIPE*\nCNPJ: 25.974.730/0001-14\nAv. Floriano Peixoto, 138, Centro, Coruripe - AL\n`;
+
+            navigator.clipboard.writeText(msg).then(() => {
+                alert(`Pedido O.S. #E${formatarCodigo(numOS)} copiado com sucesso! (Dados mantidos)`);
+            });
+        }
+
+        function obterDataHoraAtual() {
+            const agora = new Date();
+            return {
+                data: agora.toLocaleDateString('pt-BR'),
+                hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+            };
+        }
+
+        function avancarEProximoOrcamento() {
+            const numAtual = parseInt(localStorage.getItem('numeroOrcamento'), 10);
+            localStorage.setItem('numeroOrcamento', numAtual + 1);
+            document.getElementById('cliente').value = '';
+            document.getElementById('desconto').value = '0';
+            document.getElementById('dataEntregaOrcamento').value = '';
+            limparTodosItens('orcamento');
+            alert("Número do orçamento avançado! Tela limpa para o próximo cliente.");
+        }
+
+        function avancarEProximaOS() {
+            const numOS = parseInt(localStorage.getItem('numeroOS'), 10);
+            localStorage.setItem('numeroOS', numOS + 1);
+            document.getElementById('clienteOS').value = '';
+            document.getElementById('whatsappOS').value = '';
+            document.getElementById('descontoOS').value = '0';
+            document.getElementById('valorEntradaOS').value = '0';
+            document.getElementById('dataEntregaOS').value = '';
+            document.getElementById('obsOS').value = '';
+            limparTodosItens('entrada');
+            atualizarCodigoOSVisivel();
+            alert("Número do pedido avançado! Tela limpa para o próximo serviço.");
+        }
+    </script>
+</body>
+</html>
