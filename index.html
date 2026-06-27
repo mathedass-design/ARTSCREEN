@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <link class="favicon" rel="icon" type="image/png" href="logo.png">
-    <link class="apple-touch-icon" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARTSCREEN CORURIPE - Sistema</title>
     
+    <!-- Script essencial para transformar o HTML em Imagem PNG -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -263,7 +264,7 @@
             cursor: pointer;
         }
 
-        /* REESTRUTURAÇÃO COMPLETA ANTI-ERRO DO BLOCO A6 (SEM FLEXBOX) */
+        /* REESTRUTURAÇÃO DO BLOCO A6 - RODAPÉ CORRIGIDO NA BASE CENTRALIZADO */
         #bloco-nota-a6 {
             position: absolute;
             left: -9999px;
@@ -276,7 +277,7 @@
             font-family: 'Courier New', Courier, monospace;
             color: #000000;
             border: 3px double #000000;
-            display: block; /* Força compatibilidade total com html2canvas */
+            display: block;
         }
 
         .nota-header {
@@ -320,15 +321,18 @@
             margin-bottom: 15px;
         }
         
+        /* CORREÇÃO DO CSS: Força o rodapé a ficar na base absoluta da imagem, centralizado */
         .nota-rodape {
+            position: absolute;
+            bottom: 18px;
+            left: 18px;
+            width: 353px; /* Largura exata descontando o padding interno de 18px da nota */
             text-align: center;
             font-size: 10px;
-            margin-top: 25px; 
             padding-top: 10px;
             border-top: 1px dashed #000;
             line-height: 1.4;
             color: #333333;
-            display: block;
         }
 
         /* REGRAS PARA CELULAR */
@@ -353,12 +357,15 @@
 </head>
 <body>
 
+    <!-- Menu Superior -->
     <div class="menu-sistema">
         <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Orçamento</button>
         <button class="btn-sistema" onclick="alternarPainel('entrada')">Pedido</button>
-        <button class="btn-sistema btn-portfolio" onclick="window.open('portfolio.pdf', '_blank')">Portfólio</button>
+        <!-- CORREÇÃO DO LINK DO PORTFÓLIO: Abre direto a partir da raiz do domínio -->
+        <button class="btn-sistema btn-portfolio" onclick="window.open(window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/portfolio.pdf', '_blank')">Portfólio</button>
     </div>
 
+    <!-- PAINEL 1: ORÇAMENTOS -->
     <div class="container ativo" id="tela-orcamento">
         <h1>ARTSCREEN CORURIPE</h1>
         
@@ -406,6 +413,7 @@
         </div>
     </div>
 
+    <!-- PAINEL 2: PEDIDO -->
     <div class="container" id="tela-entrada">
         <h1>ARTSCREEN CORURIPE</h1>
         
@@ -500,6 +508,7 @@
         </div>
     </div>
 
+    <!-- AREA UNIFICADA DO MODELO DE NOTA A6 (MANTIDA ABSOLUTA EM ZONA SEGURA) -->
     <div id="bloco-nota-a6">
         <div class="nota-header">
             <div class="nota-titulo">ARTSCREEN CORURIPE</div>
@@ -697,7 +706,7 @@
                 let subtotal = 0;
                 conteudoItensOrcamento.querySelectorAll('.item-linha').forEach(linha => {
                     const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
-                    const desc = static_linha = linha.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
+                    const desc = linha.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
                     const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
                     if (qtd > 0 && valor > 0) {
                         subtotal += (qtd * valor);
@@ -790,19 +799,16 @@
             const numPuroSalvo = (tipo === 'orcamento') ? parseInt(localStorage.getItem('numOrcamentoPuro'), 10) : parseInt(localStorage.getItem('numOSPuro'), 10);
             const numTextoFormatado = gerarTextoCodigo('ART', numPuroSalvo);
             
-            // TRATAMENTO DA DATA DO DIA ATUAL PARA O NOME DO ARQUIVO (DD_MM_AAAA)
             const agora = new Date();
             const diaStr = String(agora.getDate()).padStart(2, '0');
             const mesStr = String(agora.getMonth() + 1).padStart(2, '0');
             const anoStr = agora.getFullYear();
             const dataFinalNome = `${diaStr}_${mesStr}_${anoStr}`;
 
-            // FORMATAÇÃO: TIPO + CODIGO + DATA
             const nomeDoArquivoFinal = (tipo === 'orcamento') 
                 ? `ORCAMENTO_${numTextoFormatado}_${dataFinalNome}` 
                 : `PEDIDO_${numTextoFormatado}_${dataFinalNome}`;
 
-            // MOTOR DE CAPTURA SEGURO: Sem quebras de ciclo ou renderização instável
             setTimeout(() => {
                 html2canvas(alvo, {
                     scale: 2, 
@@ -825,7 +831,7 @@
 
                 }).catch(err => {
                     console.error("Erro na captura de imagem:", err);
-                    alert('Erro ao processar imagem. Verifique os campos e tente novamente.');
+                    alert('Erro ao processar imagem. Tente atualizar a página.');
                 });
             }, 50);
         }
