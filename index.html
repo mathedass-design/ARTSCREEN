@@ -300,7 +300,6 @@
             line-height: 1.4;
         }
         
-        /* ESTILO CORRIGIDO: SEM NEGRITO, PEQUENO E BEM SUTIL NO MEIO EMBAIXO */
         .nota-rodape {
             text-align: center;
             font-size: 10px;
@@ -333,9 +332,10 @@
 </head>
 <body>
 
+    <!-- AJUSTE: Nomes dos botões superiores corrigidos -->
     <div class="menu-sistema">
-        <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Gerar Orçamento</button>
-        <button class="btn-sistema" onclick="alternarPainel('entrada')">Entrada de Serviço</button>
+        <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Orçamento</button>
+        <button class="btn-sistema" onclick="alternarPainel('entrada')">Pedido</button>
     </div>
 
     <!-- PAINEL 1: ORÇAMENTOS -->
@@ -380,16 +380,17 @@
         </div>
     </div>
 
-    <!-- PAINEL 2: ENTRADA DE SERVIÇO -->
+    <!-- PAINEL 2: PEDIDO -->
     <div class="container" id="tela-entrada">
-        <h2>Entrada de Serviço</h2>
+        <!-- AJUSTE: Título principal do painel alterado para PEDIDO -->
+        <h2>Pedido</h2>
         
         <div class="codigo-os-destaque" id="exibicaoCodigoOS">ORDEM DE SERVIÇO: #E0001</div>
 
         <div class="form-group">
             <div class="header-field">
                 <label for="clienteOS">Cliente</label>
-                <button class="btn-limpar-campo" onclick="avancarEProximaOS()" title="Nova O.S. (Avançar Número)">🗑️</button>
+                <button class="btn-limpar-campo" onclick="avancarEProximaOS()" title="Novo Pedido (Avançar Número)">🗑️</button>
             </div>
             <input type="text" id="clienteOS" placeholder="Nome do cliente">
         </div>
@@ -432,7 +433,7 @@
             </div>
 
             <div class="form-group" id="blocoParcelasOS" style="display: none;">
-                <label needle for="parcelasOS">Vezes (Parcelamento)</label>
+                <label for="parcelasOS">Vezes (Parcelamento)</label>
                 <select id="parcelasOS">
                     <option value="1x">1x (À vista)</option>
                     <option value="2x">2x</option>
@@ -503,7 +504,6 @@
             </div>
         </div>
         
-        <!-- RODAPÉ ATUALIZADO: LIMPO, DISCRETO E EXATAMENTE COMO VOCÊ MANDOU -->
         <div class="nota-rodape">
             CNPJ: 25.974.730/0001-14<br>
             (82) 99628-4867 | @ARTSCREENCORURIPE<br>
