@@ -2,28 +2,61 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/png" href="logo.png">
+    <link class="favicon" rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARTSCREEN CORURIPE - Orçamentos</title>
+    <title>ARTSCREEN CORURIPE - Sistema</title>
+    
+    <!-- Script essencial para transformar o HTML em Imagem PNG -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
             min-height: 100vh;
             box-sizing: border-box;
             
-            /* CONFIGURAÇÃO DA SUA NOVA IMAGEM DE FUNDO */
             background-color: #f5f5f5;
             background-image: url('fundo.png');
             background-repeat: no-repeat;
             background-position: center center;
             background-attachment: fixed;
-            background-size: cover; /* Faz a imagem cobrir toda a área cinza perfeitamente */
+            background-size: cover;
+        }
+
+        /* Menu de Seleção de Função */
+        .menu-sistema {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            max-width: 650px;
+            margin-bottom: 20px;
+        }
+
+        .btn-sistema {
+            flex: 1;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: bold;
+            border: 1px solid #999;
+            background-color: #e0e0e0;
+            color: #333;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .btn-sistema.ativo {
+            background-color: #000000;
+            border-color: #000000;
+            color: #ffffff;
         }
 
         .container {
@@ -34,11 +67,14 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             box-sizing: border-box;
             margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
+            display: none;
         }
 
-        h1 {
+        .container.ativo {
+            display: block;
+        }
+
+        h1, h2 {
             font-size: 24px;
             font-weight: bold;
             margin-top: 0;
@@ -47,25 +83,18 @@
             color: #000;
         }
 
+        .codigo-os-destaque {
+            background-color: #000;
+            color: #fff;
+            padding: 6px 12px;
+            font-size: 16px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
         .form-group {
             margin-bottom: 15px;
-        }
-
-        .checkbox-group {
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: bold;
-            user-select: none;
-        }
-
-        .checkbox-group input {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
         }
 
         .header-field {
@@ -151,7 +180,7 @@
             padding: 4px;
         }
 
-        input[type="text"], input[type="number"] {
+        input[type="text"], input[type="number"], input[type="date"], select, textarea {
             width: 100%;
             padding: 8px;
             border: 1px solid #999;
@@ -159,6 +188,17 @@
             font-size: 15px;
             box-sizing: border-box;
             font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .grid-financeiro {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
         }
 
         .totais-container {
@@ -174,124 +214,325 @@
             margin-top: 5px;
         }
 
-        button.btn-copiar {
+        .grupo-botoes-acao {
+            display: flex;
+            gap: 12px;
             width: 100%;
+        }
+
+        .grupo-botoes-acao button {
+            flex: 1;
             border: 1px solid #999;
             color: #000;
-            padding: 12px;
+            padding: 14px 6px;
             font-size: 15px;
             cursor: pointer;
             transition: background 0.2s;
             font-weight: bold;
             background-color: #e0e0e0;
+            text-transform: uppercase;
         }
 
-        button.btn-copiar:hover {
+        .grupo-botoes-acao button:hover {
             background-color: #d4d4d4;
         }
 
-        /* REGRAS EXCLUSIVAS PARA CELULAR */
+        /* MODELO DA FICHA DA NOTA EM TAMANHO PADRÃO A6 PARA GERAR IMAGEM */
+        #bloco-nota-a6 {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+            width: 395px; 
+            min-height: 560px; 
+            background-color: #ffffff;
+            padding: 18px;
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+            color: #000000;
+            border: 3px double #000000;
+        }
+
+        .nota-header {
+            text-align: center;
+            font-weight: bold;
+            border-bottom: 1px dashed #000;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+        
+        /* ESTILO DA LOGO LOGO NO TOPO CENTRALIZADA */
+        .nota-logo {
+            max-width: 80px;
+            height: auto;
+            margin: 0 auto 6px auto;
+            display: block;
+        }
+
+        .nota-titulo { font-size: 18px; letter-spacing: 1px; }
+        .nota-sub { font-size: 14px; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .nota-secao {
+            font-size: 13px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .nota-linha-divisoria {
+            border-top: 1px dashed #000;
+            margin: 6px 0;
+        }
+        .nota-tabela {
+            width: 100%;
+            font-size: 12px;
+            border-collapse: collapse;
+        }
+        .nota-tabela th {
+            border-bottom: 1px dashed #000;
+            text-align: left;
+            padding-bottom: 4px;
+        }
+        .nota-tabela td {
+            padding: 4px 0;
+        }
+        .nota-financeiro-direita {
+            text-align: right;
+            font-size: 13px;
+            font-weight: bold;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+        .nota-rodape {
+            text-align: center;
+            font-size: 10px;
+            margin-top: 15px;
+            border-top: 1px dashed #000;
+            padding-top: 8px;
+            line-height: 1.3;
+        }
+
+        /* REGRAS PARA CELULAR */
         @media (max-width: 600px) {
-            body {
-                padding: 10px;
-                background-image: none; /* Mantém limpo no celular */
-                background-color: #f5f5f5;
-            }
-            .container {
-                padding: 15px;
-                box-shadow: none;
-            }
-            .item-linha {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-                padding: 12px;
-            }
-            .col-desc { 
-                grid-column: span 2;
-                width: 100%; 
-            }
-            .col-qtd { width: 100%; }
-            .col-valor { width: 100%; }
-            
+            body { padding: 10px; background-image: none; background-color: #f5f5f5; }
+            .container { padding: 15px; box-shadow: none; }
+            .menu-sistema { max-width: 100%; gap: 8px; }
+            .btn-sistema { padding: 12px 8px; font-size: 13px; }
+            .item-linha { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px; }
+            .col-desc { grid-column: span 2; width: 100%; }
+            .col-qtd, .col-valor { width: 100%; }
             .linha-mobile-total-remover {
-                grid-column: span 2;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                border-top: 1px dashed #ddd;
-                padding-top: 8px;
-                margin-top: 2px;
+                grid-column: span 2; display: flex; justify-content: space-between; align-items: center;
+                border-top: 1px dashed #ddd; padding-top: 8px; margin-top: 2px;
             }
-            .col-total { 
-                width: auto; 
-                text-align: left;
-            }
-            .col-acao { 
-                width: auto; 
-            }
+            .col-total, .col-acao { width: auto; }
+            .grid-financeiro { grid-template-columns: 1fr; gap: 10px; }
+            .grupo-botoes-acao { flex-direction: column; gap: 8px; }
+            .grupo-botoes-acao button { width: 100%; padding: 12px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>ARTSCREEN CORURIPE</h1>
+    <div class="menu-sistema">
+        <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Gerar Orçamento</button>
+        <button class="btn-sistema" onclick="alternarPainel('entrada')">Entrada de Serviço</button>
+    </div>
 
-        <label class="checkbox-group">
-            <input type="checkbox" id="incluirDadosLoja">
-            Inserir informações da loja (CNPJ e Endereço)
-        </label>
+    <!-- PAINEL 1: ORÇAMENTOS -->
+    <div class="container ativo" id="tela-orcamento">
+        <h1>ARTSCREEN CORURIPE</h1>
 
         <div class="form-group">
             <div class="header-field">
                 <label for="cliente">Cliente</label>
-                <button class="btn-limpar-campo" onclick="limparCliente()" title="Limpar Nome">🗑️</button>
+                <button class="btn-limpar-campo" onclick="avancarEProximoOrcamento()" title="Novo Orçamento (Avançar Número)">🗑️</button>
             </div>
-            <input type="text" id="cliente" placeholder="">
+            <input type="text" id="cliente" placeholder="Nome do cliente">
         </div>
 
         <div class="form-group">
             <div class="header-field">
                 <label>Serviços / Produtos</label>
-                <button class="btn-limpar-campo" onclick="limparTodosItens()" title="Limpar Todos os Itens">🗑️</button>
+                <button class="btn-limpar-campo" onclick="limparTodosItens('orcamento')" title="Limpar Todos">🗑️</button>
             </div>
-            
-            <div class="itens-lista" id="conteudoItens">
-                <!-- Linhas inseridas dinamicamente -->
-            </div>
-
-            <button type="button" class="btn-add-item" onclick="adicionarNovaLinha()">➕ Adicionar Item</button>
+            <div class="itens-lista" id="conteudoItensOrcamento"></div>
+            <button type="button" class="btn-add-item" onclick="adicionarLinhaGenerico('orcamento')">➕ Adicionar Item</button>
         </div>
 
         <div class="form-group">
             <div class="header-field">
-                <label for="desconto">Desconto</label>
-                <button class="btn-limpar-campo" onclick="limparDesconto()" title="Limpar Desconto">🗑️</button>
+                <label for="desconto">Desconto (R$)</label>
+                <button class="btn-limpar-campo" onclick="limparDesconto('orcamento')" title="Limpar Desconto">🗑️</button>
             </div>
-            <input type="number" id="desconto" value="0" min="0" step="any" oninput="calcularOrcamento()">
+            <input type="number" id="desconto" value="0" min="0" step="any" oninput="calcularGenerico('orcamento')">
         </div>
 
-        <div class="totais-container" id="painelTotais">
-            <!-- Gerado dinamicamente via JS -->
+        <div class="form-group">
+            <label for="dataEntregaOrcamento">Previsão de Entrega</label>
+            <input type="date" id="dataEntregaOrcamento">
         </div>
 
-        <button class="btn-copiar" onclick="copyToWhatsApp()">Copiar para WhatsApp</button>
+        <div class="totais-container" id="painelTotaisOrcamento"></div>
+        
+        <div class="grupo-botoes-acao">
+            <button type="button" onclick="copiarOrcamento()">Copiar</button>
+            <button type="button" onclick="baixarNotaComoImagem('orcamento')">Baixar PNG (A6)</button>
+        </div>
+    </div>
+
+    <!-- PAINEL 2: ENTRADA DE SERVIÇO -->
+    <div class="container" id="tela-entrada">
+        <h2>Entrada de Serviço</h2>
+        
+        <div class="codigo-os-destaque" id="exibicaoCodigoOS">ORDEM DE SERVIÇO: #E0001</div>
+
+        <div class="form-group">
+            <div class="header-field">
+                <label for="clienteOS">Cliente</label>
+                <button class="btn-limpar-campo" onclick="avancarEProximaOS()" title="Nova O.S. (Avançar Número)">🗑️</button>
+            </div>
+            <input type="text" id="clienteOS" placeholder="Nome do cliente">
+        </div>
+
+        <div class="form-group">
+            <label for="whatsappOS">WhatsApp / Contato</label>
+            <input type="text" id="whatsappOS" placeholder="(82) 99999-0000">
+        </div>
+
+        <div class="form-group">
+            <div class="header-field">
+                <label>Serviços / Produtos Solicitados</label>
+                <button class="btn-limpar-campo" onclick="limparTodosItens('entrada')" title="Limpar Todos">🗑️</button>
+            </div>
+            <div class="itens-lista" id="conteudoItensOS"></div>
+            <button type="button" class="btn-add-item" onclick="adicionarLinhaGenerico('entrada')">➕ Adicionar Item</button>
+        </div>
+
+        <div class="grid-financeiro">
+            <div class="form-group">
+                <label for="descontoOS">Desconto (R$)</label>
+                <input type="number" id="descontoOS" value="0" min="0" step="any" oninput="calcularGenerico('entrada')">
+            </div>
+
+            <div class="form-group">
+                <label for="valorEntradaOS">Valor Pago (Entrada)</label>
+                <input type="number" id="valorEntradaOS" value="0" min="0" step="any" oninput="calcularGenerico('entrada')">
+            </div>
+        </div>
+
+        <div class="grid-financeiro">
+            <div class="form-group">
+                <label for="formaPagamentoOS">Forma de Pagamento</label>
+                <select id="formaPagamentoOS" onchange="verificarFormaPagamento()">
+                    <option value="PIX">PIX</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                    <option value="Débito">Cartão de Débito</option>
+                    <option value="Crédito">Cartão de Crédito</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="blocoParcelasOS" style="display: none;">
+                <label for="parcelasOS">Vezes (Parcelamento)</label>
+                <select id="parcelasOS">
+                    <option value="1x">1x (À vista)</option>
+                    <option value="2x">2x</option>
+                    <option value="3x">3x</option>
+                    <option value="4x">4x</option>
+                    <option value="5x">5x</option>
+                    <option value="6x">6x</option>
+                    <option value="7x">7x</option>
+                    <option value="8x">8x</option>
+                    <option value="9x">9x</option>
+                    <option value="10x">10x</option>
+                    <option value="11x">11x</option>
+                    <option value="12x">12x</option>
+                    <option value="13x">13x</option>
+                    <option value="14x">14x</option>
+                    <option value="15x">15x</option>
+                    <option value="16x">16x</option>
+                    <option value="17x">17x</option>
+                    <option value="18x">18x</option>
+                    <option value="19x">19x</option>
+                    <option value="20x">20x</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="dataEntregaOS">Previsão de Entrega</label>
+            <input type="date" id="dataEntregaOS">
+        </div>
+
+        <div class="form-group">
+            <label for="obsOS">Observações do Serviço</label>
+            <textarea id="obsOS" rows="3" placeholder="Detalhes da estampa, tamanhos, acabamentos, etc..."></textarea>
+        </div>
+
+        <div class="totais-container" id="painelTotaisOS"></div>
+        
+        <div class="grupo-botoes-acao">
+            <button type="button" onclick="copiarEntradaServico()">Copiar</button>
+            <button type="button" onclick="baixarNotaComoImagem('entrada')">Baixar PNG (A6)</button>
+        </div>
+    </div>
+
+    <!-- AREA UNIFICADA DO MODELO DE NOTA A6 COM LOGO COMPATÍVEL NO CABEÇALHO -->
+    <div id="bloco-nota-a6">
+        <div class="nota-header">
+            <!-- A LOGO FOI INSERIDA AQUI: CENTRALIZADA NO MEIO E EM CIMA -->
+            <img src="logo.png" alt="Logo" class="nota-logo">
+            <div class="nota-titulo">ARTSCREEN CORURIPE</div>
+            <div class="nota-sub" id="tipoNotaA6">FICHA</div>
+        </div>
+        <div class="nota-secao" id="dadosGeraisNotaA6"></div>
+        <div class="nota-linha-divisoria"></div>
+        <table class="nota-tabela">
+            <thead>
+                <tr>
+                    <th style="width: 15%;">Qtd</th>
+                    <th style="width: 60%;">Descrição</th>
+                    <th style="width: 25%; text-align: right;">Total</th>
+                </tr>
+            </thead>
+            <tbody id="itensNotaA6"></tbody>
+        </table>
+        <div class="nota-linha-divisoria"></div>
+        <div class="nota-financeiro-direita" id="financeiroNotaA6"></div>
+        <div id="blocoObsNotaA6" style="display:none;">
+            <div class="nota-linha-divisoria"></div>
+            <div class="nota-secao" style="font-size: 11px;" id="obsNotaA6"></div>
+        </div>
+        
+        <div class="nota-rodape">
+            CNPJ: 25.974.730/0001-14<br>
+            Av. Floriano Peixoto, 138, Centro, Coruripe - AL
+        </div>
     </div>
 
     <script>
-        if (!localStorage.getItem('numeroOrcamento')) {
-            localStorage.setItem('numeroOrcamento', '1');
+        if (!localStorage.getItem('numeroOrcamento')) localStorage.setItem('numeroOrcamento', '1');
+        if (!localStorage.getItem('numeroOS')) localStorage.setItem('numeroOS', '1');
+
+        const conteudoItensOrcamento = document.getElementById('conteudoItensOrcamento');
+        const conteudoItensOS = document.getElementById('conteudoItensOS');
+
+        adicionarLinhaGenerico('orcamento');
+        adicionarLinhaGenerico('entrada');
+        atualizarCodigoOSVisivel();
+
+        function alternarPainel(painel) {
+            document.querySelectorAll('.btn-sistema').forEach(b => b.classList.remove('ativo'));
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('ativo'));
+
+            if (painel === 'orcamento') {
+                document.querySelectorAll('.btn-sistema')[0].classList.add('ativo');
+                document.getElementById('tela-orcamento').classList.add('ativo');
+            } else {
+                document.querySelectorAll('.btn-sistema')[1].classList.add('ativo');
+                document.getElementById('tela-entrada').classList.add('ativo');
+                atualizarCodigoOSVisivel();
+            }
         }
 
-        const conteudoItens = document.getElementById('conteudoItens');
-        const descontoInput = document.getElementById('desconto');
-        const painelTotais = document.getElementById('painelTotais');
-        const clienteInput = document.getElementById('cliente');
-
-        adicionarNovaLinha();
-
-        function formatarNumeroOrcamento(num) {
+        function formatarCodigo(num) {
             return String(num).padStart(4, '0');
         }
 
@@ -299,145 +540,356 @@
             return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
 
-        function adicionarNovaLinha(qtd = '', desc = '', valor = '') {
-            const containerLinha = document.createElement('div');
-            containerLinha.className = 'item-linha';
-            containerLinha.innerHTML = `
-                <div class="col-desc"><input type="text" class="ipt-desc" value="${desc}" placeholder="Serviço / Produto"></div>
-                <div class="col-qtd"><input type="number" class="ipt-qtd" value="${qtd}" placeholder="Qtd" min="1" oninput="atualizarSubtotalLinha(this)"></div>
-                <div class="col-valor"><input type="number" class="ipt-valor" value="${valor}" placeholder="Valor Unit." min="0" step="any" oninput="atualizarSubtotalLinha(this)"></div>
+        function atualizarCodigoOSVisivel() {
+            const numOS = parseInt(localStorage.getItem('numeroOS'), 10);
+            document.getElementById('exibicaoCodigoOS').innerText = `ORDEM DE SERVIÇO: #E${formatarCodigo(numOS)}`;
+        }
+
+        function verificarFormaPagamento() {
+            const forma = document.getElementById('formaPagamentoOS').value;
+            document.getElementById('blocoParcelasOS').style.display = (forma === 'Crédito') ? 'block' : 'none';
+        }
+
+        function adicionarLinhaGenerico(tipo) {
+            const container = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
+            const linha = document.createElement('div');
+            linha.className = 'item-linha';
+            linha.innerHTML = `
+                <div class="col-desc"><input type="text" class="ipt-desc" placeholder="Serviço / Produto"></div>
+                <div class="col-qtd"><input type="number" class="ipt-qtd" placeholder="Qtd" min="1" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
+                <div class="col-valor"><input type="number" class="ipt-valor" placeholder="Valor Unit." min="0" step="any" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
                 <div class="linha-mobile-total-remover">
                     <div class="col-total">Total: R$ 0,00</div>
-                    <div class="col-acao"><button type="button" class="btn-remover-linha" onclick="removerLinha(this)">❌</button></div>
+                    <div class="col-acao"><button type="button" class="btn-remover-linha" onclick="removerLinhaGenerico(this, '${tipo}')">❌</button></div>
                 </div>
             `;
-            conteudoItens.appendChild(containerLinha);
-            
-            if(qtd && valor) {
-                const iptQtd = containerLinha.querySelector('.ipt-qtd');
-                atualizarSubtotalLinha(iptQtd);
-            } else {
-                calcularOrcamento();
-            }
+            container.appendChild(linha);
+            calcularGenerico(tipo);
         }
 
-        function removerLinha(botao) {
+        function removerLinhaGenerico(botao, tipo) {
             botao.closest('.item-linha').remove();
-            calcularOrcamento();
+            calcularGenerico(tipo);
         }
 
-        function atualizarSubtotalLinha(input) {
-            const linha = input.closest('.item-linha');
-            const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
-            const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
-            const totalLinhaElemento = linha.querySelector('.col-total');
-            
-            totalLinhaElemento.innerText = 'Total: ' + formatarMoeda(qtd * valor);
-            calcularOrcamento();
+        function atualizarSubtotalLinha(input, tipo) {
+            const static_linha = input.closest('.item-linha');
+            const qtd = parseFloat(static_linha.querySelector('.ipt-qtd').value) || 0;
+            const valor = parseFloat(static_linha.querySelector('.ipt-valor').value) || 0;
+            static_linha.querySelector('.col-total').innerText = 'Total: ' + formatarMoeda(qtd * valor);
+            calcularGenerico(tipo);
         }
 
-        function calcularOrcamento() {
-            let subtotalOriginal = 0;
-            const lines = conteudoItens.querySelectorAll('.item-linha');
+        function calcularGenerico(tipo) {
+            const container = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
+            const painel = (tipo === 'orcamento') ? document.getElementById('painelTotaisOrcamento') : document.getElementById('painelTotaisOS');
+            const descontoInput = (tipo === 'orcamento') ? document.getElementById('desconto') : document.getElementById('descontoOS');
 
-            lines.forEach(linha => {
+            let subtotal = 0;
+            container.querySelectorAll('.item-linha').forEach(linha => {
                 const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
                 const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
-                subtotalOriginal += (qtd * valor);
+                subtotal += (qtd * valor);
             });
 
             const desconto = parseFloat(descontoInput.value) || 0;
-            let htmlTotais = '';
+            const totalGeral = Math.max(0, subtotal - desconto);
 
-            if (desconto > 0) {
-                const totalComDesconto = Math.max(0, subtotalOriginal - desconto);
-                htmlTotais += `<div>VALOR SEM DESCONTO: ${formatarMoeda(subtotalOriginal)}</div>`;
-                htmlTotais += `<div>DESCONTO: ${formatarMoeda(desconto)}</div>`;
-                htmlTotais += `<div class="total-destaque">TOTAL COM DESCONTO: ${formatarMoeda(totalComDesconto)}</div>`;
+            if (tipo === 'orcamento') {
+                let html = '';
+                if (desconto > 0) {
+                    html += `<div>VALOR SEM DESCONTO: ${formatarMoeda(subtotal)}</div>`;
+                    html += `<div>DESCONTO: ${formatarMoeda(desconto)}</div>`;
+                    html += `<div class="total-destaque">TOTAL COM DESCONTO: ${formatarMoeda(totalGeral)}</div>`;
+                } else {
+                    html += `<div class="total-destaque">TOTAL: ${formatarMoeda(subtotal)}</div>`;
+                }
+                painel.innerHTML = html;
             } else {
-                htmlTotais += `<div class="total-destaque">TOTAL: ${formatarMoeda(subtotalOriginal)}</div>`;
+                const valorEntrada = parseFloat(document.getElementById('valorEntradaOS').value) || 0;
+                const restante = Math.max(0, totalGeral - valorEntrada);
+
+                let html = `<div>VALOR TOTAL DOS SERVIÇOS: ${formatarMoeda(subtotal)}</div>`;
+                if (desconto > 0) html += `<div>DESCONTO CONCEDIDO: ${formatarMoeda(desconto)}</div>`;
+                html += `<div>VALOR COBRADO: ${formatarMoeda(totalGeral)}</div>`;
+                html += `<div style="color: green; font-weight: bold;">VALOR PAGO (ENTRADA): ${formatarMoeda(valorEntrada)}</div>`;
+                
+                if (restante > 0) {
+                    html += `<div class="total-destaque" style="color: #cc0000;">VALOR RESTANTE A PAGAR: ${formatarMoeda(restante)}</div>`;
+                } else {
+                    html += `<div class="total-destaque" style="color: blue;">SITUAÇÃO: VALOR COMPLETO PAGO!</div>`;
+                }
+                painel.innerHTML = html;
+            }
+        }
+
+        function montarEstruturaNotaA6HTML(tipo) {
+            const { data, hora } = obterDataHoraAtual();
+            let htmlGerais = '';
+            let htmlItens = '';
+            let htmlFinanceiro = '';
+            
+            if (tipo === 'orcamento') {
+                document.getElementById('tipoNotaA6').innerText = "ORÇAMENTO";
+                const cliente = document.getElementById('cliente').value.trim() || "Não informado";
+                const numAtual = parseInt(localStorage.getItem('numeroOrcamento'), 10);
+                const desconto = parseFloat(document.getElementById('desconto').value) || 0;
+
+                let prazoOrcamento = document.getElementById('dataEntregaOrcamento').value;
+                if(prazoOrcamento) {
+                    const [ano, mes, dia] = prazoOrcamento.split('-');
+                    prazoOrcamento = `${dia}/${mes}/${ano}`;
+                } else {
+                    prazoOrcamento = "Não definido";
+                }
+
+                htmlGerais = `
+                    <b>ORÇAMENTO:</b> #${formatarCodigo(numAtual)}<br>
+                    <b>Data:</b> ${data} às ${hora}<br>
+                    <b>Entrega:</b> ${prazoOrcamento}<br>
+                    <b>Cliente:</b> ${cliente}
+                `;
+
+                let subtotal = 0;
+                conteudoItensOrcamento.querySelectorAll('.item-linha').forEach(linha => {
+                    const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
+                    const desc = linha.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
+                    const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
+                    if (qtd > 0 && valor > 0) {
+                        subtotal += (qtd * valor);
+                        htmlItens += `<tr><td>${qtd}x</td><td>${desc}</td><td style="text-align: right;">${formatarMoeda(qtd * valor)}</td></tr>`;
+                    }
+                });
+
+                const totalGeral = Math.max(0, subtotal - desconto);
+                htmlFinanceiro = `Subtotal: ${formatarMoeda(subtotal)}<br>`;
+                if(desconto > 0) htmlFinanceiro += `Desconto: - ${formatarMoeda(desconto)}<br>`;
+                htmlFinanceiro += `Total Geral: ${formatarMoeda(totalGeral)}`;
+                
+                document.getElementById('blocoObsNotaA6').style.display = 'none';
+
+            } else {
+                document.getElementById('tipoNotaA6').innerText = "PEDIDO";
+                const cliente = document.getElementById('clienteOS').value.trim() || "Não informado";
+                const whatsapp = document.getElementById('whatsappOS').value.trim() || "Não informado";
+                const desconto = parseFloat(document.getElementById('descontoOS').value) || 0;
+                const valorEntrada = parseFloat(document.getElementById('valorEntradaOS').value) || 0;
+                const formaPagto = document.getElementById('formaPagamentoOS').value;
+                const parcelas = document.getElementById('parcelasOS').value;
+                const obs = document.getElementById('obsOS').value.trim() || "Nenhuma";
+                const numOS = parseInt(localStorage.getItem('numeroOS'), 10);
+                
+                let dataEntrega = document.getElementById('dataEntregaOS').value;
+                if(dataEntrega) {
+                    const [ano, mes, dia] = dataEntrega.split('-');
+                    dataEntrega = `${dia}/${mes}/${ano}`;
+                } else {
+                    dataEntrega = "Não definido";
+                }
+
+                htmlGerais = `
+                    <b>PEDIDO O.S:</b> #E${formatarCodigo(numOS)}<br>
+                    <b>Entrada:</b> ${data} às ${hora}<br>
+                    <b>Entrega:</b> ${dataEntrega}<br>
+                    <b>Cliente:</b> ${cliente}<br>
+                    <b>Contato:</b> ${whatsapp}
+                `;
+
+                let subtotal = 0;
+                conteudoItensOS.querySelectorAll('.item-linha').forEach(linha => {
+                    const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
+                    const desc = linha.querySelector('.ipt-desc').value.trim() || "Sem descrição";
+                    const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
+                    if (qtd > 0 && valor > 0) {
+                        subtotal += (qtd * valor);
+                        htmlItens += `<tr><td>${qtd}x</td><td>${desc}</td><td style="text-align: right;">${formatarMoeda(qtd * valor)}</td></tr>`;
+                    }
+                });
+
+                const totalGeral = Math.max(0, subtotal - desconto);
+                const restante = Math.max(0, totalGeral - valorEntrada);
+                let detalhePagto = formaPagto;
+                if(formaPagto === 'Crédito') detalhePagto += ` (${parcelas})`;
+
+                htmlFinanceiro = `Subtotal: ${formatarMoeda(subtotal)}<br>`;
+                if(desconto > 0) htmlFinanceiro += `Desconto: - ${formatarMoeda(desconto)}<br>`;
+                htmlFinanceiro += `Total Líquido: ${formatarMoeda(totalGeral)}<br>`;
+                htmlFinanceiro += `Pago Entrada: ${formatarMoeda(valorEntrada)}<br>`;
+                htmlFinanceiro += `Forma Pagto: ${detalhePagto}<br>`;
+                
+                if(restante > 0) {
+                    htmlFinanceiro += `<span style="color:#cc0000">Restante: ${formatarMoeda(restante)}</span>`;
+                } else {
+                    htmlFinanceiro += `<span style="color:blue">SITUAÇÃO: PAGO</span>`;
+                }
+
+                document.getElementById('blocoObsNotaA6').style.display = 'block';
+                document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${obs}`;
             }
 
-            painelTotais.innerHTML = htmlTotais;
+            if(htmlItens === '') htmlItens = '<tr><td colspan="3">Nenhum item lançado</td></tr>';
+            
+            document.getElementById('dadosGeraisNotaA6').innerHTML = htmlGerais;
+            document.getElementById('itensNotaA6').innerHTML = htmlItens;
+            document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
         }
 
-        function limparCliente() {
-            clienteInput.value = '';
-            clienteInput.focus();
+        function baixarNotaComoImagem(tipo) {
+            montarEstruturaNotaA6HTML(tipo);
+            const alvo = document.getElementById('bloco-nota-a6');
+            const num = (tipo === 'orcamento') ? formatarCodigo(parseInt(localStorage.getItem('numeroOrcamento'), 10)) : formatarCodigo(parseInt(localStorage.getItem('numeroOS'), 10));
+            const prefixo = (tipo === 'orcamento') ? 'orcamento_' : 'pedido_E';
+
+            alvo.style.position = 'static';
+            alvo.style.left = '0';
+            alvo.style.top = '0';
+
+            html2canvas(alvo, {
+                scale: 2, 
+                logging: false,
+                useCORS: true
+            }).then(canvas => {
+                alvo.style.position = 'absolute';
+                alvo.style.left = '-9999px';
+                alvo.style.top = '-9999px';
+
+                const link = document.createElement('a');
+                link.download = `${prefixo}${num}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                alert('Erro ao gerar a imagem.');
+                alvo.style.position = 'absolute';
+                alvo.style.left = '-9999px';
+                alvo.style.top = '-9999px';
+            });
         }
 
-        function limparTodosItens() {
-            conteudoItens.innerHTML = '';
-            adicionarNovaLinha();
-            calcularOrcamento();
+        function copiarOrcamento() {
+            const cliente = document.getElementById('cliente').value.trim() || "Não informado";
+            const desconto = parseFloat(document.getElementById('desconto').value) || 0;
+            const numAtual = parseInt(localStorage.getItem('numeroOrcamento'), 10);
+            const { data, hora } = obterDataHoraAtual();
+
+            let prazoOrcamento = document.getElementById('dataEntregaOrcamento').value;
+            if(prazoOrcamento) {
+                const [ano, mes, dia] = prazoOrcamento.split('-');
+                prazoOrcamento = `${dia}/${mes}/${ano}`;
+            } else {
+                prazoOrcamento = "Não definido";
+            }
+
+            let msg = `*Orçamento:* #${formatarCodigo(numAtual)}\n*Data:* ${data} às ${hora}\n*Previsão de Entrega:* ${prazoOrcamento}\n*Cliente:* ${cliente}\n----------------------------------------\n`;
+            let subtotal = 0;
+
+            conteudoItensOrcamento.querySelectorAll('.item-linha').forEach(linha => {
+                const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
+                const desc = linha.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
+                const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
+                if (qtd > 0 && valor > 0) {
+                    subtotal += (qtd * valor);
+                    msg += `${qtd}x ${desc} (${formatarMoeda(valor)} cada) = ${formatarMoeda(qtd * valor)}\n`;
+                }
+            });
+
+            msg += `----------------------------------------\n`;
+            if (desconto > 0) {
+                msg += `*VALOR SEM DESCONTO:* ${formatarMoeda(subtotal)}\n*DESCONTO:* ${formatarMoeda(desconto)}\n*TOTAL COM DESCONTO:* ${formatarMoeda(Math.max(0, subtotal - desconto))}\n`;
+            } else {
+                msg += `*TOTAL:* ${formatarMoeda(subtotal)}\n`;
+            }
+            msg += `----------------------------------------\n*ARTSCREEN CORURIPE*\nCNPJ: 25.974.730/0001-14\nAv. Floriano Peixoto, 138, Centro, Coruripe - AL\n`;
+
+            navigator.clipboard.writeText(msg).then(() => {
+                alert(`Orçamento #${formatarCodigo(numAtual)} copiado! (Dados mantidos)`);
+            });
         }
 
-        function limparDesconto() {
-            descontoInput.value = '0';
-            calcularOrcamento();
+        function copiarEntradaServico() {
+            montarEstruturaNotaA6HTML('entrada');
+            const cliente = document.getElementById('clienteOS').value.trim() || "Não informado";
+            const whatsapp = document.getElementById('whatsappOS').value.trim() || "Não informado";
+            const desconto = parseFloat(document.getElementById('descontoOS').value) || 0;
+            const valorEntrada = parseFloat(document.getElementById('valorEntradaOS').value) || 0;
+            const formaPagto = document.getElementById('formaPagamentoOS').value;
+            const parcelas = document.getElementById('parcelasOS').value;
+            const obs = document.getElementById('obsOS').value.trim() || "Nenhuma";
+            
+            let dataEntrega = document.getElementById('dataEntregaOS').value;
+            if(dataEntrega) {
+                const [ano, mes, dia] = dataEntrega.split('-');
+                dataEntrega = `${dia}/${mes}/${ano}`;
+            } else {
+                dataEntrega = "Não definido";
+            }
+
+            const numOS = parseInt(localStorage.getItem('numeroOS'), 10);
+            const { data, hora } = obterDataHoraAtual();
+
+            let msg = `📌 *PEDIDO - ARTSCREEN*\n*CÓDIGO O.S:* #E${formatarCodigo(numOS)}\n*Data de Entrada:* ${data} às ${hora}\n*Previsão de Entrega:* ${dataEntrega}\n----------------------------------------\n*CLIENTE:* ${cliente}\n*CONTATO:* ${whatsapp}\n----------------------------------------\n*ITENS DO SERVIÇO:*\n`;
+
+            let subtotal = 0;
+            conteudoItensOS.querySelectorAll('.item-linha').forEach(linha => {
+                const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
+                const desc = linha.querySelector('.ipt-desc').value.trim() || "Sem descrição";
+                const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
+                if (qtd > 0 && valor > 0) {
+                    subtotal += (qtd * valor);
+                    msg += `- ${qtd}x ${desc} (${formatarMoeda(valor)} cada) = ${formatarMoeda(qtd * valor)}\n`;
+                }
+            });
+
+            const totalGeral = Math.max(0, subtotal - desconto);
+            const restante = Math.max(0, totalGeral - valorEntrada);
+            let detalhePagto = formaPagto;
+            if(formaPagto === 'Crédito') detalhePagto += ` (${parcelas})`;
+
+            msg += `----------------------------------------\n*VALOR TOTAL DOS ITENS:* ${formatarMoeda(subtotal)}\n`;
+            if (desconto > 0) msg += `*DESCONTO:* ${formatarMoeda(desconto)}\n`;
+            msg += `*VALOR LÍQUIDO COBRADO:* ${formatarMoeda(totalGeral)}\n*VALOR DE ENTRADA PAGO:* ${formatarMoeda(valorEntrada)}\n*FORMA DE PAGAMENTO:* ${detalhePagto}\n`;
+            
+            if (restante > 0) {
+                msg += `*VALOR RESTANTE A PAGAR:* ${formatarMoeda(restante)}\n`;
+            } else {
+                msg += `*SITUAÇÃO FINANCEIRA:* TOTALMENTE PAGO JÁ NA ENTRADA\n`;
+            }
+            msg += `----------------------------------------\n*OBSERVAÇÕES:*\n${obs}\n----------------------------------------\n*ARTSCREEN CORURIPE*\nCNPJ: 25.974.730/0001-14\nAv. Floriano Peixoto, 138, Centro, Coruripe - AL\n`;
+
+            navigator.clipboard.writeText(msg).then(() => {
+                alert(`Pedido O.S. #E${formatarCodigo(numOS)} copiado com sucesso! (Dados mantidos)`);
+            });
         }
 
         function obterDataHoraAtual() {
             const agora = new Date();
-            const data = agora.toLocaleDateString('pt-BR');
-            const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            return { data, hora };
+            return {
+                data: agora.toLocaleDateString('pt-BR'),
+                hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+            };
         }
 
-        function copyToWhatsApp() {
-            const cliente = clienteInput.value.trim() || "Não informado";
-            const desconto = parseFloat(descontoInput.value) || 0;
-            const incluirDados = document.getElementById('incluirDadosLoja').checked;
-            
+        function avancarEProximoOrcamento() {
             const numAtual = parseInt(localStorage.getItem('numeroOrcamento'), 10);
-            const orcamentoFormatado = formatarNumeroOrcamento(numAtual);
-            const { data, hora } = obterDataHoraAtual();
+            localStorage.setItem('numeroOrcamento', numAtual + 1);
+            document.getElementById('cliente').value = '';
+            document.getElementById('desconto').value = '0';
+            document.getElementById('dataEntregaOrcamento').value = '';
+            limparTodosItens('orcamento');
+            alert("Número do orçamento avançado! Tela limpa para o próximo cliente.");
+        }
 
-            let mensagem = `*Orçamento:* #${orcamentoFormatado}\n`;
-            mensagem += `*Data:* ${data} às ${hora}\n`;
-            mensagem += `*Cliente:* ${cliente}\n`;
-            mensagem += `----------------------------------------\n`;
-            
-            let subtotalOriginal = 0;
-            const lines = conteudoItens.querySelectorAll('.item-linha');
-
-            lines.forEach(linha => {
-                const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
-                const descricao = linha.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
-                const valorUnitario = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
-
-                if (qtd > 0 && valorUnitario > 0) {
-                    const totalItem = qtd * valorUnitario;
-                    subtotalOriginal += totalItem;
-                    mensagem += `${qtd}x ${descricao} (${formatarMoeda(valorUnitario)} cada) = ${formatarMoeda(totalItem)}\n`;
-                }
-            });
-
-            mensagem += `----------------------------------------\n`;
-
-            if (desconto > 0) {
-                const totalComDesconto = Math.max(0, subtotalOriginal - desconto);
-                mensagem += `*VALOR SEM DESCONTO:* ${formatarMoeda(subtotalOriginal)}\n`;
-                mensagem += `*DESCONTO:* ${formatarMoeda(desconto)}\n`;
-                mensagem += `*TOTAL COM DESCONTO:* ${formatarMoeda(totalComDesconto)}\n`;
-            } else {
-                mensagem += `*TOTAL:* ${formatarMoeda(subtotalOriginal)}\n`;
-            }
-
-            mensagem += `----------------------------------------\n`;
-            mensagem += `*ARTSCREEN CORURIPE*\n`;
-
-            if (incluirDados) {
-                mensagem += `CNPJ: 25.974.730/0001-14\n`;
-                mensagem += `Av. Floriano Peixoto, 138, Centro, Coruripe - AL\n`;
-            }
-
-            navigator.clipboard.writeText(mensagem).then(() => {
-                alert(`Orçamento #${orcamentoFormatado} copiado com sucesso!`);
-                localStorage.setItem('numeroOrcamento', numAtual + 1);
-            }).catch(err => {
-                alert('Erro ao copiar o texto.');
-            });
+        function avancarEProximaOS() {
+            const numOS = parseInt(localStorage.getItem('numeroOS'), 10);
+            localStorage.setItem('numeroOS', numOS + 1);
+            document.getElementById('clienteOS').value = '';
+            document.getElementById('whatsappOS').value = '';
+            document.getElementById('descontoOS').value = '0';
+            document.getElementById('valorEntradaOS').value = '0';
+            document.getElementById('dataEntregaOS').value = '';
+            document.getElementById('obsOS').value = '';
+            limparTodosItens('entrada');
+            atualizarCodigoOSVisivel();
+            alert("Número do pedido avançado! Tela limpa para o próximo serviço.");
         }
     </script>
 </body>
