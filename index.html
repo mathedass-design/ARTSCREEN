@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARTSCREEN CORURIPE - Sistema</title>
     
+    <!-- Script essencial para transformar o HTML em Imagem PNG -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -358,16 +359,19 @@
 </head>
 <body>
 
+    <!-- Menu Superior -->
     <div class="menu-sistema">
         <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Orçamento</button>
         <button class="btn-sistema" onclick="alternarPainel('entrada')">Pedido</button>
         <button class="btn-sistema btn-portfolio" onclick="window.open('portfolio.pdf', '_blank')">Portfólio</button>
     </div>
 
+    <!-- PAINEL 1: ORÇAMENTOS -->
     <div class="container ativo" id="tela-orcamento">
         <h1>ARTSCREEN CORURIPE</h1>
         
-        <div class="codigo-os-destaque" id="exibicaoCodigoOrcamento">ORÇAMENTO: #0001</div>
+        <!-- ALTERAÇÃO: Nome alterado para "Nº ORÇAMENTO" -->
+        <div class="codigo-os-destaque" id="exibicaoCodigoOrcamento">Nº ORÇAMENTO: #ART00100</div>
 
         <div class="form-group">
             <div class="header-field">
@@ -411,10 +415,11 @@
         </div>
     </div>
 
+    <!-- PAINEL 2: PEDIDO -->
     <div class="container" id="tela-entrada">
-        <h2>Pedido</h2>
+        <h1>ARTSCREEN CORURIPE</h1>
         
-        <div class="codigo-os-destaque" id="exibicaoCodigoOS">ORDEM DE SERVIÇO: #E0001</div>
+        <div class="codigo-os-destaque" id="exibicaoCodigoOS">Nº PEDIDO: #E00100</div>
 
         <div class="form-group">
             <div class="header-field">
@@ -505,6 +510,7 @@
         </div>
     </div>
 
+    <!-- AREA UNIFICADA DO MODELO DE NOTA A6 -->
     <div id="bloco-nota-a6">
         <div class="nota-conteudo-dinamico">
             <div class="nota-header">
@@ -539,12 +545,12 @@
     </div>
 
     <script>
-        // Inicialização de memória segura
+        // ALTERAÇÃO: Inicialização forçada começando sempre a partir do número 100
         if (!localStorage.getItem('numeroOrcamento') || localStorage.getItem('numeroOrcamento') === 'NaN') {
-            localStorage.setItem('numeroOrcamento', '1');
+            localStorage.setItem('numeroOrcamento', '100');
         }
         if (!localStorage.getItem('numeroOS') || localStorage.getItem('numeroOS') === 'NaN') {
-            localStorage.setItem('numeroOS', '1');
+            localStorage.setItem('numeroOS', '100');
         }
 
         const conteudoItensOrcamento = document.getElementById('conteudoItensOrcamento');
@@ -568,10 +574,11 @@
             atualizarCodigosVisiveisDinamicos();
         }
 
-        function formatarCodigo(num) {
+        // ALTERAÇÃO: Formatação no modelo fixo consecutivo (Ex: ART00100, ART00101)
+        function formatarCodigoDinamico(prefixo, num) {
             let n = parseInt(num, 10);
-            if (isNaN(n)) n = 1;
-            return String(n).padStart(4, '0');
+            if (isNaN(n) || n < 100) n = 100;
+            return `${prefixo}${String(n).padStart(5, '0')}`;
         }
 
         function formatarMoeda(valor) {
@@ -579,11 +586,12 @@
         }
 
         function atualizarCodigosVisiveisDinamicos() {
-            const numOrc = parseInt(localStorage.getItem('numeroOrcamento'), 10) || 1;
-            const numOS = parseInt(localStorage.getItem('numeroOS'), 10) || 1;
+            const numOrc = parseInt(localStorage.getItem('numeroOrcamento'), 10) || 100;
+            const numOS = parseInt(localStorage.getItem('numeroOS'), 10) || 100;
             
-            document.getElementById('exibicaoCodigoOrcamento').innerText = `ORÇAMENTO: #${formatarCodigo(numOrc)}`;
-            document.getElementById('exibicaoCodigoOS').innerText = `ORDEM DE SERVIÇO: #E${formatarCodigo(numOS)}`;
+            // Exibição idêntica e padronizada em ambos os lados
+            document.getElementById('exibicaoCodigoOrcamento').innerText = `Nº ORÇAMENTO: #${formatarCodigoDinamico('ART', numOrc)}`;
+            document.getElementById('exibicaoCodigoOS').innerText = `Nº PEDIDO: #${formatarCodigoDinamico('ARTE', numOS)}`;
         }
 
         function verificarFormaPagamento() {
@@ -680,7 +688,7 @@
             if (tipo === 'orcamento') {
                 document.getElementById('tipoNotaA6').innerText = "ORÇAMENTO";
                 const cliente = document.getElementById('cliente').value.trim() || "Não informado";
-                const numAtual = parseInt(localStorage.getItem('numeroOrcamento'), 10) || 1;
+                const numAtual = parseInt(localStorage.getItem('numeroOrcamento'), 10) || 100;
                 const desconto = parseFloat(document.getElementById('desconto').value) || 0;
                 const checkedValidade = document.getElementById('validade30Dias').checked;
 
@@ -693,7 +701,7 @@
                 }
 
                 htmlGerais = `
-                    <b>ORÇAMENTO:</b> #${formatarCodigo(numAtual)}<br>
+                    <b>Nº ORÇAMENTO:</b> #${formatarCodigoDinamico('ART', numAtual)}<br>
                     <b>Data:</b> ${dataStr} às ${horaStr}<br>
                     <b>Entrega:</b> ${prazoOrcamento}<br>
                     <b>Cliente:</b> ${cliente}
@@ -702,7 +710,7 @@
                 let subtotal = 0;
                 conteudoItensOrcamento.querySelectorAll('.item-linha').forEach(linha => {
                     const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
-                    const desc = static_desc = linha.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
+                    const desc = linha.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
                     const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
                     if (qtd > 0 && valor > 0) {
                         subtotal += (qtd * valor);
@@ -731,7 +739,7 @@
                 const formaPagto = document.getElementById('formaPagamentoOS').value;
                 const parcelas = document.getElementById('parcelasOS').value;
                 const obs = document.getElementById('obsOS').value.trim() || "Nenhuma";
-                const numOS = parseInt(localStorage.getItem('numeroOS'), 10) || 1;
+                const numOS = parseInt(localStorage.getItem('numeroOS'), 10) || 100;
                 
                 let dataEntrega = document.getElementById('dataEntregaOS').value;
                 if(dataEntrega) {
@@ -742,7 +750,7 @@
                 }
 
                 htmlGerais = `
-                    <b>PEDIDO O.S:</b> #E${formatarCodigo(numOS)}<br>
+                    <b>Nº PEDIDO:</b> #${formatarCodigoDinamico('ARTE', numOS)}<br>
                     <b>Entrada:</b> ${dataStr} às ${horaStr}<br>
                     <b>Entrega:</b> ${dataEntrega}<br>
                     <b>Cliente:</b> ${cliente}<br>
@@ -789,15 +797,14 @@
         }
 
         function processarEBaixarNota(tipo) {
-            // 1. Monta o HTML estruturado com o código atual antes do avanço
             montarEstruturaNotaA6HTML(tipo);
             
             const alvo = document.getElementById('bloco-nota-a6');
             const numAtualSálvo = (tipo === 'orcamento') ? parseInt(localStorage.getItem('numeroOrcamento'), 10) : parseInt(localStorage.getItem('numeroOS'), 10);
-            const numFormatado = formatarCodigo(numAtualSálvo);
-            const prefixo = (tipo === 'orcamento') ? 'orcamento_' : 'pedido_E';
+            
+            const numFormatadoImagem = (tipo === 'orcamento') ? formatarCodigoDinamico('ART', numAtualSálvo) : formatarCodigoDinamico('ARTE', numAtualSálvo);
+            const prefixoArquivo = (tipo === 'orcamento') ? 'orcamento_' : 'pedido_';
 
-            // Torna o bloco visível temporariamente para renderização
             alvo.style.position = 'static';
             alvo.style.left = '0';
             alvo.style.top = '0';
@@ -807,25 +814,22 @@
                     scale: 2, 
                     logging: false
                 }).then(canvas => {
-                    // Oculta novamente o elemento
                     alvo.style.position = 'absolute';
                     alvo.style.left = '-9999px';
                     alvo.style.top = '-9999px';
 
-                    // Faz o download automático da imagem
                     const link = document.createElement('a');
-                    link.download = `${prefixo}${numFormatado}.png`;
+                    link.download = `${prefixoArquivo}${numFormatadoImagem}.png`;
                     link.href = canvas.toDataURL('image/png');
                     link.click();
 
-                    // 2. AVANÇA O CÓDIGO AUTOMATICAMENTE APENAS APÓS O SUCESSO DO DOWNLOAD
+                    // Incrementa de forma consecutiva
                     if (tipo === 'orcamento') {
                         localStorage.setItem('numeroOrcamento', numAtualSálvo + 1);
                     } else {
                         localStorage.setItem('numeroOS', numAtualSálvo + 1);
                     }
                     
-                    // Atualiza a visualização do painel instantaneamente
                     atualizarCodigosVisiveisDinamicos();
 
                 }).catch(err => {
