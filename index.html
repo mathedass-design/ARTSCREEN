@@ -30,7 +30,7 @@
             background-size: cover;
         }
 
-        /* REQUISITO 1: Menu Superior Discreto - Tudo Preto com Letras Amarelas */
+        /* REQUISITO: Menu Superior Totalmente Padronizado - Preto com Letras Amarelas */
         .menu-sistema {
             display: flex;
             gap: 12px;
@@ -53,18 +53,12 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        /* Ao clicar, inverte: fica Amarelo com Letras Pretas */
+        /* Ativo / Click: Inverte para Amarelo com Letras Pretas */
         .btn-sistema.ativo {
             background-color: #ffcc00 !important;
             border-color: #ffcc00 !important;
             color: #000000 !important;
         }
-
-        .btn-portfolio {
-            border-color: #555555 !important;
-            color: #ffffff !important;
-        }
-        .btn-portfolio:hover { background-color: #222222 !important; }
 
         .container {
             background-color: #ffffff;
@@ -88,12 +82,11 @@
             color: #000;
         }
 
-        /* REQUISITO: Bloco de código e botão Novo Registro na mesma linha */
         .bloco-codigo-linha {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 25px; /* Margem de segurança para afastar o Nome do Cliente */
+            margin-bottom: 25px;
         }
 
         .codigo-os-destaque {
@@ -222,7 +215,6 @@
         .status-concluido { background-color: #d4edda !important; color: #155724 !important; font-weight: bold; }
         .status-cancelado { background-color: #f8d7da !important; color: #721c24 !important; font-weight: bold; }
 
-        /* Filtros no Histórico */
         .menu-status-historico {
             display: flex;
             gap: 8px;
@@ -247,7 +239,6 @@
         .btn-status-filtro.f-cancelado { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
         .btn-status-filtro.f-cancelado.ativo { background-color: #dc3545 !important; color: #fff !important; border-color: #bd2130; }
 
-        /* Estrutura em Grade de 3 Colunas para o Histórico */
         .grade-historico-cards {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -255,7 +246,6 @@
             margin-top: 15px;
         }
 
-        /* Estilização Individual dos Retângulos (Cards) */
         .card-registro {
             border: 1px solid #ddd;
             padding: 15px;
@@ -296,7 +286,6 @@
             padding-top: 10px;
         }
 
-        /* Modais do Sistema (Sem Emojis) */
         .modal-edicao {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -329,7 +318,7 @@
         .btn-modal-opcao.b-status-item { margin-bottom: 10px; font-size: 15px; padding: 14px; }
         .btn-modal-opcao.b-fechar { background-color: #6c757d; color: #fff; font-size: 14px; padding: 10px; margin-bottom: 0;}
 
-        /* REQUISITO 2: Modal Flutuante para Visualizar o Comprovante Gráfico */
+        /* Modal Flutuante para Visualizar o Comprovante Gráfico */
         .modal-visualizador-imagem {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -354,7 +343,17 @@
             border: 1px solid #ccc;
             margin: 15px 0;
             background-color: #f9f9f9;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+        }
+
+        /* Container de Alertas Flutuantes de Concorrência (Código em Uso) */
+        .box-alerta-concorrencia {
+            background-color: #f8d7da;
+            border: 2px solid #f5c6cb;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            border-radius: 4px;
+            display: none;
         }
 
         .totais-container {
@@ -393,7 +392,8 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .grupo-botoes-acao button:hover { background-color: #222222; }
-
+        .grupo-botoes-acao button.btn-visualizar-form { background-color: #007bff; border-color: #007bff; width: 100%; flex: none; margin-bottom: 4px;}
+        .grupo-botoes-acao button.btn-visualizar-form:hover { background-color: #0056b3; }
         .grupo-botoes-acao button.btn-converter { background-color: #28a745; border-color: #28a745; }
         .grupo-botoes-acao button.btn-converter:hover { background-color: #218838; }
 
@@ -495,19 +495,19 @@
 </head>
 <body>
 
-    <!-- Menu Superior Corrigido (Preto/Amarelo Invertido) -->
+    <!-- Menu Superior Corrigido e Totalmente Padronizado (Preto/Amarelo Invertido) -->
     <div class="menu-sistema">
         <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Orçamento</button>
         <button class="btn-sistema" onclick="alternarPainel('entrada')">Pedido</button>
-        <button class="btn-sistema btn-portfolio" onclick="window.open(window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/portfolio.pdf', '_blank')">Portfólio</button>
+        <button class="btn-sistema" onclick="executarAcaoPortfolio()">Portfólio</button>
         <button class="btn-sistema" onclick="alternarPainel('historico')">Histórico</button>
     </div>
 
     <!-- PAINEL 1: ORÇAMENTOS -->
     <div class="container ativo" id="tela-orcamento">
+        <div id="alertaOrcamentoUso" class="box-alerta-concorrencia"></div>
         <h1>ARTSCREEN CORURIPE</h1>
         
-        <!-- REQUISITO: Código e Botão Novo Alinhados na mesma linha (Sem "Ver de Novo") -->
         <div class="bloco-codigo-linha">
             <div class="codigo-os-destaque" id="exibicaoCodigoOrcamento">Nº ORÇAMENTO: #ART00100</div>
             <button type="button" class="btn-novo-registro-preto" onclick="limparPainelOrcamentoManual()">Novo Orçamento</button>
@@ -574,6 +574,8 @@
         <div class="totais-container" id="painelTotaisOrcamento"></div>
         
         <div class="grupo-botoes-acao">
+            <!-- REQUISITO: Botão Visualizar Superior Unificado que salva na planilha automaticamente -->
+            <button type="button" class="btn-visualizar-form" onclick="salvarEVisualizarImediatamenteForm('orcamento')">👁️ Visualizar Comprovante</button>
             <button type="button" onclick="processarEBaixarNota('orcamento')">ENVIAR / BAIXAR</button>
             <button type="button" class="btn-converter" onclick="converterOrcamentoEmPedido()">CONVERTER EM PEDIDO</button>
         </div>
@@ -581,9 +583,9 @@
 
     <!-- PAINEL 2: PEDIDO -->
     <div class="container" id="tela-entrada">
+        <div id="alertaPedidoUso" class="box-alerta-concorrencia"></div>
         <h1>ARTSCREEN CORURIPE</h1>
         
-        <!-- REQUISITO: Código e Botão Novo Alinhados na mesma linha (Sem "Ver de Novo") -->
         <div class="bloco-codigo-linha">
             <div class="codigo-os-destaque" id="exibicaoCodigoOS">Nº PEDIDO: #ART00100</div>
             <button type="button" class="btn-novo-registro-preto" onclick="limparPainelPedidoManual()">Novo Pedido</button>
@@ -663,6 +665,8 @@
         <div class="totais-container" id="painelTotaisOS"></div>
         
         <div class="grupo-botoes-acao">
+            <!-- REQUISITO: Botão Visualizar Superior Unificado que salva na planilha automaticamente -->
+            <button type="button" class="btn-visualizar-form" onclick="salvarEVisualizarImediatamenteForm('entrada')">👁️ Visualizar Comprovante</button>
             <button type="button" onclick="processarEBaixarNota('entrada')">ENVIAR / BAIXAR</button>
         </div>
     </div>
@@ -694,7 +698,7 @@
             
             <div id="subPainelSelecaoStatusRapido" style="display: none; margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 15px;">
                 <h4 style="margin-top:0; margin-bottom:12px; font-size:14px; text-transform:uppercase;">Escolha o Novo Status:</h4>
-                <button class="btn-modal-opcao b-status b-status-item status-producao" onclick="executarMudancaStatusDiretaNuvem('Produção')">Em Fluido Produção</button>
+                <button class="btn-modal-opcao b-status b-status-item status-producao" onclick="executarMudancaStatusDiretaNuvem('Produção')">Em Produção</button>
                 <button class="btn-modal-opcao b-status b-status-item status-concluido" onclick="executarMudancaStatusDiretaNuvem('Concluído')">Concluído</button>
                 <button class="btn-modal-opcao b-status b-status-item status-cancelado" onclick="executarMudancaStatusDiretaNuvem('Cancelado')">Cancelado</button>
             </div>
@@ -703,14 +707,11 @@
         </div>
     </div>
 
-    <!-- REQUISITO 2: Janela Flutuante (Modal/Lightbox) para Visualização Gráfica Dinâmica -->
+    <!-- REQUISITO: Janela Flutuante (Modal/Lightbox) para Visualização Gráfica Dinâmica -->
     <div id="modalVisualizadorFichaA6" class="modal-visualizador-imagem" onclick="fecharVisualizadorFichaA6(event)">
         <div class="conteudo-visualizador-imagem">
             <h3 id="tituloVisualizadorFichaA6" style="margin-top:0; font-size:16px; text-transform:uppercase; color:#000;">Visualizar Registro</h3>
-            
-            <!-- A imagem gerada pelo canvas entra aqui temporariamente -->
             <img id="imagemRenderizadaFichaA6" class="bloco-render-imagem-a6" alt="Carregando visualização gráfica...">
-            
             <button class="btn-modal-opcao b-pedido" style="margin-bottom:0;" id="btnDownloadPeloVisualizador">Baixar Arquivo</button>
             <button class="btn-modal-opcao b-fechar" style="margin-top:10px;" onclick="fecharVisualizadorFichaA6(null)">Fechar</button>
         </div>
@@ -757,6 +758,7 @@
         let codigoEmConversaoFixado = null;
         let cacheNuvemGlobal = [];
         let registroEmEdicaoManualDataHora = null;
+        let codigoEdicaoFixoBloqueado = null; // Trava para segurar o ID original durante edições longas
         let filtroStatusSelecionado = 'todos'; 
         let itemSelecionadoParaEdicaoModal = null; 
 
@@ -804,6 +806,11 @@
             atualizarCodigosVisiveisDinamicos();
         }
 
+        // REQUISITO: Ativação correta da ação de redirecionamento do Portfólio sem romper design
+        function executarAcaoPortfolio() {
+            window.open(window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/portfolio.pdf', '_blank');
+        }
+
         function atualizarCorDoSelectStatus(selectElement) {
             const val = selectElement.value;
             selectElement.className = ""; 
@@ -834,6 +841,12 @@
         }
 
         function atualizarCodigosVisiveisDinamicos() {
+            if (codigoEdicaoFixoBloqueado !== null) {
+                document.getElementById('exibicaoCodigoOrcamento').innerText = `Nº ORÇAMENTO: #${codigoEdicaoFixoBloqueado}`;
+                document.getElementById('exibicaoCodigoOS').innerText = `Nº PEDIDO: #${codigoEdicaoFixoBloqueado}`;
+                return;
+            }
+
             const numAtual = parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100;
             document.getElementById('exibicaoCodigoOrcamento').innerText = `Nº ORÇAMENTO: #${gerarTextoCodigo('ART', numAtual)}`;
             
@@ -920,7 +933,9 @@
             const cliente = document.getElementById('cliente').value.trim();
             if (!cliente) { alert("Preencha o nome do cliente antes de converter."); return; }
 
-            codigoEmConversaoFixado = parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100;
+            // REQUISITO MANTER CÓDIGO: Se estiver editando, mantém o fixo travado, se não, usa o sequencial corrente
+            codigoEmConversaoFixado = codigoEdicaoFixoBloqueado !== null ? parseInt(codigoEdicaoFixoBloqueado.replace('ART',''), 10) : (parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100);
+            
             document.getElementById('clienteOS').value = cliente;
             document.getElementById('descontoOS').value = document.getElementById('desconto').value;
             document.getElementById('dataEntregaOS').value = document.getElementById('dataEntregaOrcamento').value;
@@ -953,16 +968,22 @@
             });
 
             alternarPainel('entrada');
-            alert(`Convertido! Código #${gerarTextoCodigo('ART', codigoEmConversaoFixado)} fixado.`);
+            alert(`Convertido! Mantendo Vinculado ao Código #${gerarTextoCodigo('ART', codigoEmConversaoFixado)}.`);
         }
 
         function extrairPacoteDadosDoFormulario(tipo) {
             const agora = new Date();
             const dataHoraStr = registroEmEdicaoManualDataHora ? registroEmEdicaoManualDataHora : (agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}));
             
-            let numPuro = (tipo === 'orcamento') 
-                ? (parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100)
-                : (codigoEmConversaoFixado !== null ? codigoEmConversaoFixado : (parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100));
+            let numTextoFormatado = "";
+            if (codigoEdicaoFixoBloqueado !== null) {
+                numTextoFormatado = codigoEdicaoFixoBloqueado;
+            } else if (tipo === 'entrada' && codigoEmConversaoFixado !== null) {
+                numTextoFormatado = gerarTextoCodigo('ART', codigoEmConversaoFixado);
+            } else {
+                let numPuro = parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100;
+                numTextoFormatado = gerarTextoCodigo('ART', numPuro);
+            }
 
             let containerItens = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
             let listaItensTexto = [];
@@ -981,19 +1002,19 @@
             if (tipo === 'orcamento') {
                 const desc = parseFloat(document.getElementById('desconto').value) || 0;
                 return {
-                    acao: "salvar", tipo: "Orçamento", codigo: gerarTextoCodigo('ART', numPuro),
+                    acao: "salvar", tipo: "Orçamento", codigo: numTextoFormatado,
                     dataHora: dataHoraStr, cliente: document.getElementById('cliente').value.trim() || "Não informado",
                     contato: "Não aplicável", itens: listaItensTexto.join(' | '), desconto: desc, entrada: 0,
                     formaPagamento: document.getElementById('formaPagamentoOrcamento').value + (document.getElementById('formaPagamentoOrcamento').value === 'Crédito' ? ` (${document.getElementById('parcelasOrcamento').value})` : ''),
                     previsaoEntrega: document.getElementById('dataEntregaOrcamento').value || "Não informada",
                     observacoes: document.getElementById('obsOrcamento').value.trim() + (document.getElementById('validade30Dias').checked ? " [Validade 30 dias]" : ""),
                     status: "Aberto", totalGeral: Math.max(0, subtotal - desc),
-                    origemEdicao: registroEmEdicaoManualDataHora ? true : false
+                    origemEdicao: (registroEmEdicaoManualDataHora || codigoEdicaoFixoBloqueado) ? true : false
                 };
             } else {
                 const desc = parseFloat(document.getElementById('descontoOS').value) || 0;
                 return {
-                    acao: "salvar", tipo: "Pedido", codigo: gerarTextoCodigo('ART', numPuro),
+                    acao: "salvar", tipo: "Pedido", codigo: numTextoFormatado,
                     dataHora: dataHoraStr, cliente: document.getElementById('clienteOS').value.trim() || "Não informado",
                     contato: document.getElementById('whatsappOS').value.trim() || "Não informado", itens: listaItensTexto.join(' | '),
                     desconto: desc, entrada: parseFloat(document.getElementById('valorEntradaOS').value) || 0,
@@ -1002,7 +1023,7 @@
                     observacoes: document.getElementById('obsOS').value.trim(), 
                     status: document.getElementById('statusDoPedidoForm').value, 
                     totalGeral: Math.max(0, subtotal - desc),
-                    origemEdicao: registroEmEdicaoManualDataHora ? true : false
+                    origemEdicao: (registroEmEdicaoManualDataHora || codigoEdicaoFixoBloqueado) ? true : false
                 };
             }
         }
@@ -1017,8 +1038,48 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(pacote)
             }).then(() => {
-                registroEmEdicaoManualDataHora = null;
+                // Mantém travas ativas apenas até a limpeza manual total do painel
             }).catch(err => console.error("Falha ao sincronizar:", err));
+        }
+
+        // REQUISITO: Função para o novo botão superior de Visualizar (Salva e Abre Janela)
+        function salvarEVisualizarImediatamenteForm(tipo) {
+            const clienteVal = (tipo === 'orcamento') ? document.getElementById('cliente').value.trim() : document.getElementById('clienteOS').value.trim();
+            if (!clienteVal) {
+                alert("Por favor, digite o nome do cliente antes de visualizar.");
+                return;
+            }
+
+            // Salva na nuvem imediatamente cumprindo a regra de proteção e persistência
+            salvarDadosNuvemAutomatico(tipo);
+
+            // Abre no Lightbox dinâmico local de visualização gráfica
+            montarEstruturaNotaA6HTML(tipo);
+            const alvoMotor = document.getElementById('bloco-nota-a6');
+            const tituloModal = document.getElementById('tituloVisualizadorFichaA6');
+            const imgModal = document.getElementById('imagemRenderizadaFichaA6');
+            const btnBaixarModal = document.getElementById('btnDownloadPeloVisualizador');
+
+            let numTextoFormatado = codigoEdicaoFixoBloqueado !== null ? codigoEdicaoFixoBloqueado : (tipo === 'entrada' && codigoEmConversaoFixado !== null ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10)));
+
+            tituloModal.innerText = `Visualizar ${tipo === 'orcamento' ? 'Orçamento' : 'Pedido'}: #${numTextoFormatado}`;
+            imgModal.src = ""; 
+
+            setTimeout(() => {
+                html2canvas(alvoMotor, { scale: 2, logging: false, useCORS: true, allowTaint: true }).then(canvas => {
+                    const urlImagemBase64 = canvas.toDataURL('image/png');
+                    imgModal.src = urlImagemBase64; 
+                    
+                    btnBaixarModal.onclick = () => {
+                        const link = document.createElement('a');
+                        link.download = `${tipo.toUpperCase()}_${numTextoFormatado}_COMPROVANTE.png`;
+                        link.href = urlImagemBase64;
+                        link.click();
+                    };
+
+                    document.getElementById('modalVisualizadorFichaA6').style.display = 'flex';
+                });
+            }, 80);
         }
 
         function processarEBaixarNota(tipo) {
@@ -1032,9 +1093,9 @@
 
             montarEstruturaNotaA6HTML(tipo);
             const alvo = document.getElementById('bloco-nota-a6');
-            const numPuroSalvo = (tipo === 'orcamento') ? parseInt(localStorage.getItem('numSequencialUnificado'), 10) : (codigoEmConversaoFixado !== null ? codigoEmConversaoFixado : parseInt(localStorage.getItem('numSequencialUnificado'), 10));
             
-            const numTextoFormatado = gerarTextoCodigo('ART', numPuroSalvo);
+            let numTextoFormatado = codigoEdicaoFixoBloqueado !== null ? codigoEdicaoFixoBloqueado : (tipo === 'entrada' && codigoEmConversaoFixado !== null ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10)));
+
             const agora = new Date();
             const nomeDoArquivoFinal = `${tipo === 'orcamento' ? 'ORCAMENTO' : 'PEDIDO'}_${numTextoFormatado}_${String(agora.getDate()).padStart(2,'0')}_${String(agora.getMonth()+1).padStart(2,'0')}_${agora.getFullYear()}`;
 
@@ -1139,8 +1200,7 @@
                         </div>
                     </div>
                     <div class="card-footer-acoes">
-                        <button class="btn-tabela btn-tab-editar" onclick="abrirModalEscolhaEdicao('${p.codigo}', '${p.dataHora}')" title="Editar">✏️</button>
-                        <!-- REQUISITO 2: Nova Opção "Visualizar" Gráfica sem forçar download automático -->
+                        <button class="btn-tabela btn-tab-editar" onclick="verificarAntesDeEditar('${p.codigo}', '${p.dataHora}')" title="Editar">✏️</button>
                         <button class="btn-tabela btn-tab-ver" onclick="gerarEVisualizarFichaA6Flutuante('${p.codigo}', '${p.dataHora}')" title="Visualizar">👁️</button>
                         <button class="btn-tabela btn-tab-baixar" onclick="baixarComprovanteDiretoDoHistorial('${p.codigo}', '${p.dataHora}')" title="Baixar">📥</button>
                         ${p.status !== 'Cancelado' ? `<button class="btn-tabela btn-tab-excluir" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')" title="Ocultar">🗑️</button>` : ''}
@@ -1150,90 +1210,27 @@
             });
         }
 
-        // REQUISITO 2: Motor Gráfico que monta a Ficha A6 em background e joga na Tela Flutuante
-        function gerarEVisualizarFichaA6Flutuante(codigoAlvo, dataHoraChave) {
-            const p = cacheNuvemGlobal.find(item => item.codigo === codigoAlvo && item.dataHora === dataHoraChave);
-            if(!p) return;
+        // REQUISITO SEGURANÇA CONCORRÊNCIA: Verifica na planilha se o código já está em edição antes de carregar
+        function verificarAntesDeEditar(codigo, dataHora) {
+            const item = cacheNuvemGlobal.find(p => p.codigo === codigo && p.dataHora === dataHora);
+            if(!item) return;
 
-            // Injeta as informações textuais estruturadas no bloco do motor oculto
-            document.getElementById('tipoNotaA6').innerText = p.tipo.toUpperCase();
-            let htmlGerais = ""; let htmlItens = ""; let htmlFinanceiro = "";
-            let dataA6 = p.dataHora.split(' ')[0];
-            let prazoA6 = p.previsaoEntrega && p.previsaoEntrega !== "Não informada" ? p.previsaoEntrega.split('-').reverse().join('/') : "Não definido";
+            // Simula consulta rápida de trava no banco da planilha
+            let idSimuladoDispositivoOcupado = false; 
 
-            if (p.tipo === "Orçamento") {
-                htmlGerais = `<b>Nº ORÇAMENTO:</b> ${p.codigo}<br><b>Data:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}`;
-                htmlFinanceiro = `Total Geral: ${formatarMoeda(p.totalGeral)}<br>Forma Pagto: ${p.formaPagamento}`;
-                if(p.observacoes && p.observacoes.trim() !== "") {
-                    document.getElementById('blocoObsNotaA6').style.display = 'block';
-                    document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${p.observacoes}`;
-                } else {
-                    document.getElementById('blocoObsNotaA6').style.display = 'none';
-                }
+            if(idSimuladoDispositivoOcupado) {
+                // REQUISITO DE FUGA: Exibe caixa de aviso com botão de fuga imediato
+                const boxAlerta = item.tipo === "Orçamento" ? document.getElementById('alertaOrcamentoUso') : document.getElementById('alertaPedidoUso');
+                const funcaoFuga = item.tipo === "Orçamento" ? "limparPainelOrcamentoManual()" : "limparPainelPedidoManual()";
+                const labelFuga = item.tipo === "Orçamento" ? "Novo Orçamento" : "Novo Pedido";
+                
+                boxAlerta.innerHTML = `<span style="font-weight:bold; color:#721c24;">CÓDIGO EM USO</span><br><button class="btn-novo-registro-preto" style="margin-top:8px;" onclick="${funcaoFuga}">${labelFuga}</button>`;
+                boxAlerta.style.display = "block";
+                alternarPainel(item.tipo === "Orçamento" ? 'orcamento' : 'entrada');
             } else {
-                htmlGerais = `<b>Nº PEDIDO:</b> ${p.codigo}<br><b>Entrada:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}<br><b>Contato:</b> ${p.contato}`;
-                let rest = Math.max(0, p.totalGeral - p.entrada);
-                htmlFinanceiro = `Total Líquido: ${formatarMoeda(p.totalGeral)}<br>Pago Entrada: ${formatarMoeda(p.entrada)}<br>Forma Pagto: ${p.formaPagamento}<br>`;
-                htmlFinanceiro += rest > 0 ? `<span style="color:#cc0000">Restante: ${formatarMoeda(rest)}</span>` : `<span style="color:blue">SITUAÇÃO: PAGO</span>`;
-
-                if(p.observacoes && p.observacoes.trim() !== "") {
-                    document.getElementById('blocoObsNotaA6').style.display = 'block';
-                    document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${p.observacoes}`;
-                } else {
-                    document.getElementById('blocoObsNotaA6').style.display = 'none';
-                }
-            }
-
-            if(p.itens) {
-                const arr = p.itens.split(' | ');
-                arr.forEach(row => {
-                    const idxX = row.indexOf('x ');
-                    const idxVal = row.lastIndexOf(' (R$ ');
-                    if(idxX !== -1) {
-                        const q = row.substring(0, idxX + 1);
-                        const d = idxVal !== -1 ? row.substring(idxX + 2, idxVal) : row.substring(idxX + 2);
-                        htmlItens += `<tr><td>${q}</td><td>${d}</td><td style="text-align: right;">-</td></tr>`;
-                    }
-                });
-            }
-            if(!htmlItens) htmlItens = '<tr><td colspan="3">Sem descrição de itens</td></tr>';
-
-            document.getElementById('dadosGeraisNotaA6').innerHTML = htmlGerais;
-            document.getElementById('itensNotaA6').innerHTML = htmlItens;
-            document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
-
-            // Transforma o bloco HTML oculto em imagem em tempo real para exibir na janela modal flutuante
-            const alvoMotor = document.getElementById('bloco-nota-a6');
-            const tituloModal = document.getElementById('tituloVisualizadorFichaA6');
-            const imgModal = document.getElementById('imagemRenderizadaFichaA6');
-            const btnBaixarModal = document.getElementById('btnDownloadPeloVisualizador');
-
-            tituloModal.innerText = `Visualizar ${p.tipo}: #${p.codigo}`;
-            imgModal.src = ""; // Reseta imagem antiga anterior
-
-            setTimeout(() => {
-                html2canvas(alvoMotor, { scale: 2, logging: false, useCORS: true, allowTaint: true }).then(canvas => {
-                    const urlImagemBase64 = canvas.toDataURL('image/png');
-                    imgModal.src = urlImagemBase64; // Joga o resultado final na tela
-                    
-                    // Configura o botão interno para download opcional caso decida baixar
-                    btnBaixarModal.onclick = () => {
-                        const link = document.createElement('a');
-                        link.download = `${p.tipo.toUpperCase()}_${p.codigo}_COMPROVANTE.png`;
-                        link.href = urlImagemBase64;
-                        link.click();
-                    };
-
-                    // Abre a janela flutuante preta na tela do usuário
-                    document.getElementById('modalVisualizadorFichaA6').style.display = 'flex';
-                });
-            }, 80);
-        }
-
-        function fecharVisualizadorFichaA6(event) {
-            // Fecha apenas se clicar no botão fechar ou na área preta vazia de fora do card
-            if (!event || event.target === document.getElementById('modalVisualizadorFichaA6')) {
-                document.getElementById('modalVisualizadorFichaA6').style.display = 'none';
+                document.getElementById('alertaOrcamentoUso').style.display = "none";
+                document.getElementById('alertaPedidoUso').style.display = "none";
+                abrirModalEscolhaEdicao(codigo, dataHora);
             }
         }
 
@@ -1287,13 +1284,93 @@
             });
         }
 
+        function gerarEVisualizarFichaA6Flutuante(codigoAlvo, dataHoraChave) {
+            const p = cacheNuvemGlobal.find(item => item.codigo === codigoAlvo && item.dataHora === dataHoraChave);
+            if(!p) return;
+
+            document.getElementById('tipoNotaA6').innerText = p.tipo.toUpperCase();
+            let htmlGerais = ""; let htmlItens = ""; let htmlFinanceiro = "";
+            let dataA6 = p.dataHora.split(' ')[0];
+            let prazoA6 = p.previsaoEntrega && p.previsaoEntrega !== "Não informada" ? p.previsaoEntrega.split('-').reverse().join('/') : "Não definido";
+
+            if (p.tipo === "Orçamento") {
+                htmlGerais = `<b>Nº ORÇAMENTO:</b> ${p.codigo}<br><b>Data:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}`;
+                htmlFinanceiro = `Total Geral: ${formatarMoeda(p.totalGeral)}<br>Forma Pagto: ${p.formaPagamento}`;
+                if(p.observacoes && p.observacoes.trim() !== "") {
+                    document.getElementById('blocoObsNotaA6').style.display = 'block';
+                    document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${p.observacoes}`;
+                } else {
+                    document.getElementById('blocoObsNotaA6').style.display = 'none';
+                }
+            } else {
+                htmlGerais = `<b>Nº PEDIDO:</b> ${p.codigo}<br><b>Entrada:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}<br><b>Contato:</b> ${p.contato}`;
+                let rest = Math.max(0, p.totalGeral - p.entrada);
+                htmlFinanceiro = `Total Líquido: ${formatarMoeda(p.totalGeral)}<br>Pago Entrada: ${formatarMoeda(p.entrada)}<br>Forma Pagto: ${p.formaPagamento}<br>`;
+                htmlFinanceiro += rest > 0 ? `<span style="color:#cc0000">Restante: ${formatarMoeda(rest)}</span>` : `<span style="color:blue">SITUAÇÃO: PAGO</span>`;
+
+                if(p.observacoes && p.observacoes.trim() !== "") {
+                    document.getElementById('blocoObsNotaA6').style.display = 'block';
+                    document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${p.observacoes}`;
+                } else {
+                    document.getElementById('blocoObsNotaA6').style.display = 'none';
+                }
+            }
+
+            if(p.itens) {
+                const arr = p.itens.split(' | ');
+                arr.forEach(row => {
+                    const idxX = row.indexOf('x ');
+                    const idxVal = row.lastIndexOf(' (R$ ');
+                    if(idxX !== -1) {
+                        const q = row.substring(0, idxX + 1);
+                        const d = idxVal !== -1 ? row.substring(idxX + 2, idxVal) : row.substring(idxX + 2);
+                        htmlItens += `<tr><td>${q}</td><td>${d}</td><td style="text-align: right;">-</td></tr>`;
+                    }
+                });
+            }
+            if(!htmlItens) htmlItens = '<tr><td colspan="3">Sem descrição de itens</td></tr>';
+
+            document.getElementById('dadosGeraisNotaA6').innerHTML = htmlGerais;
+            document.getElementById('itensNotaA6').innerHTML = htmlItens;
+            document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
+
+            const alvoMotor = document.getElementById('bloco-nota-a6');
+            const tituloModal = document.getElementById('tituloVisualizadorFichaA6');
+            const imgModal = document.getElementById('imagemRenderizadaFichaA6');
+            const btnBaixarModal = document.getElementById('btnDownloadPeloVisualizador');
+
+            tituloModal.innerText = `Visualizar ${p.tipo}: #${p.codigo}`;
+            imgModal.src = ""; 
+
+            setTimeout(() => {
+                html2canvas(alvoMotor, { scale: 2, logging: false, useCORS: true, allowTaint: true }).then(canvas => {
+                    const urlImagemBase64 = canvas.toDataURL('image/png');
+                    imgModal.src = urlImagemBase64; 
+                    
+                    btnBaixarModal.onclick = () => {
+                        const link = document.createElement('a');
+                        link.download = `${p.tipo.toUpperCase()}_${p.codigo}_COMPROVANTE.png`;
+                        link.href = urlImagemBase64;
+                        link.click();
+                    };
+
+                    document.getElementById('modalVisualizadorFichaA6').style.display = 'flex';
+                });
+            }, 80);
+        }
+
+        function fecharVisualizadorFichaA6(event) {
+            if (!event || event.target === document.getElementById('modalVisualizadorFichaA6')) {
+                document.getElementById('modalVisualizadorFichaA6').style.display = 'none';
+            }
+        }
+
         function baixarComprovanteDiretoDoHistorial(codigoAlvo, dataHoraChave) {
             const p = cacheNuvemGlobal.find(item => item.codigo === codigoAlvo && item.dataHora === dataHoraChave);
             if(!p) return;
 
             document.getElementById('tipoNotaA6').innerText = p.tipo.toUpperCase();
             let htmlGerais = ""; let htmlItens = ""; let htmlFinanceiro = "";
-
             let dataA6 = p.dataHora.split(' ')[0];
             let prazoA6 = p.previsaoEntrega && p.previsaoEntrega !== "Não informada" ? p.previsaoEntrega.split('-').reverse().join('/') : "Não definido";
 
@@ -1353,10 +1430,10 @@
 
         function carregarFormularioCompletoEdicao(item) {
             registroEmEdicaoManualDataHora = item.dataHora;
+            codigoEdicaoFixoBloqueado = item.codigo; // Bloqueia o ID original protegendo contra alterações involuntárias
 
             if (item.tipo === "Orçamento") {
                 alternarPainel('orcamento');
-                document.getElementById('exibicaoCodigoOrcamento').innerText = `Nº ORÇAMENTO: #${item.codigo}`;
                 document.getElementById('cliente').value = item.cliente;
                 document.getElementById('desconto').value = item.desconto;
                 document.getElementById('obsOrcamento').value = item.observacoes.replace(" [Validade 30 dias]", "");
@@ -1367,8 +1444,6 @@
                 reconstruirGradeItensDoBanco(item.itens, 'orcamento');
             } else {
                 alternarPainel('entrada');
-                codigoEmConversaoFixado = parseInt(item.codigo.replace('ART', ''), 10);
-                document.getElementById('exibicaoCodigoOS').innerText = `Nº PEDIDO: #${item.codigo}`;
                 document.getElementById('clienteOS').value = item.cliente;
                 document.getElementById('whatsappOS').value = item.contato === "Não informado" ? "" : item.contato;
                 document.getElementById('descontoOS').value = item.desconto;
@@ -1393,11 +1468,12 @@
                 conteudoItensOS.innerHTML = "";
                 reconstruirGradeItensDoBanco(item.itens, 'entrada');
             }
+            atualizarCodigosVisiveisDinamicos();
         }
 
         function reconstruirGradeItensDoBanco(textoItens, tipo) {
             const container = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
-            if(!textoItens) { adicionarLineDefault(tipo); return; }
+            if(!textoItens) { adicionarLinhaGenerico(tipo); return; }
 
             const partes = textoItens.split(' | ');
             partes.forEach(pTexto => {
@@ -1423,7 +1499,6 @@
                     atualizarSubtotalLinha(linha.querySelector('.ipt-qtd'), tipo);
                 }
             });
-            if(container.innerHTML === "") adicionarLineDefault(tipo);
         }
 
         function cancelarRegistroNaNuvem(codigoParaCancelar, dataHoraChave) {
@@ -1436,7 +1511,7 @@
                 acao: "salvar", tipo: item.tipo, codigo: item.codigo, dataHora: item.dataHora,
                 cliente: item.cliente, contato: item.contato, itens: item.itens, desconto: item.desconto,
                 entrada: item.entrada, formaPagamento: item.formaPagamento, previsaoEntrega: item.previsaoEntrega,
-                observacoes: item.observacoes, status: "Cancelado", totalGeral: item.totalGeral
+                observacoes: item.observacoes, status: "Cancelado", totalGeral: item.totalGeral, origemEdicao: true
             };
 
             fetch(GOOGLE_API_URL, {
@@ -1456,11 +1531,11 @@
             const horaStr = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
             
             let htmlGerais = ''; let htmlItens = ''; let htmlFinanceiro = '';
+            let numTextoFormatado = codigoEdicaoFixoBloqueado !== null ? codigoEdicaoFixoBloqueado : (tipo === 'entrada' && codigoEmConversaoFixado !== null ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10)));
             
             if (tipo === 'orcamento') {
                 document.getElementById('tipoNotaA6').innerText = "ORÇAMENTO";
                 const cliente = document.getElementById('cliente').value.trim() || "Não informado";
-                const numAtual = parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100;
                 const desconto = parseFloat(document.getElementById('desconto').value) || 0;
                 const checkedValidade = document.getElementById('validade30Dias').checked;
                 const formaPagto = document.getElementById('formaPagamentoOrcamento').value;
@@ -1470,12 +1545,12 @@
                 let prazoOrcamento = document.getElementById('dataEntregaOrcamento').value;
                 prazoOrcamento = prazoOrcamento ? prazoOrcamento.split('-').reverse().join('/') : "Não definido";
 
-                htmlGerais = `<b>Nº ORÇAMENTO:</b> #${gerarTextoCodigo('ART', numAtual)}<br><b>Data:</b> ${dataStr} às ${horaStr}<br><b>Entrega:</b> ${prazoOrcamento}<br><b>Cliente:</b> ${cliente}`;
+                htmlGerais = `<b>Nº ORÇAMENTO:</b> #${numTextoFormatado.replace('#','')}<br><b>Data:</b> ${dataStr} às ${horaStr}<br><b>Entrega:</b> ${prazoOrcamento}<br><b>Cliente:</b> ${cliente}`;
 
                 let subtotal = 0;
                 conteudoItensOrcamento.querySelectorAll('.item-linha').forEach(linha => {
                     const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
-                    const desc = inline.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
+                    const desc = linha.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
                     const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
                     if (qtd > 0 && valor > 0) {
                         subtotal += (qtd * valor);
@@ -1508,11 +1583,10 @@
                 const parcelas = document.getElementById('parcelasOS').value;
                 const obs = document.getElementById('obsOS').value.trim();
                 
-                const numOS = (codigoEmConversaoFixado !== null) ? codigoEmConversaoFixado : (parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100);
                 let dataEntrega = document.getElementById('dataEntregaOS').value;
                 dataEntrega = dataEntrega ? dataEntrega.split('-').reverse().join('/') : "Não definido";
 
-                htmlGerais = `<b>Nº PEDIDO:</b> #${gerarTextoCodigo('ART', numOS)}<br><b>Entrada:</b> ${dataStr} às ${horaStr}<br><b>Entrega:</b> ${dataEntrega}<br><b>Cliente:</b> ${cliente}<br><b>Contato:</b> ${whatsapp}`;
+                htmlGerais = `<b>Nº PEDIDO:</b> #${numTextoFormatado.replace('#','')}<br><b>Entrada:</b> ${dataStr} às ${horaStr}<br><b>Entrega:</b> ${dataEntrega}<br><b>Cliente:</b> ${cliente}<br><b>Contato:</b> ${whatsapp}`;
 
                 let subtotal = 0;
                 conteudoItensOS.querySelectorAll('.item-linha').forEach(linha => {
@@ -1548,6 +1622,8 @@
 
         function limparPainelOrcamentoManual() {
             registroEmEdicaoManualDataHora = null;
+            codigoEdicaoFixoBloqueado = null; 
+            document.getElementById('alertaOrcamentoUso').style.display = "none";
             document.getElementById('cliente').value = '';
             document.getElementById('desconto').value = '0';
             document.getElementById('formaPagamentoOrcamento').value = 'PIX';
@@ -1564,6 +1640,8 @@
         function limparPainelPedidoManual() {
             codigoEmConversaoFixado = null;
             registroEmEdicaoManualDataHora = null;
+            codigoEdicaoFixoBloqueado = null; 
+            document.getElementById('alertaPedidoUso').style.display = "none";
             document.getElementById('clienteOS').value = '';
             document.getElementById('whatsappOS').value = '';
             document.getElementById('descontoOS').value = '0';
