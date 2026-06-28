@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARTSCREEN CORURIPE - Sistema</title>
     
-    <!-- Script essencial para transformar o HTML em Imagem PNG -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -35,7 +34,7 @@
             display: flex;
             gap: 12px;
             width: 100%;
-            max-width: 650px;
+            max-width: 750px;
             margin-bottom: 20px;
         }
 
@@ -53,26 +52,31 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
+        /* REQUISITO: Aba ativa em destaque amarelo */
         .btn-sistema.ativo {
-            background-color: #000000;
-            border-color: #000000;
-            color: #ffffff;
+            background-color: #ffcc00 !important;
+            border-color: #b38f00 !important;
+            color: #000000 !important;
         }
 
-        /* Estilo especial para o botão de portfólio externo */
         .btn-portfolio {
             background-color: #555555;
             color: #ffffff;
             border-color: #555555;
         }
-        .btn-portfolio:hover {
-            background-color: #333333;
+        .btn-portfolio:hover { background-color: #333333; }
+
+        .btn-nuvem-menu {
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
         }
+        .btn-nuvem-menu:hover { background-color: #0056b3; }
 
         .container {
             background-color: #ffffff;
             width: 100%;
-            max-width: 650px;
+            max-width: 750px;
             padding: 30px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             box-sizing: border-box;
@@ -80,9 +84,7 @@
             display: none;
         }
 
-        .container.ativo {
-            display: block;
-        }
+        .container.ativo { display: block; }
 
         h1, h2 {
             font-size: 24px;
@@ -103,9 +105,7 @@
             margin-bottom: 20px;
         }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
+        .form-group { margin-bottom: 15px; }
 
         .header-field {
             display: flex;
@@ -114,11 +114,7 @@
             margin-bottom: 5px;
         }
 
-        label {
-            font-size: 16px;
-            color: #333;
-            font-weight: bold;
-        }
+        label { font-size: 16px; color: #333; font-weight: bold; }
 
         .btn-limpar-campo {
             background: none;
@@ -129,10 +125,7 @@
             opacity: 0.7;
             transition: opacity 0.2s;
         }
-
-        .btn-limpar-campo:hover {
-            opacity: 1;
-        }
+        .btn-limpar-campo:hover { opacity: 1; }
 
         .itens-lista {
             display: flex;
@@ -175,10 +168,7 @@
             width: auto;
             margin-bottom: 20px;
         }
-
-        .btn-add-item:hover {
-            background-color: #f0f0f0;
-        }
+        .btn-add-item:hover { background-color: #f0f0f0; }
 
         .btn-remover-linha {
             background: none;
@@ -199,10 +189,7 @@
             box-sizing: border-box;
             font-family: inherit;
         }
-
-        textarea {
-            resize: vertical;
-        }
+        textarea { resize: vertical; }
 
         .grid-financeiro {
             display: grid;
@@ -210,6 +197,11 @@
             gap: 12px;
             margin-bottom: 15px;
         }
+
+        /* REQUISITO Estilização Dinâmica das Cores do Status */
+        .status-producao { background-color: #fff3cd !important; color: #856404 !important; font-weight: bold; }
+        .status-concluido { background-color: #d4edda !important; color: #155724 !important; font-weight: bold; }
+        .status-cancelado { background-color: #f8d7da !important; color: #721c24 !important; font-weight: bold; }
 
         .totais-container {
             margin-top: 15px;
@@ -228,14 +220,16 @@
             display: flex;
             gap: 12px;
             width: 100%;
+            flex-wrap: wrap;
         }
 
         .grupo-botoes-acao button {
             flex: 1;
+            min-width: 140px;
             border: 1px solid #000;
             color: #ffffff;
             padding: 16px 6px;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
             transition: background 0.2s;
             font-weight: bold;
@@ -244,19 +238,13 @@
             letter-spacing: 1px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
+        .grupo-botoes-acao button:hover { background-color: #222222; }
 
-        .grupo-botoes-acao button:hover {
-            background-color: #222222;
-        }
+        .grupo-botoes-acao button.btn-converter { background-color: #28a745; border-color: #28a745; }
+        .grupo-botoes-acao button.btn-converter:hover { background-color: #218838; }
 
-        /* Estilo do novo botão de conversão */
-        .grupo-botoes-acao button.btn-converter {
-            background-color: #28a745;
-            border-color: #28a745;
-        }
-        .grupo-botoes-acao button.btn-converter:hover {
-            background-color: #218838;
-        }
+        .grupo-botoes-acao button.btn-nuvem-salvar { background-color: #007bff; border-color: #007bff; }
+        .grupo-botoes-acao button.btn-nuvem-salvar:hover { background-color: #0056b3; }
 
         .checkbox-group {
             display: flex;
@@ -267,13 +255,48 @@
             cursor: pointer;
             user-select: none;
         }
-        .checkbox-group input {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
+        .checkbox-group input { width: 18px; height: 18px; cursor: pointer; }
+
+        /* REQUISITO: Campo de busca estilizado */
+        .busca-container {
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .input-busca {
+            padding: 12px;
+            font-size: 15px;
+            border: 2px solid #007bff;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        /* CONFIGURAÇÃO DO BLOCO A6 PARA CAPTURA */
+        .tabela-historico {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .tabela-historico th, .tabela-historico td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .tabela-historico th { background-color: #000; color: #fff; }
+        .tabela-historico tr:nth-child(even) { background-color: #f9f9f9; }
+        
+        .btn-tabela {
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            color: #fff;
+            margin-right: 4px;
+        }
+        .btn-tab-editar { background-color: #ffc107; color: #000; }
+        .btn-tab-excluir { background-color: #dc3545; }
+
+        /* DESIGN DA FICHA GRAFICA A6 SEGURO ANTI-ERRO */
         #bloco-nota-a6 {
             position: absolute;
             left: -9999px;
@@ -286,7 +309,6 @@
             font-family: 'Courier New', Courier, monospace;
             color: #000000;
             border: 3px double #000000;
-            display: block;
         }
 
         .nota-header {
@@ -299,36 +321,12 @@
         .nota-titulo { font-size: 18px; letter-spacing: 1px; }
         .nota-sub { font-size: 14px; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .nota-secao {
-            font-size: 13px;
-            margin-bottom: 10px;
-            line-height: 1.4;
-        }
-        .nota-linha-divisoria {
-            border-top: 1px dashed #000;
-            margin: 6px 0;
-        }
-        .nota-tabela {
-            width: 100%;
-            font-size: 12px;
-            border-collapse: collapse;
-        }
-        .nota-tabela th {
-            border-bottom: 1px dashed #000;
-            text-align: left;
-            padding-bottom: 4px;
-        }
-        .nota-tabela td {
-            padding: 4px 0;
-        }
-        .nota-financeiro-direita {
-            text-align: right;
-            font-size: 13px;
-            font-weight: bold;
-            margin-top: 6px;
-            line-height: 1.4;
-            margin-bottom: 15px;
-        }
+        .nota-secao { font-size: 13px; margin-bottom: 10px; line-height: 1.4; }
+        .nota-linha-divisoria { border-top: 1px dashed #000; margin: 6px 0; }
+        .nota-tabela { width: 100%; font-size: 12px; border-collapse: collapse; }
+        .nota-tabela th { border-bottom: 1px dashed #000; text-align: left; padding-bottom: 4px; }
+        .nota-tabela td { padding: 4px 0; }
+        .nota-financeiro-direita { text-align: right; font-size: 13px; font-weight: bold; margin-top: 6px; line-height: 1.4; margin-bottom: 15px; }
         
         .nota-rodape {
             position: absolute;
@@ -343,12 +341,11 @@
             color: #333333;
         }
 
-        /* REGRAS PARA CELULAR */
         @media (max-width: 600px) {
             body { padding: 10px; background-image: none; background-color: #f5f5f5; }
             .container { padding: 15px; box-shadow: none; }
-            .menu-sistema { max-width: 100%; gap: 8px; }
-            .btn-sistema { padding: 12px 8px; font-size: 13px; }
+            .menu-sistema { max-width: 100%; gap: 6px; }
+            .btn-sistema { padding: 10px 4px; font-size: 12px; }
             .item-linha { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px; }
             .col-desc { grid-column: span 2; width: 100%; }
             .col-qtd, .col-valor { width: 100%; }
@@ -360,22 +357,21 @@
             .grid-financeiro { grid-template-columns: 1fr; gap: 10px; }
             .grupo-botoes-acao { flex-direction: column; gap: 8px; }
             .grupo-botoes-acao button { width: 100%; padding: 14px; }
+            .tabela-historico { font-size: 11px; display: block; overflow-x: auto; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Menu Superior -->
     <div class="menu-sistema">
         <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Orçamento</button>
         <button class="btn-sistema" onclick="alternarPainel('entrada')">Pedido</button>
         <button class="btn-sistema btn-portfolio" onclick="window.open(window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/portfolio.pdf', '_blank')">Portfólio</button>
+        <button class="btn-sistema btn-nuvem-menu" onclick="alternarPainel('historico')">☁️ Histórico</button>
     </div>
 
-    <!-- PAINEL 1: ORÇAMENTOS -->
     <div class="container ativo" id="tela-orcamento">
         <h1>ARTSCREEN CORURIPE</h1>
-        
         <div class="codigo-os-destaque" id="exibicaoCodigoOrcamento">Nº ORÇAMENTO: #ART00100</div>
 
         <div class="form-group">
@@ -403,7 +399,6 @@
             <input type="number" id="desconto" value="0" min="0" step="any" oninput="calcularGenerico('orcamento')">
         </div>
 
-        <!-- REQUISITO: Forma de Pagamento e Parcelas no Orçamento -->
         <div class="grid-financeiro">
             <div class="form-group">
                 <label for="formaPagamentoOrcamento">Forma de Pagamento</label>
@@ -414,30 +409,11 @@
                     <option value="Crédito">Cartão de Crédito</option>
                 </select>
             </div>
-
             <div class="form-group" id="blocoParcelasOrcamento" style="display: none;">
                 <label for="parcelasOrcamento">Vezes (Parcelamento)</label>
                 <select id="parcelasOrcamento">
                     <option value="1x">1x (À vista)</option>
-                    <option value="2x">2x</option>
-                    <option value="3x">3x</option>
-                    <option value="4x">4x</option>
-                    <option value="5x">5x</option>
-                    <option value="6x">6x</option>
-                    <option value="7x">7x</option>
-                    <option value="8x">8x</option>
-                    <option value="9x">9x</option>
-                    <option value="10x">10x</option>
-                    <option value="11x">11x</option>
-                    <option value="12x">12x</option>
-                    <option value="13x">13x</option>
-                    <option value="14x">14x</option>
-                    <option value="15x">15x</option>
-                    <option value="16x">16x</option>
-                    <option value="17x">17x</option>
-                    <option value="18x">18x</option>
-                    <option value="19x">19x</option>
-                    <option value="20x">20x</option>
+                    <option value="2x">2x</option><option value="3x">3x</option><option value="4x">4x</option><option value="5x">5x</option><option value="6x">6x</option><option value="7x">7x</option><option value="8x">8x</option><option value="9x">9x</option><option value="10x">10x</option><option value="11x">11x</option><option value="12x">12x</option><option value="13x">13x</option><option value="14x">14x</option><option value="15x">15x</option><option value="16x">16x</option><option value="17x">17x</option><option value="18x">18x</option><option value="19x">19x</option><option value="20x">20x</option>
                 </select>
             </div>
         </div>
@@ -447,7 +423,6 @@
             <input type="date" id="dataEntregaOrcamento">
         </div>
 
-        <!-- REQUISITO: Campo de Observações no Orçamento -->
         <div class="form-group">
             <label for="obsOrcamento">Observações do Orçamento</label>
             <textarea id="obsOrcamento" rows="3" placeholder="Observações adicionais para o cliente..."></textarea>
@@ -460,17 +435,15 @@
 
         <div class="totais-container" id="painelTotaisOrcamento"></div>
         
-        <!-- REQUISITO: Botão de Conversão Direta adicionado -->
         <div class="grupo-botoes-acao">
             <button type="button" onclick="processarEBaixarNota('orcamento')">ENVIAR / BAIXAR</button>
             <button type="button" class="btn-converter" onclick="converterOrcamentoEmPedido()">CONVERTER EM PEDIDO</button>
+            <button type="button" class="btn-nuvem-salvar" onclick="salvarDadosNaNuvem('orcamento')">☁️ SALVAR NA NUVEM</button>
         </div>
     </div>
 
-    <!-- PAINEL 2: PEDIDO -->
     <div class="container" id="tela-entrada">
         <h1>ARTSCREEN CORURIPE</h1>
-        
         <div class="codigo-os-destaque" id="exibicaoCodigoOS">Nº PEDIDO: #ART00100</div>
 
         <div class="form-group">
@@ -500,7 +473,6 @@
                 <label for="descontoOS">Desconto (R$)</label>
                 <input type="number" id="descontoOS" value="0" min="0" step="any" oninput="calcularGenerico('entrada')">
             </div>
-
             <div class="form-group">
                 <label for="valorEntradaOS">Valor Pago (Entrada)</label>
                 <input type="number" id="valorEntradaOS" value="0" min="0" step="any" oninput="calcularGenerico('entrada')">
@@ -517,32 +489,22 @@
                     <option value="Crédito">Cartão de Crédito</option>
                 </select>
             </div>
-
             <div class="form-group" id="blocoParcelasOS" style="display: none;">
                 <label for="parcelasOS">Vezes (Parcelamento)</label>
                 <select id="parcelasOS">
                     <option value="1x">1x (À vista)</option>
-                    <option value="2x">2x</option>
-                    <option value="3x">3x</option>
-                    <option value="4x">4x</option>
-                    <option value="5x">5x</option>
-                    <option value="6x">6x</option>
-                    <option value="7x">7x</option>
-                    <option value="8x">8x</option>
-                    <option value="9x">9x</option>
-                    <option value="10x">10x</option>
-                    <option value="11x">11x</option>
-                    <option value="12x">12x</option>
-                    <option value="13x">13x</option>
-                    <option value="14x">14x</option>
-                    <option value="15x">15x</option>
-                    <option value="16x">16x</option>
-                    <option value="17x">17x</option>
-                    <option value="18x">18x</option>
-                    <option value="19x">19x</option>
-                    <option value="20x">20x</option>
+                    <option value="2x">2x</option><option value="3x">3x</option><option value="4x">4x</option><option value="5x">5x</option><option value="6x">6x</option><option value="7x">7x</option><option value="8x">8x</option><option value="9x">9x</option><option value="10x">10x</option><option value="11x">11x</option><option value="12x">12x</option><option value="13x">13x</option><option value="14x">14x</option><option value="15x">15x</option><option value="16x">16x</option><option value="17x">17x</option><option value="18x">18x</option><option value="19x">19x</option><option value="20x">20x</option>
                 </select>
             </div>
+        </div>
+
+        <div class="form-group">
+            <label for="statusDoPedidoForm">Status do Pedido</label>
+            <select id="statusDoPedidoForm" class="status-producao" onchange="atualizarCorDoSelectStatus(this)">
+                <option value="Produção" class="status-producao">🟡 Em Produção</option>
+                <option value="Concluído" class="status-concluido">🟢 Concluído</option>
+                <option value="Cancelado" class="status-cancelado">🔴 Cancelado</option>
+            </select>
         </div>
 
         <div class="form-group">
@@ -559,51 +521,80 @@
         
         <div class="grupo-botoes-acao">
             <button type="button" onclick="processarEBaixarNota('entrada')">ENVIAR / BAIXAR</button>
+            <button type="button" class="btn-nuvem-salvar" onclick="salvarDadosNaNuvem('entrada')">☁️ SALVAR NA NUVEM</button>
         </div>
     </div>
 
-    <!-- AREA UNIFICADA DO MODELO DE NOTA A6 (ZONA SEGURA) -->
-    <div id="bloco-nota-a6">
-        <div class="nota-header">
-            <div class="nota-titulo">ARTSCREEN CORURIPE</div>
-            <div class="nota-sub" id="tipoNotaA6">FICHA</div>
+    <div class="container" id="tela-historico">
+        <h2>☁️ Banco de Dados em Nuvem</h2>
+        <p>Lista de pedidos e orçamentos integrados em tempo real na sua planilha Google.</p>
+        
+        <div class="busca-container">
+            <input type="text" id="campoBuscaNuvem" class="input-busca" placeholder="🔍 Buscar por código, nome do cliente ou data..." oninput="filtrarTabelaHistoricoLocal()">
         </div>
-        <div class="nota-secao" id="dadosGeraisNotaA6"></div>
-        <div class="nota-linha-divisoria"></div>
-        <table class="nota-tabela">
+
+        <button type="button" class="btn-add-item" onclick="puxarDadosDaNuvem()">🔄 Atualizar Lista</button>
+        
+        <table class="tabela-historico">
             <thead>
                 <tr>
-                    <th style="width: 15%;">Qtd</th>
-                    <th style="width: 60%;">Descrição</th>
-                    <th style="width: 25%; text-align: right;">Total</th>
+                    <th>Código</th>
+                    <th>Tipo</th>
+                    <th>Cliente</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
-            <tbody id="itensNotaA6"></tbody>
+            <tbody id="corpoTabelaNuvem">
+                <tr><td colspan="6">Clique em atualizar para carregar os registros...</td></tr>
+            </tbody>
         </table>
-        <div class="nota-linha-divisoria"></div>
-        <div class="nota-financeiro-direita" id="financeiroNotaA6"></div>
-        <div id="blocoObsNotaA6" style="display:none;">
+    </div>
+
+    <div id="bloco-nota-a6-container" style="position: absolute; left: -9999px; top: 0; width: 395px;">
+        <div id="bloco-nota-a6" style="position: static; left: 0; top: 0; display: block;">
+            <div class="nota-header">
+                <div class="nota-titulo">ARTSCREEN CORURIPE</div>
+                <div class="nota-sub" id="tipoNotaA6">FICHA</div>
+            </div>
+            <div class="nota-secao" id="dadosGeraisNotaA6"></div>
             <div class="nota-linha-divisoria"></div>
-            <div class="nota-secao" style="font-size: 11px;" id="obsNotaA6"></div>
-        </div>
-        
-        <div class="nota-rodape">
-            CNPJ: 25.974.730/0001-14<br>
-            (82) 99628-4867 | @ARTSCREENCORURIPE<br>
-            Av. Floriano Peixoto, 138, Centro, Coruripe - AL
+            <table class="nota-tabela">
+                <thead>
+                    <tr>
+                        <th style="width: 15%;">Qtd</th>
+                        <th style="width: 60%;">Descrição</th>
+                        <th style="width: 25%; text-align: right;">Total</th>
+                    </tr>
+                </thead>
+                <tbody id="itensNotaA6"></tbody>
+            </table>
+            <div class="nota-linha-divisoria"></div>
+            <div class="nota-financeiro-direita" id="financeiroNotaA6"></div>
+            <div id="blocoObsNotaA6" style="display:none;">
+                <div class="nota-linha-divisoria"></div>
+                <div class="nota-secao" style="font-size: 11px;" id="obsNotaA6"></div>
+            </div>
+            <div class="nota-rodape">
+                CNPJ: 25.974.730/0001-14<br>
+                (82) 99628-4867 | @ARTSCREENCORURIPE<br>
+                Av. Floriano Peixoto, 138, Centro, Coruripe - AL
+            </div>
         </div>
     </div>
 
     <script>
-        // REQUISITO: Unificação completa da numeração sequencial em um único motor
+        const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbyjE_DML-7o-Y_ZDReD7h5sUuBugTIq32fYsPwzD-ElwLT73JTp8Ji8_RY9txuMUa0u/exec";
+
         let numSequencialUnificado = parseInt(localStorage.getItem('numSequencialUnificado'), 10);
         if (isNaN(numSequencialUnificado) || numSequencialUnificado < 100) {
             numSequencialUnificado = 100;
             localStorage.setItem('numSequencialUnificado', '100');
         }
 
-        // Variável de controle para congelar o ID durante a conversão estável
         let codigoEmConversaoFixado = null;
+        let cacheNuvemGlobal = [];
 
         const conteudoItensOrcamento = document.getElementById('conteudoItensOrcamento');
         const conteudoItensOS = document.getElementById('conteudoItensOS');
@@ -612,6 +603,7 @@
         adicionarLineDefault('entrada');
         atualizarCodigosVisiveisDinamicos();
 
+        // REQUISITO: Alternador dinâmico de abas com destaque amarelo
         function alternarPainel(painel) {
             document.querySelectorAll('.btn-sistema').forEach(b => b.classList.remove('ativo'));
             document.querySelectorAll('.container').forEach(c => c.classList.remove('ativo'));
@@ -619,11 +611,24 @@
             if (painel === 'orcamento') {
                 document.querySelectorAll('.btn-sistema')[0].classList.add('ativo');
                 document.getElementById('tela-orcamento').classList.add('ativo');
-            } else {
+            } else if (painel === 'entrada') {
                 document.querySelectorAll('.btn-sistema')[1].classList.add('ativo');
                 document.getElementById('tela-entrada').classList.add('ativo');
+            } else if (painel === 'historico') {
+                document.querySelectorAll('.btn-sistema')[3].classList.add('ativo');
+                document.getElementById('tela-historico').classList.add('ativo');
+                puxarDadosDaNuvem();
             }
             atualizarCodigosVisiveisDinamicos();
+        }
+
+        // Altera a cor do campo de status dinamicamente no formulário
+        function atualizarCorDoSelectStatus(selectElement) {
+            const val = selectElement.value;
+            selectElement.className = ""; 
+            if(val === "Produção") selectElement.classList.add("status-producao");
+            if(val === "Concluído") selectElement.classList.add("status-concluido");
+            if(val === "Cancelado") selectElement.classList.add("status-cancelado");
         }
 
         function gerarTextoCodigo(prefixo, numero) {
@@ -636,8 +641,6 @@
 
         function atualizarCodigosVisiveisDinamicos() {
             const numAtual = parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100;
-            
-            // Mostra o próximo número da fila sequencial para ambos os lados
             document.getElementById('exibicaoCodigoOrcamento').innerText = `Nº ORÇAMENTO: #${gerarTextoCodigo('ART', numAtual)}`;
             
             if (codigoEmConversaoFixado !== null) {
@@ -657,9 +660,7 @@
             document.getElementById('blocoParcelasOS').style.display = (forma === 'Crédito') ? 'block' : 'none';
         }
 
-        function adicionarLineDefault(tipo) {
-            adicionarLinhaGenerico(tipo);
-        }
+        function adicionarLineDefault(tipo) { adicionarLinhaGenerico(tipo); }
 
         function adicionarLinhaGenerico(tipo) {
             const container = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
@@ -684,109 +685,357 @@
         }
 
         function atualizarSubtotalLinha(input, tipo) {
-            const static_linha = input.closest('.item-linha');
-            const qtd = parseFloat(static_linha.querySelector('.ipt-qtd').value) || 0;
-            const valor = parseFloat(static_linha.querySelector('.ipt-valor').value) || 0;
-            static_linha.querySelector('.col-total').innerText = 'Total: ' + formatarMoeda(qtd * valor);
+            const linha = input.closest('.item-linha');
+            const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
+            const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
+            linha.querySelector('.col-total').innerText = 'Total: ' + formatarMoeda(qtd * valor);
             calcularGenerico(tipo);
         }
 
         function calcularGenerico(tipo) {
             const container = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
             const painel = (tipo === 'orcamento') ? document.getElementById('painelTotaisOrcamento') : document.getElementById('painelTotaisOS');
-            const toggle_descontoInput = (tipo === 'orcamento') ? document.getElementById('desconto') : document.getElementById('descontoOS');
+            const desInput = (tipo === 'orcamento') ? document.getElementById('desconto') : document.getElementById('descontoOS');
 
             let subtotal = 0;
-            container.querySelectorAll('.item-linha').forEach(linha => {
-                const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
-                const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
-                subtotal += (qtd * valor);
+            container.querySelectorAll('.item-linha').forEach(l => {
+                const q = parseFloat(l.querySelector('.ipt-qtd').value) || 0;
+                const v = parseFloat(l.querySelector('.ipt-valor').value) || 0;
+                subtotal += (q * v);
             });
 
-            const desconto = parseFloat(toggle_descontoInput.value) || 0;
-            const totalGeral = Math.max(0, subtotal - desconto);
+            const desc = parseFloat(desInput.value) || 0;
+            const totalGeral = Math.max(0, subtotal - desc);
 
             if (tipo === 'orcamento') {
-                let html = '';
-                if (desconto > 0) {
-                    html += `<div>VALOR SEM DESCONTO: ${formatarMoeda(subtotal)}</div>`;
-                    html += `<div>DESCONTO: ${formatarMoeda(desconto)}</div>`;
-                    html += `<div class="total-destaque">TOTAL COM DESCONTO: ${formatarMoeda(totalGeral)}</div>`;
-                } else {
-                    html += `<div class="total-destaque">TOTAL: ${formatarMoeda(subtotal)}</div>`;
-                }
-                painel.innerHTML = html;
+                painel.innerHTML = desc > 0 
+                    ? `<div>VALOR SEM DESCONTO: ${formatarMoeda(subtotal)}</div><div>DESCONTO: ${formatarMoeda(desc)}</div><div class="total-destaque">TOTAL COM DESCONTO: ${formatarMoeda(totalGeral)}</div>`
+                    : `<div class="total-destaque">TOTAL: ${formatarMoeda(subtotal)}</div>`;
             } else {
-                const valorEntrada = parseFloat(document.getElementById('valorEntradaOS').value) || 0;
-                const restante = Math.max(0, totalGeral - valorEntrada);
-
+                const entrada = parseFloat(document.getElementById('valorEntradaOS').value) || 0;
+                const rest = Math.max(0, totalGeral - entrada);
                 let html = `<div>VALOR TOTAL DOS SERVIÇOS: ${formatarMoeda(subtotal)}</div>`;
-                if (desconto > 0) html += `<div>DESCONTO CONCEDIDO: ${formatarMoeda(desconto)}</div>`;
-                html += `<div>VALOR COBRADO: ${formatarMoeda(totalGeral)}</div>`;
-                html += `<div style="color: green; font-weight: bold;">VALOR PAGO (ENTRADA): ${formatarMoeda(valorEntrada)}</div>`;
-                
-                if (restante > 0) {
-                    html += `<div class="total-destaque" style="color: #cc0000;">VALOR RESTANTE A PAGAR: ${formatarMoeda(restante)}</div>`;
-                } else {
-                    html += `<div class="total-destaque" style="color: blue;">SITUAÇÃO: VALOR COMPLETO PAGO!</div>`;
-                }
+                if (desc > 0) html += `<div>DESCONTO CONCEDIDO: ${formatarMoeda(desc)}</div>`;
+                html += `<div>VALOR COBRADO: ${formatarMoeda(totalGeral)}</div><div style="color: green; font-weight: bold;">VALOR PAGO (ENTRADA): ${formatarMoeda(entrada)}</div>`;
+                html += rest > 0 
+                    ? `<div class="total-destaque" style="color: #cc0000;">VALOR RESTANTE A PAGAR: ${formatarMoeda(rest)}</div>`
+                    : `<div class="total-destaque" style="color: blue;">SITUAÇÃO: VALOR COMPLETO PAGO!</div>`;
                 painel.innerHTML = html;
             }
         }
 
-        // REQUISITO: Clonagem absoluta e inteligente de dados entre abas
         function converterOrcamentoEmPedido() {
             const cliente = document.getElementById('cliente').value.trim();
-            if (!cliente) {
-                alert("Por favor, preencha pelo menos o nome do cliente antes de converter.");
-                return;
-            }
+            if (!cliente) { alert("Preencha o nome do cliente antes de converter."); return; }
 
-            // Fixa o ID numérico atual para travar o mesmo número no pedido
             codigoEmConversaoFixado = parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100;
-
-            // Transfere campos diretos
             document.getElementById('clienteOS').value = cliente;
             document.getElementById('descontoOS').value = document.getElementById('desconto').value;
             document.getElementById('dataEntregaOS').value = document.getElementById('dataEntregaOrcamento').value;
             document.getElementById('obsOS').value = document.getElementById('obsOrcamento').value;
             
-            // Transfere pagamentos
-            const formaPgto = document.getElementById('formaPagamentoOrcamento').value;
-            document.getElementById('formaPagamentoOS').value = formaPgto;
+            const forma = document.getElementById('formaPagamentoOrcamento').value;
+            document.getElementById('formaPagamentoOS').value = forma;
             verificarFormaPagamentoOS();
-            if (formaPgto === 'Crédito') {
-                document.getElementById('parcelasOS').value = document.getElementById('parcelasOrcamento').value;
-            }
+            if (forma === 'Crédito') document.getElementById('parcelasOS').value = document.getElementById('parcelasOrcamento').value;
 
-            // Clona a grade de itens dinâmicos
             conteudoItensOS.innerHTML = '';
-            conteudoItensOrcamento.querySelectorAll('.item-linha').forEach(linhaOrigem => {
-                const desc = linhaOrigem.querySelector('.ipt-desc').value;
-                const qtd = linhaOrigem.querySelector('.ipt-qtd').value;
-                const valor = linhaOrigem.querySelector('.ipt-valor').value;
+            conteudoItensOrcamento.querySelectorAll('.item-linha').forEach(lo => {
+                const d = lo.querySelector('.ipt-desc').value;
+                const q = lo.querySelector('.ipt-qtd').value;
+                const v = lo.querySelector('.ipt-valor').value;
 
-                const novaLinha = document.createElement('div');
-                novaLinha.className = 'item-linha';
-                novaLinha.innerHTML = `
-                    <div class="col-desc"><input type="text" class="ipt-desc" value="${desc}" placeholder="Serviço / Produto"></div>
-                    <div class="col-qtd"><input type="number" class="ipt-qtd" value="${qtd}" placeholder="Qtd" min="1" oninput="atualizarSubtotalLinha(this, 'entrada')"></div>
-                    <div class="col-valor"><input type="number" class="ipt-valor" value="${valor}" placeholder="Valor Unit." min="0" step="any" oninput="atualizarSubtotalLinha(this, 'entrada')"></div>
+                const nl = document.createElement('div');
+                nl.className = 'item-linha';
+                nl.innerHTML = `
+                    <div class="col-desc"><input type="text" class="ipt-desc" value="${d}"></div>
+                    <div class="col-qtd"><input type="number" class="ipt-qtd" value="${q}" oninput="atualizarSubtotalLinha(this, 'entrada')"></div>
+                    <div class="col-valor"><input type="number" class="ipt-valor" value="${v}" oninput="atualizarSubtotalLinha(this, 'entrada')"></div>
                     <div class="linha-mobile-total-remover">
                         <div class="col-total">Total: R$ 0,00</div>
                         <div class="col-acao"><button type="button" class="btn-remover-linha" onclick="removerLinhaGenerico(this, 'entrada')">❌</button></div>
                     </div>
                 `;
-                conteudoItensOS.appendChild(novaLinha);
-                
-                // Recalcula o subtotal da linha recém-criada
-                const iptQtd = novaLinha.querySelector('.ipt-qtd');
-                atualizarSubtotalLinha(iptQtd, 'entrada');
+                conteudoItensOS.appendChild(nl);
+                atualizarSubtotalLinha(nl.querySelector('.ipt-qtd'), 'entrada');
             });
 
-            // Direciona o foco do usuário para o painel de pedidos
             alternarPainel('entrada');
-            alert(`Orçamento convertido! Código #${gerarTextoCodigo('ART', codigoEmConversaoFixado)} fixado para este Pedido.`);
+            alert(`Convertido! Código #${gerarTextoCodigo('ART', codigoEmConversaoFixado)} fixado.`);
+        }
+
+        function extrairPacoteDadosDoFormulario(tipo) {
+            const agora = new Date();
+            const dataHoraStr = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+            
+            let numPuro = (tipo === 'orcamento') 
+                ? (parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100)
+                : (codigoEmConversaoFixado !== null ? codigoEmConversaoFixado : (parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100));
+
+            let containerItens = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
+            let listaItensTexto = [];
+            let subtotal = 0;
+
+            containerItens.querySelectorAll('.item-linha').forEach(l => {
+                const q = parseFloat(l.querySelector('.ipt-qtd').value) || 0;
+                const d = l.querySelector('.ipt-desc').value.trim() || "Item";
+                const v = l.querySelector('.ipt-valor').value || 0;
+                if(q > 0) {
+                    subtotal += (q * v);
+                    listaItensTexto.push(`${q}x ${d} (${formatarMoeda(q*v)})`);
+                }
+            });
+
+            if (tipo === 'orcamento') {
+                const desc = parseFloat(document.getElementById('desconto').value) || 0;
+                return {
+                    acao: "salvar", tipo: "Orçamento", codigo: gerarTextoCodigo('ART', numPuro),
+                    dataHora: dataHoraStr, cliente: document.getElementById('cliente').value.trim() || "Não informado",
+                    contato: "Não aplicável", itens: listaItensTexto.join(' | '), desconto: desc, entrada: 0,
+                    formaPagamento: document.getElementById('formaPagamentoOrcamento').value + (document.getElementById('formaPagamentoOrcamento').value === 'Crédito' ? ` (${document.getElementById('parcelasOrcamento').value})` : ''),
+                    previsaoEntrega: document.getElementById('dataEntregaOrcamento').value || "Não informada",
+                    observacoes: document.getElementById('obsOrcamento').value.trim() + (document.getElementById('validade30Dias').checked ? " [Validade 30 dias]" : ""),
+                    status: "Aberto", totalGeral: Math.max(0, subtotal - desc)
+                };
+            } else {
+                const desc = parseFloat(document.getElementById('descontoOS').value) || 0;
+                return {
+                    acao: "salvar", tipo: "Pedido", codigo: gerarTextoCodigo('ART', numPuro),
+                    dataHora: dataHoraStr, cliente: document.getElementById('clienteOS').value.trim() || "Não informado",
+                    contato: document.getElementById('whatsappOS').value.trim() || "Não informado", itens: listaItensTexto.join(' | '),
+                    desconto: desc, entrada: parseFloat(document.getElementById('valorEntradaOS').value) || 0,
+                    formaPagamento: document.getElementById('formaPagamentoOS').value + (document.getElementById('formaPagamentoOS').value === 'Crédito' ? ` (${document.getElementById('parcelasOS').value})` : ''),
+                    previsaoEntrega: document.getElementById('dataEntregaOS').value || "Não informada",
+                    observacoes: document.getElementById('obsOS').value.trim(), 
+                    status: document.getElementById('statusDoPedidoForm').value, // Envia o status dinâmico do form
+                    totalGeral: Math.max(0, subtotal - desc)
+                };
+            }
+        }
+
+        function salvarDadosNaNuvem(tipo) {
+            const pacote = extrairPacoteDadosDoFormulario(tipo);
+            if (!pacote.cliente || pacote.cliente === "Não informado") { alert("Por favor, digite o nome do cliente antes de salvar."); return; }
+
+            alert("Salvando na nuvem... Aguarde confirmação.");
+
+            fetch(GOOGLE_API_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(pacote)
+            }).then(() => {
+                alert(`Sucesso! Código ${pacote.codigo} integrado na planilha.`);
+                if (tipo === 'entrada') codigoEmConversaoFixado = null;
+            }).catch(err => {
+                alert("Erro ao conectar com a nuvem.");
+            });
+        }
+
+        // CORREÇÃO: Função de Download Revisada e Segura
+        function processarEBaixarNota(tipo) {
+            montarEstruturaNotaA6HTML(tipo);
+            const alvo = document.getElementById('bloco-nota-a6');
+            const numPuroSalvo = (tipo === 'orcamento') ? parseInt(localStorage.getItem('numSequencialUnificado'), 10) : (codigoEmConversaoFixado !== null ? codigoEmConversaoFixado : parseInt(localStorage.getItem('numSequencialUnificado'), 10));
+            
+            const numTextoFormatado = gerarTextoCodigo('ART', numPuroSalvo);
+            const agora = new Date();
+            const nomeDoArquivoFinal = `${tipo === 'orcamento' ? 'ORCAMENTO' : 'PEDIDO'}_${numTextoFormatado}_${String(agora.getDate()).padStart(2,'0')}_${String(agora.getMonth()+1).padStart(2,'0')}_${agora.getFullYear()}`;
+
+            // Executa a foto diretamente sem alterar posições de exibição
+            setTimeout(() => {
+                html2canvas(alvo, { 
+                    scale: 2, 
+                    logging: false, 
+                    useCORS: true, 
+                    allowTaint: true 
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `${nomeDoArquivoFinal}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+
+                    if (tipo === 'entrada' && codigoEmConversaoFixado !== null) {
+                        codigoEmConversaoFixado = null;
+                    } else {
+                        localStorage.setItem('numSequencialUnificado', String(numPuroSalvo + 1));
+                    }
+                    atualizarCodigosVisiveisDinamicos();
+                }).catch((err) => {
+                    console.error(err);
+                    alert('Erro na captura da imagem. Tente atualizar a página.');
+                });
+            }, 100);
+        }
+
+        function puxarDadosDaNuvem() {
+            const corpo = document.getElementById('corpoTabelaNuvem');
+            corpo.innerHTML = `<tr><td colspan="6"> Surrey... 🔄 Consultando banco de dados na nuvem, aguarde...</td></tr>`;
+
+            fetch(GOOGLE_API_URL)
+                .then(res => res.json())
+                .then(dados => {
+                    cacheNuvemGlobal = dados; 
+                    renderizarTabelaHistoricoFiltrada(dados);
+                }).catch(err => {
+                    corpo.innerHTML = `<tr><td colspan="6" style="color:red">Erro ao carregar dados da nuvem.</td></tr>`;
+                });
+        }
+
+        // Renderiza os dados do histórico sem ocultar nada, preservando duplicados
+        function renderizarTabelaHistoricoFiltrada(listaPedidos) {
+            const corpo = document.getElementById('corpoTabelaNuvem');
+            corpo.innerHTML = "";
+
+            // REQUISITO: Exibe todos do mesmo jeito sem dar conflito se houver códigos iguais (Ordem decrescente de lançamento)
+            const itensFiltrados = listaPedidos.filter(p => p.status !== "Cancelado").reverse();
+
+            if(itensFiltrados.length === 0) {
+                corpo.innerHTML = `<tr><td colspan="6">Nenhum registro encontrado.</td></tr>`;
+                return;
+            }
+
+            itensFiltrados.forEach(p => {
+                let statusCor = "orange";
+                if(p.status === "Produção") statusCor = "#b58900";
+                if(p.status === "Concluído") statusCor = "green";
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${p.codigo}</b></td>
+                    <td>${p.tipo}</td>
+                    <td>${p.cliente}</td>
+                    <td>${formatarMoeda(p.totalGeral)}</td>
+                    <td><span style="color:${statusCor}; font-weight:bold">${p.status}</span></td>
+                    <td>
+                        <button class="btn-tabela btn-tab-editar" onclick="reabrirEEditarRegistroDaNuvem('${p.codigo}', '${p.dataHora}')">✏️ Editar</button>
+                        <button class="btn-tabela btn-tab-excluir" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')">🗑️ Excluir</button>
+                    </td>
+                `;
+                corpo.appendChild(tr);
+            });
+        }
+
+        // REQUISITO: Filtro inteligente local por Código, Nome ou Data
+        function filtrarTabelaHistoricoLocal() {
+            const termo = document.getElementById('campoBuscaNuvem').value.toLowerCase().trim();
+            if(!termo) {
+                renderizarTabelaHistoricoFiltrada(cacheNuvemGlobal);
+                return;
+            }
+
+            const filtrados = cacheNuvemGlobal.filter(p => {
+                const cod = p.codigo.toLowerCase();
+                const cli = p.cliente.toLowerCase();
+                const data = p.dataHora.toLowerCase();
+                return cod.includes(termo) || cli.includes(termo) || data.includes(termo);
+            });
+
+            renderizarTabelaHistoricoFiltrada(filtrados);
+        }
+
+        // Reabre o registro buscando pelo código e carimbo de data/hora (anti-conflito para duplicados)
+        function reabrirEEditarRegistroDaNuvem(codigoBuscado, dataHoraChave) {
+            const item = cacheNuvemGlobal.find(p => p.codigo === codigoBuscado && p.dataHora === dataHoraChave);
+            if(!item) return;
+
+            alert(`Reabrindo e carregando ${item.tipo} #${item.codigo}...`);
+
+            if (item.tipo === "Orçamento") {
+                alternarPainel('orcamento');
+                document.getElementById('exibicaoCodigoOrcamento').innerText = `Nº ORÇAMENTO: #${item.codigo}`;
+                document.getElementById('cliente').value = item.cliente;
+                document.getElementById('desconto').value = item.desconto;
+                document.getElementById('obsOrcamento').value = item.observacoes.replace(" [Validade 30 dias]", "");
+                document.getElementById('validade30Dias').checked = item.observacoes.includes("[Validade 30 dias]");
+                if(item.previsaoEntrega && item.previsaoEntrega !== "Não informada") document.getElementById('dataEntregaOrcamento').value = item.previsaoEntrega;
+
+                conteudoItensOrcamento.innerHTML = "";
+                reconstruirGradeItensDoBanco(item.itens, 'orcamento');
+            } else {
+                alternarPainel('entrada');
+                codigoEmConversaoFixado = parseInt(item.codigo.replace('ART', ''), 10);
+                document.getElementById('exibicaoCodigoOS').innerText = `Nº PEDIDO: #${item.codigo}`;
+                document.getElementById('clienteOS').value = item.cliente;
+                document.getElementById('whatsappOS').value = item.contato === "Não informado" ? "" : item.contato;
+                document.getElementById('descontoOS').value = item.desconto;
+                document.getElementById('valorEntradaOS').value = item.entrada;
+                document.getElementById('obsOS').value = item.observacoes;
+                if(item.previsaoEntrega && item.previsaoEntrega !== "Não informada") document.getElementById('dataEntregaOS').value = item.previsaoEntrega;
+
+                // Restaura o Status do banco de dados e atualiza a cor dele no form
+                document.getElementById('statusDoPedidoForm').value = item.status || "Produção";
+                atualizarCorDoSelectStatus(document.getElementById('statusDoPedidoForm'));
+
+                let formaPura = item.formaPagamento;
+                if(formaPura.includes('Crédito')) {
+                    document.getElementById('formaPagamentoOS').value = 'Crédito';
+                    verificarFormaPagamentoOS();
+                    const parcelaExtraida = formaPura.match(/\(([^)]+)\)/);
+                    if(parcelaExtraida) document.getElementById('parcelasOS').value = parcelaExtraida[1];
+                } else {
+                    document.getElementById('formaPagamentoOS').value = formaPura;
+                    verificarFormaPagamentoOS();
+                }
+
+                conteudoItensOS.innerHTML = "";
+                reconstruirGradeItensDoBanco(item.itens, 'entrada');
+            }
+        }
+
+        function reconstruirGradeItensDoBanco(textoItens, tipo) {
+            const container = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
+            if(!textoItens) { adicionarLineDefault(tipo); return; }
+
+            const partes = textoItens.split(' | ');
+            partes.forEach(pTexto => {
+                const idxX = pTexto.indexOf('x ');
+                const idxVal = pTexto.lastIndexOf(' (R$ ');
+                
+                if(idxX !== -1) {
+                    const qtd = pTexto.substring(0, idxX);
+                    let desc = idxVal !== -1 ? pTexto.substring(idxX + 2, idxVal) : pTexto.substring(idxX + 2);
+
+                    const linha = document.createElement('div');
+                    linha.className = 'item-linha';
+                    linha.innerHTML = `
+                        <div class="col-desc"><input type="text" class="ipt-desc" value="${desc}"></div>
+                        <div class="col-qtd"><input type="number" class="ipt-qtd" value="${qtd}" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
+                        <div class="col-valor"><input type="number" class="ipt-valor" value="0" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
+                        <div class="linha-mobile-total-remover">
+                            <div class="col-total">Total: R$ 0,00</div>
+                            <div class="col-acao"><button type="button" class="btn-remover-linha" onclick="removerLinhaGenerico(this, '${tipo}')">❌</button></div>
+                        </div>
+                    `;
+                    container.appendChild(linha);
+                    atualizarSubtotalLinha(linha.querySelector('.ipt-qtd'), tipo);
+                }
+            });
+            if(container.innerHTML === "") adicionarLineDefault(tipo);
+        }
+
+        function cancelarRegistroNaNuvem(codigoParaCancelar, dataHoraChave) {
+            if(!confirm(`Tem certeza que deseja ocultar e cancelar o registro ${codigoParaCancelar}?`)) return;
+
+            const item = cacheNuvemGlobal.find(p => p.codigo === codigoParaCancelar && p.dataHora === dataHoraChave);
+            if(!item) return;
+
+            const pacoteCancelamento = {
+                acao: "salvar", tipo: item.tipo, codigo: item.codigo, dataHora: item.dataHora,
+                cliente: item.cliente, contato: item.contato, itens: item.itens, desconto: item.desconto,
+                entrada: item.entrada, formaPagamento: item.formaPagamento, previsaoEntrega: item.previsaoEntrega,
+                observacoes: item.observacoes, status: "Cancelado", totalGeral: item.totalGeral
+            };
+
+            fetch(GOOGLE_API_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(pacoteCancelamento)
+            }).then(() => {
+                alert("Registro cancelado!");
+                puxarDadosDaNuvem();
+            });
         }
 
         function montarEstruturaNotaA6HTML(tipo) {
@@ -809,19 +1058,9 @@
                 const obsOrc = document.getElementById('obsOrcamento').value.trim();
 
                 let prazoOrcamento = document.getElementById('dataEntregaOrcamento').value;
-                if(prazoOrcamento) {
-                    const [ano, mes, dia] = prazoOrcamento.split('-');
-                    prazoOrcamento = `${dia}/${mes}/${ano}`;
-                } else {
-                    prazoOrcamento = "Não definido";
-                }
+                prazoOrcamento = prazoOrcamento ? prazoOrcamento.split('-').reverse().join('/') : "Não definido";
 
-                htmlGerais = `
-                    <b>Nº ORÇAMENTO:</b> #${gerarTextoCodigo('ART', numAtual)}<br>
-                    <b>Data:</b> ${dataStr} às ${horaStr}<br>
-                    <b>Entrega:</b> ${prazoOrcamento}<br>
-                    <b>Cliente:</b> ${cliente}
-                `;
+                htmlGerais = `<b>Nº ORÇAMENTO:</b> #${gerarTextoCodigo('ART', numAtual)}<br><b>Data:</b> ${dataStr} às ${horaStr}<br><b>Entrega:</b> ${prazoOrcamento}<br><b>Cliente:</b> ${cliente}`;
 
                 let subtotal = 0;
                 conteudoItensOrcamento.querySelectorAll('.item-linha').forEach(linha => {
@@ -835,17 +1074,13 @@
                 });
 
                 const totalGeral = Math.max(0, subtotal - desconto);
-                let detalhePagto = formaPagto;
-                if(formaPagto === 'Crédito') detalhePagto += ` (${parcelas})`;
+                let detalhePagto = formaPagto === 'Crédito' ? `${formaPagto} (${parcelas})` : formaPagto;
 
                 htmlFinanceiro = `Subtotal: ${formatarMoeda(subtotal)}<br>`;
                 if(desconto > 0) htmlFinanceiro += `Desconto: - ${formatarMoeda(desconto)}<br>`;
-                htmlFinanceiro += `Total Geral: ${formatarMoeda(totalGeral)}<br>`;
-                htmlFinanceiro += `Forma Pagto: ${detalhePagto}`;
+                htmlFinanceiro += `Total Geral: ${formatarMoeda(totalGeral)}<br>Forma Pagto: ${detalhePagto}`;
                 
-                // Consolida observações estruturadas na foto do Orçamento
-                let textoObsFinal = "";
-                if (obsOrc) textoObsFinal += `<b>OBSERVAÇÕES:</b><br>${obsOrc}<br>`;
+                let textoObsFinal = obsOrc ? `<b>OBSERVAÇÕES:</b><br>${obsOrc}<br>` : "";
                 if (checkedValidade) textoObsFinal += `${obsOrc ? '<br>' : ''}Este orçamento possui validade de 30 dias.`;
 
                 if (textoObsFinal !== "") {
@@ -864,25 +1099,13 @@
                 const formaPagto = document.getElementById('formaPagamentoOS').value;
                 const parcelas = document.getElementById('parcelasOS').value;
                 const obs = document.getElementById('obsOS').value.trim() || "Nenhuma";
+                const statusOS = document.getElementById('statusDoPedidoForm').value;
                 
-                // Determina o ID usado na impressão gráfica (congelado ou novo da fila)
                 const numOS = (codigoEmConversaoFixado !== null) ? codigoEmConversaoFixado : (parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100);
-                
                 let dataEntrega = document.getElementById('dataEntregaOS').value;
-                if(dataEntrega) {
-                    const [ano, mes, dia] = dataEntrega.split('-');
-                    dataEntrega = `${dia}/${mes}/${ano}`;
-                } else {
-                    dataEntrega = "Não definido";
-                }
+                dataEntrega = dataEntrega ? dataEntrega.split('-').reverse().join('/') : "Não definido";
 
-                htmlGerais = `
-                    <b>Nº PEDIDO:</b> #${gerarTextoCodigo('ART', numOS)}<br>
-                    <b>Entrada:</b> ${dataStr} às ${horaStr}<br>
-                    <b>Entrega:</b> ${dataEntrega}<br>
-                    <b>Cliente:</b> ${cliente}<br>
-                    <b>Contato:</b> ${whatsapp}
-                `;
+                htmlGerais = `<b>Nº PEDIDO:</b> #${gerarTextoCodigo('ART', numOS)}<br><b>Entrada:</b> ${dataStr} às ${horaStr}<br><b>Entrega:</b> ${dataEntrega}<br><b>Cliente:</b> ${cliente}<br><b>Contato:</b> ${whatsapp}`;
 
                 let subtotal = 0;
                 conteudoItensOS.querySelectorAll('.item-linha').forEach(linha => {
@@ -897,85 +1120,21 @@
 
                 const totalGeral = Math.max(0, subtotal - desconto);
                 const restante = Math.max(0, totalGeral - valorEntrada);
-                let detalhePagto = formaPagto;
-                if(formaPagto === 'Crédito') detalhePagto += ` (${parcelas})`;
+                let detalhePagto = formaPagto === 'Crédito' ? `${formaPagto} (${parcelas})` : formaPagto;
 
                 htmlFinanceiro = `Subtotal: ${formatarMoeda(subtotal)}<br>`;
                 if(desconto > 0) htmlFinanceiro += `Desconto: - ${formatarMoeda(desconto)}<br>`;
-                htmlFinanceiro += `Total Líquido: ${formatarMoeda(totalGeral)}<br>`;
-                htmlFinanceiro += `Pago Entrada: ${formatarMoeda(valorEntrada)}<br>`;
-                htmlFinanceiro += `Forma Pagto: ${detalhePagto}<br>`;
-                
-                if(restante > 0) {
-                    htmlFinanceiro += `<span style="color:#cc0000">Restante: ${formatarMoeda(restante)}</span>`;
-                } else {
-                    htmlFinanceiro += `<span style="color:blue">SITUAÇÃO: PAGO</span>`;
-                }
+                htmlFinanceiro += `Total Líquido: ${formatarMoeda(totalGeral)}<br>Pago Entrada: ${formatarMoeda(valorEntrada)}<br>Forma Pagto: ${detalhePagto}<br>`;
+                htmlFinanceiro += restante > 0 ? `<span style="color:#cc0000">Restante: ${formatarMoeda(restante)}</span>` : `<span style="color:blue">SITUAÇÃO: PAGO</span>`;
 
                 document.getElementById('blocoObsNotaA6').style.display = 'block';
-                document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${obs}`;
+                document.getElementById('obsNotaA6').innerHTML = `<b>STATUS:</b> ${statusOS}<br><br><b>OBSERVAÇÕES:</b><br>${obs}`;
             }
 
             if(htmlItens === '') htmlItens = '<tr><td colspan="3">Nenhum item lançado</td></tr>';
-            
             document.getElementById('dadosGeraisNotaA6').innerHTML = htmlGerais;
             document.getElementById('itensNotaA6').innerHTML = htmlItens;
             document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
-        }
-
-        function processarEBaixarNota(tipo) {
-            montarEstruturaNotaA6HTML(tipo);
-            
-            const alvo = document.getElementById('bloco-nota-a6');
-            
-            // Define qual id numérico fixar no nome do arquivo baixado
-            let numPuroUtilizado;
-            if (tipo === 'entrada' && codigoEmConversaoFixado !== null) {
-                numPuroUtilizado = codigoEmConversaoFixado;
-            } else {
-                numPuroUtilizado = parseInt(localStorage.getItem('numSequencialUnificado'), 10);
-            }
-            
-            const numTextoFormatado = gerarTextoCodigo('ART', numPuroUtilizado);
-            
-            const agora = new Date();
-            const diaStr = String(agora.getDate()).padStart(2, '0');
-            const mesStr = String(agora.getMonth() + 1).padStart(2, '0');
-            const anoStr = agora.getFullYear();
-            const dataFinalNome = `${diaStr}_${mesStr}_${anoStr}`;
-
-            const nomeDoArquivoFinal = (tipo === 'orcamento') 
-                ? `ORCAMENTO_${numTextoFormatado}_${dataFinalNome}` 
-                : `PEDIDO_${numTextoFormatado}_${dataFinalNome}`;
-
-            setTimeout(() => {
-                html2canvas(alvo, {
-                    scale: 2, 
-                    logging: false,
-                    useCORS: true,
-                    allowTaint: true
-                }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = `${nomeDoArquivoFinal}.png`;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-
-                    // REQUISITO: Gerencia o avanço sequencial do motor único de ID
-                    if (tipo === 'entrada' && codigoEmConversaoFixado !== null) {
-                        // Se veio de conversão, limpa a trava de ID e NÃO consome um novo número da fila
-                        codigoEmConversaoFixado = null;
-                    } else {
-                        // Orçamentos e Pedidos inéditos sobem a fila global normalmente (+1)
-                        localStorage.setItem('numSequencialUnificado', String(numPuroUtilizado + 1));
-                    }
-                    
-                    atualizarCodigosVisiveisDinamicos();
-
-                }).catch(err => {
-                    console.error("Erro na captura de imagem:", err);
-                    alert('Erro ao processar imagem. Tente atualizar a página.');
-                });
-            }, 50);
         }
 
         function limparPainelOrcamentoManual() {
@@ -990,13 +1149,15 @@
         }
 
         function limparPainelPedidoManual() {
-            codigoEmConversaoFixado = null; // Reseta travas de conversões anteriores
+            codigoEmConversaoFixado = null;
             document.getElementById('clienteOS').value = '';
             document.getElementById('whatsappOS').value = '';
             document.getElementById('descontoOS').value = '0';
             document.getElementById('valorEntradaOS').value = '0';
             document.getElementById('formaPagamentoOS').value = 'PIX';
             verificarFormaPagamentoOS();
+            document.getElementById('statusDoPedidoForm').value = 'Produção';
+            atualizarCorDoSelectStatus(document.getElementById('statusDoPedidoForm'));
             document.getElementById('dataEntregaOS').value = '';
             document.getElementById('obsOS').value = '';
             limparTodosItens('entrada');
