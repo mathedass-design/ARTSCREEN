@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARTSCREEN CORURIPE - Sistema</title>
     
-    <!-- Script essencial para transformar o HTML em Imagem PNG -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -142,9 +141,25 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 5px;
+            font-weight: bold;
         }
 
         label { font-size: 16px; color: #333; font-weight: bold; }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        .checkbox-group input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
 
         .btn-limpar-campo {
             background: none;
@@ -532,7 +547,6 @@
 </head>
 <body>
 
-    <!-- Menu Superior Padronizado -->
     <div class="menu-sistema">
         <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Orçamento</button>
         <button class="btn-sistema" onclick="alternarPainel('entrada')">Pedido</button>
@@ -540,7 +554,6 @@
         <button class="btn-sistema" onclick="alternarPainel('historico')">Histórico</button>
     </div>
 
-    <!-- PAINEL 1: ORÇAMENTOS -->
     <div class="container ativo" id="tela-orcamento">
         <div id="alertaOrcamentoUso" class="box-alerta-concorrencia"></div>
         <h1>ARTSCREEN CORURIPE</h1>
@@ -617,7 +630,6 @@
         </div>
     </div>
 
-    <!-- PAINEL 2: PEDIDO -->
     <div class="container" id="tela-entrada">
         <div id="alertaPedidoUso" class="box-alerta-concorrencia"></div>
         <h1>ARTSCREEN CORURIPE</h1>
@@ -669,7 +681,7 @@
 
         <div class="grid-financeiro">
             <div class="form-group">
-                <label for="descontoOS">Desconto (R$)</label>
+                <label forgets="descontoOS">Desconto (R$)</label>
                 <input type="number" id="descontoOS" value="0" min="0" step="any" oninput="calcularGenerico('entrada')">
             </div>
             <div class="form-group" id="blocoParcelasOS" style="display: none;">
@@ -709,7 +721,6 @@
         </div>
     </div>
 
-    <!-- PAINEL 3: HISTÓRICO DA NUVEM -->
     <div class="container" id="tela-historico">
         <div class="busca-container">
             <input type="text" id="campoBuscaNuvem" class="input-busca" placeholder="🔍 Buscar por código ou cliente..." oninput="filtrarTabelaHistoricoLocal()">
@@ -727,7 +738,6 @@
         <div id="gradeHistoricoCards" class="grade-historico-cards"></div>
     </div>
 
-    <!-- Modal Seletora de Modo de Edição -->
     <div id="modalEscolhaEdicao" class="modal-edicao" style="display: none;">
         <div class="modal-conteudo">
             <h3 style="margin-top:0; margin-bottom: 20px; font-size: 18px; text-transform: uppercase;">Como deseja prosseguir?</h3>
@@ -745,7 +755,6 @@
         </div>
     </div>
 
-    <!-- Janela Flutuante de Visualização Gráfica -->
     <div id="modalVisualizadorFichaA6" class="modal-visualizador-imagem" onclick="fecharVisualizadorFichaA6(event)">
         <div class="conteudo-visualizador-imagem">
             <h3 id="tituloVisualizadorFichaA6" style="margin-top:0; font-size:16px; text-transform:uppercase; color:#000;">Visualizar Registro</h3>
@@ -755,7 +764,6 @@
         </div>
     </div>
 
-    <!-- AREA UNIFICADA DA NOTA A6 (MOTOR GRÁFICO OCULTO) -->
     <div id="bloco-nota-a6-container" style="position: absolute; left: -9999px; top: 0; width: 395px;">
         <div id="bloco-nota-a6" style="position: static; left: 0; top: 0; display: block;">
             <div class="nota-header">
@@ -796,7 +804,6 @@
     <script>
         const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbyjE_DML-7o-Y_ZDReD7h5sUuBugTIq32fYsPwzD-ElwLT73JTp8Ji8_RY9txuMUa0u/exec";
 
-        let numSequencialUnificado = 100;
         let codigoEmConversaoFixado = null;
         let cacheNuvemGlobal = [];
         let registroEmEdicaoManualDataHora = null;
@@ -804,7 +811,6 @@
         let filtroStatusSelecionado = 'todos'; 
         let itemSelecionadoParaEdicaoModal = null; 
 
-        // REQUISITO: Forçar inicialização limpa com exatamente o PRIMEIRO ITEM gerado e visível
         window.addEventListener('DOMContentLoaded', () => {
             limparTodosItens('orcamento');
             limparTodosItens('entrada');
@@ -829,6 +835,40 @@
                     }
                 })
                 .catch(err => console.error("Falha ao puxar sequência inicial:", err));
+        }
+
+        // FUNÇÃO NOVO ORÇAMENTO
+        function limparPainelOrcamentoManual() {
+            registroEmEdicaoManualDataHora = null;
+            codigoEdicaoFixoBloqueado = null;
+            document.getElementById('cliente').value = '';
+            document.getElementById('desconto').value = '0';
+            document.getElementById('formaPagamentoOrcamento').value = 'PIX';
+            document.getElementById('dataEntregaOrcamento').value = '';
+            document.getElementById('obsOrcamento').value = '';
+            document.getElementById('validade30Dias').checked = false;
+            verificarFormaPagamentoOrcamento();
+            limparTodosItens('orcamento');
+            sincronizarProximoCodigoComANuvem();
+        }
+
+        // FUNÇÃO NOVO PEDIDO
+        function limparPainelPedidoManual() {
+            registroEmEdicaoManualDataHora = null;
+            codigoEdicaoFixoBloqueado = null;
+            codigoEmConversaoFixado = null;
+            document.getElementById('clienteOS').value = '';
+            document.getElementById('whatsappOS').value = '';
+            document.getElementById('valorEntradaOS').value = '0';
+            document.getElementById('descontoOS').value = '0';
+            document.getElementById('formaPagamentoOS').value = 'PIX';
+            document.getElementById('statusDoPedidoForm').value = 'Definir Status';
+            document.getElementById('dataEntregaOS').value = '';
+            document.getElementById('obsOS').value = '';
+            atualizarCorDoSelectStatus(document.getElementById('statusDoPedidoForm'));
+            verificarFormaPagamentoOS();
+            limparTodosItens('entrada');
+            sincronizarProximoCodigoComANuvem();
         }
 
         function alternarPainel(painel) {
@@ -972,7 +1012,6 @@
             }
         }
 
-        // REQUISITO: Ajustado conversor de orçamentos mitigando conflito de herança de escopos
         function converterOrcamentoEmPedido() {
             const cliente = document.getElementById('cliente').value.trim();
             if (!cliente) { alert("Preencha o nome do cliente antes de converter."); return; }
@@ -1155,7 +1194,6 @@
                 });
         }
 
-        // REQUISITO: Retornado o modelo original de filtragem limpa e direta
         function filtrarTabelaHistoricoLocal() {
             const termoBusca = document.getElementById('campoBuscaNuvem').value.toLowerCase().trim();
             
@@ -1297,9 +1335,14 @@
                 }
             }
 
-            if(p.observacoes && p.observacoes.trim() !== "") {
+            let textoObsFinal = p.observacoes || "";
+            if (p.tipo === "Orçamento" && textoObsFinal.includes("[Validade 30 dias]")) {
+                textoObsFinal = textoObsFinal.replace(" [Validade 30 dias]", "") + "<br><span style='color:red; font-weight:bold;'>Orçamento válido por 30 dias</span>";
+            }
+
+            if(textoObsFinal.trim() !== "") {
                 document.getElementById('blocoObsNotaA6').style.display = 'block';
-                document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${p.observacoes}`;
+                document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${textoObsFinal}`;
             } else {
                 document.getElementById('blocoObsNotaA6').style.display = 'none';
             }
@@ -1395,7 +1438,7 @@
                 document.getElementById('tipoNotaA6').innerText = "ORÇAMENTO";
                 const cliente = document.getElementById('cliente').value.trim() || "Não informado";
                 const desconto = parseFloat(document.getElementById('desconto').value) || 0;
-                const obsOrc = document.getElementById('obsOrcamento').value.trim();
+                let obsOrc = document.getElementById('obsOrcamento').value.trim();
                 let prazo = document.getElementById('dataEntregaOrcamento').value ? document.getElementById('dataEntregaOrcamento').value.split('-').reverse().join('/') : "Não definido";
 
                 htmlGerais = `<b>Nº ORÇAMENTO:</b> #${numTextoFormatado.replace('#','')}<br><b>Data:</b> ${dataStr}<br><b>Entrega:</b> ${prazo}<br><b>Cliente:</b> ${cliente}`;
@@ -1410,6 +1453,10 @@
 
                 if (desconto > 0) htmlFinanceiro += `Subtotal: ${formatarMoeda(subtotal)}<br>Desconto: -${formatarMoeda(desconto)}<br>`;
                 htmlFinanceiro += `Total Geral: ${formatarMoeda(subtotal - desconto)}<br>Forma Pagto: ${document.getElementById('formaPagamentoOrcamento').value}`;
+
+                if (document.getElementById('validade30Dias').checked) {
+                    obsOrc += (obsOrc !== "" ? "<br>" : "") + "<span style='color:red; font-weight:bold;'>Orçamento válido por 30 dias</span>";
+                }
 
                 if(obsOrc !== "") { document.getElementById('blocoObsNotaA6').style.display = 'block'; document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${obsOrc}`; }
                 else { document.getElementById('blocoObsNotaA6').style.display = 'none'; }
