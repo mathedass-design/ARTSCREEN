@@ -205,6 +205,29 @@
         .status-concluido { background-color: #d4edda !important; color: #155724 !important; font-weight: bold; }
         .status-cancelado { background-color: #f8d7da !important; color: #721c24 !important; font-weight: bold; }
 
+        /* Filtros por Botões Coloridos no Histórico */
+        .menu-status-historico {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .btn-status-filtro {
+            flex: 1;
+            padding: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            text-transform: uppercase;
+            text-align: center;
+        }
+        .btn-status-filtro.f-andamento { background-color: #fff3cd; color: #856404; border-color: #ffeeba; }
+        .btn-status-filtro.f-andamento.ativo { background-color: #ffcc00 !important; color: #000 !important; border-color: #b38f00; }
+        .btn-status-filtro.f-concluido { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .btn-status-filtro.f-concluido.ativo { background-color: #28a745 !important; color: #fff !important; border-color: #1e7e34; }
+        .btn-status-filtro.f-cancelado { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+        .btn-status-filtro.f-cancelado.ativo { background-color: #dc3545 !important; color: #fff !important; border-color: #bd2130; }
+
         .totais-container {
             margin-top: 15px;
             margin-bottom: 20px;
@@ -257,7 +280,7 @@
         .checkbox-group input { width: 18px; height: 18px; cursor: pointer; }
 
         .busca-container {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             width: 100%;
         }
         .input-busca {
@@ -271,7 +294,7 @@
         .tabela-historico {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 10px;
             font-size: 14px;
         }
         .tabela-historico th, .tabela-historico td {
@@ -283,7 +306,7 @@
         .tabela-historico tr:nth-child(even) { background-color: #f9f9f9; }
         
         .btn-tabela {
-            padding: 5px 10px;
+            padding: 5px 8px;
             font-size: 12px;
             font-weight: bold;
             cursor: pointer;
@@ -292,7 +315,8 @@
             margin-right: 4px;
         }
         .btn-tab-editar { background-color: #ffc107; color: #000; }
-        .btn-tabela.btn-tab-excluir { background-color: #dc3545; }
+        .btn-tab-excluir { background-color: #dc3545; }
+        .btn-tab-baixar { background-color: #17a2b8; }
 
         /* DESIGN DA FICHA GRAFICA A6 SEGURO ANTI-ERRO */
         #bloco-nota-a6 {
@@ -356,12 +380,14 @@
             .grupo-botoes-acao { flex-direction: column; gap: 8px; }
             .grupo-botoes-acao button { width: 100%; padding: 14px; }
             .tabela-historico { font-size: 11px; display: block; overflow-x: auto; }
+            .menu-status-historico { flex-direction: row; gap: 4px; }
+            .btn-status-filtro { padding: 8px 4px; font-size: 11px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Menu Superior -->
+    <!-- Menu Superior Organizado -->
     <div class="menu-sistema">
         <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Orçamento</button>
         <button class="btn-sistema" onclick="alternarPainel('entrada')">Pedido</button>
@@ -530,8 +556,16 @@
         <h2>☁️ Banco de Dados em Nuvem</h2>
         <p>Lista de pedidos e orçamentos integrados em tempo real na sua planilha Google.</p>
         
+        <!-- REQUISITO: Lupa de Busca Global no topo -->
         <div class="busca-container">
-            <input type="text" id="campoBuscaNuvem" class="input-busca" placeholder="🔍 Buscar por código, nome do cliente ou data..." oninput="filtrarTabelaHistoricoLocal()">
+            <input type="text" id="campoBuscaNuvem" class="input-busca" placeholder="🔍 Buscar por código, nome do cliente ou data em qualquer seção..." oninput="filtrarTabelaHistoricoLocal()">
+        </div>
+
+        <!-- REQUISITO: Botões Coloridos de Status para Separação -->
+        <div class="menu-status-historico">
+            <button class="btn-status-filtro f-andamento ativo" onclick="mudarFiltroStatusHistorico('andamento')">🟡 Em Andamento</button>
+            <button class="btn-status-filtro f-concluido" onclick="mudarFiltroStatusHistorico('concluido')">🟢 Concluídos</button>
+            <button class="btn-status-filtro f-cancelado" onclick="mudarFiltroStatusHistorico('cancelado')">🔴 Cancelados</button>
         </div>
 
         <button type="button" class="btn-add-item" onclick="puxarDadosDaNuvem()">🔄 Atualizar Lista</button>
@@ -543,12 +577,11 @@
                     <th>Tipo</th>
                     <th>Cliente</th>
                     <th>Total</th>
-                    <th>Status</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody id="corpoTabelaNuvem">
-                <tr><td colspan="6">Clique em atualizar para carregar os registros...</td></tr>
+                <tr><td colspan="5">Clique em atualizar para carregar os registros...</td></tr>
             </tbody>
         </table>
     </div>
@@ -593,13 +626,16 @@
         let numSequencialUnificado = 100;
         let codigoEmConversaoFixado = null;
         let cacheNuvemGlobal = [];
-        let registroEmEdicaoManualDataHora = null; // Evita conflitos ao salvar edições de duplicados
+        let registroEmEdicaoManualDataHora = null;
+        let filtroStatusSelecionado = 'andamento'; // Estado inicial da aba de histórico
 
         const conteudoItensOrcamento = document.getElementById('conteudoItensOrcamento');
         const conteudoItensOS = document.getElementById('conteudoItensOS');
 
-        // REQUISITO: Sincronizar código com a planilha assim que o sistema abre
+        // REQUISITO: Linhas iniciais ativas abertas e visíveis ao iniciar
         window.addEventListener('DOMContentLoaded', () => {
+            limparTodosItens('orcamento');
+            limparTodosItens('entrada');
             sincronizarProximoCodigoComANuvem();
         });
 
@@ -650,6 +686,18 @@
             if(val === "Cancelado") selectElement.classList.add("status-cancelado");
         }
 
+        // Alternador de abas internas coloridas do histórico
+        function mudarFiltroStatusHistorico(statusRef) {
+            document.querySelectorAll('.btn-status-filtro').forEach(b => b.classList.remove('ativo'));
+            filtroStatusSelecionado = statusRef;
+            
+            if(statusRef === 'andamento') document.querySelector('.btn-status-filtro.f-andamento').classList.add('ativo');
+            if(statusRef === 'concluido') document.querySelector('.btn-status-filtro.f-concluido').classList.add('ativo');
+            if(statusRef === 'cancelado') document.querySelector('.btn-status-filtro.f-cancelado').classList.add('ativo');
+
+            filtrarTabelaHistoricoLocal();
+        }
+
         function gerarTextoCodigo(prefixo, numero) {
             return `${prefixo}${String(numero).padStart(5, '0')}`;
         }
@@ -678,8 +726,6 @@
             const forma = document.getElementById('formaPagamentoOS').value;
             document.getElementById('blocoParcelasOS').style.display = (forma === 'Crédito') ? 'block' : 'none';
         }
-
-        function adicionarLineDefault(tipo) { adicionarLinhaGenerico(tipo); }
 
         function adicionarLinhaGenerico(tipo) {
             const container = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
@@ -785,7 +831,6 @@
 
         function extrairPacoteDadosDoFormulario(tipo) {
             const agora = new Date();
-            // Mantém a chave original se for uma edição manual para o script não duplicar a linha à toa
             const dataHoraStr = registroEmEdicaoManualDataHora ? registroEmEdicaoManualDataHora : (agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}));
             
             let numPuro = (tipo === 'orcamento') 
@@ -845,7 +890,6 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(pacote)
             }).then(() => {
-                // Limpa os estados de edição após o salvamento seguro
                 registroEmEdicaoManualDataHora = null;
             }).catch(err => console.error("Falha ao sincronizar:", err));
         }
@@ -868,12 +912,7 @@
             const nomeDoArquivoFinal = `${tipo === 'orcamento' ? 'ORCAMENTO' : 'PEDIDO'}_${numTextoFormatado}_${String(agora.getDate()).padStart(2,'0')}_${String(agora.getMonth()+1).padStart(2,'0')}_${agora.getFullYear()}`;
 
             setTimeout(() => {
-                html2canvas(alvo, { 
-                    scale: 2, 
-                    logging: false, 
-                    useCORS: true, 
-                    allowTaint: true 
-                }).then(canvas => {
+                html2canvas(alvo, { scale: 2, logging: false, useCORS: true, allowTaint: true }).then(canvas => {
                     const link = document.createElement('a');
                     link.download = `${nomeDoArquivoFinal}.png`;
                     link.href = canvas.toDataURL('image/png');
@@ -885,80 +924,162 @@
                         localStorage.setItem('numSequencialUnificado', String(numPuroSalvo + 1));
                     }
                     atualizarCodigosVisiveisDinamicos();
-                }).catch((err) => {
-                    alert('Erro na captura da imagem. Tente atualizar a página.');
+                }).catch(() => {
+                    alert('Erro na captura da imagem.');
                 });
             }, 100);
         }
 
         function puxarDadosDaNuvem() {
             const corpo = document.getElementById('corpoTabelaNuvem');
-            corpo.innerHTML = `<tr><td colspan="6"> Consultando banco de dados na nuvem, aguarde...</td></tr>`;
+            corpo.innerHTML = `<tr><td colspan="5">⏳ Consultando banco de dados na nuvem, aguarde...</td></tr>`;
 
             fetch(GOOGLE_API_URL)
                 .then(res => res.json())
                 .then(dados => {
                     cacheNuvemGlobal = dados; 
-                    renderizarTabelaHistoricoFiltrada(dados);
-                }).catch(err => {
-                    corpo.innerHTML = `<tr><td colspan="6" style="color:red">Erro ao carregar dados da nuvem.</td></tr>`;
+                    filtrarTabelaHistoricoLocal();
+                }).catch(() => {
+                    corpo.innerHTML = `<tr><td colspan="5" style="color:red">Erro ao carregar dados da nuvem.</td></tr>`;
                 });
         }
 
-        function renderizarTabelaHistoricoFiltrada(listaPedidos) {
+        // REQUISITO: Filtro por Lupa Global e Abas Coloridas de Progresso combinados
+        function filtrarTabelaHistoricoLocal() {
+            const termoBusca = document.getElementById('campoBuscaNuvem').value.toLowerCase().trim();
+            
+            // 1. Aplica a separação de categorias por abas
+            let dadosFiltradosStatus = cacheNuvemGlobal.filter(p => {
+                if (filtroStatusSelecionado === 'andamento') {
+                    return p.status === "Aberto" || p.status === "Produção" || p.status === "Definir Status" || !p.status;
+                } else if (filtroStatusSelecionado === 'concluido') {
+                    return p.status === "Concluído";
+                } else if (filtroStatusSelecionado === 'cancelado') {
+                    return p.status === "Cancelado";
+                }
+                return true;
+            });
+
+            // 2. Mescla com o termo digitado na Lupa Global se houver
+            if (termoBusca) {
+                dadosFiltradosStatus = dadosFiltradosStatus.filter(p => {
+                    return p.codigo.toLowerCase().includes(termoBusca) || 
+                           p.cliente.toLowerCase().includes(termoBusca) || 
+                           p.dataHora.toLowerCase().includes(termoBusca);
+                });
+            }
+
+            renderizarTabelaHistoricoFinal(dadosFiltradosStatus);
+        }
+
+        function renderizarTabelaHistoricoFinal(listaFiltrada) {
             const corpo = document.getElementById('corpoTabelaNuvem');
             corpo.innerHTML = "";
 
-            const itensFiltrados = listaPedidos.filter(p => p.status !== "Cancelado").reverse();
+            const itensOrdenados = listaFiltrada.reverse();
 
-            if(itensFiltrados.length === 0) {
-                corpo.innerHTML = `<tr><td colspan="6">Nenhum registro encontrado.</td></tr>`;
+            if(itensOrdenados.length === 0) {
+                corpo.innerHTML = `<tr><td colspan="5">Nenhum registro encontrado nesta seção.</td></tr>`;
                 return;
             }
 
-            itensFiltrados.forEach(p => {
-                let statusCor = "gray";
-                if(p.status === "Produção") statusCor = "#b58900";
-                if(p.status === "Concluído") statusCor = "green";
-
+            itensOrdenados.forEach(p => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><b>${p.codigo}</b></td>
                     <td>${p.tipo}</td>
                     <td>${p.cliente}</td>
                     <td>${formatarMoeda(p.totalGeral)}</td>
-                    <td><span style="color:${statusCor}; font-weight:bold">${p.status || "Não Definido"}</span></td>
                     <td>
-                        <button class="btn-tabela btn-tab-editar" onclick="reabrirEEditarRegistroDaNuvem('${p.codigo}', '${p.dataHora}')">✏️ Editar</button>
-                        <button class="btn-tabela btn-tab-excluir" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')">Ocultar</button>
+                        <button class="btn-tabela btn-tab-editar" onclick="reabrirEEditarRegistroDaNuvem('${p.codigo}', '${p.dataHora}')">✏️</button>
+                        <!-- REQUISITO Seta para baixar direto do histórico -->
+                        <button class="btn-tabela btn-tab-baixar" onclick="baixarComprovanteDiretoDoHistorial('${p.codigo}', '${p.dataHora}')" title="Baixar Comprovante">📥</button>
+                        ${p.status !== 'Cancelado' ? `<button class="btn-tabela btn-tab-excluir" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')">🗑️</button>` : ''}
                     </td>
                 `;
                 corpo.appendChild(tr);
             });
         }
 
-        function filtrarTabelaHistoricoLocal() {
-            const termo = document.getElementById('campoBuscaNuvem').value.toLowerCase().trim();
-            if(!termo) {
-                renderizarTabelaHistoricoFiltrada(cacheNuvemGlobal);
-                return;
+        // REQUISITO: Geração em background da ficha A6 usando a seta de download (📥)
+        function baixarComprovanteDiretoDoHistorial(codigoAlvo, dataHoraChave) {
+            const p = cacheNuvemGlobal.find(item => item.codigo === codigoAlvo && item.dataHora === dataHoraChave);
+            if(!p) return;
+
+            document.getElementById('tipoNotaA6').innerText = p.tipo.toUpperCase();
+            
+            let htmlGerais = "";
+            let htmlItens = "";
+            let htmlFinanceiro = "";
+
+            // Trata as datas
+            let dataA6 = p.dataHora.split(' ')[0];
+            let prazoA6 = p.previsaoEntrega && p.previsaoEntrega !== "Não informada" ? p.previsaoEntrega.split('-').reverse().join('/') : "Não definido";
+
+            if (p.tipo === "Orçamento") {
+                htmlGerais = `<b>Nº ORÇAMENTO:</b> ${p.codigo}<br><b>Data:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}`;
+                
+                htmlFinanceiro = `Total Geral: ${formatarMoeda(p.totalGeral)}<br>Forma Pagto: ${p.formaPayment || p.formaPagamento}`;
+                
+                // Trata as observações
+                if(p.observacoes && p.observacoes.trim() !== "") {
+                    document.getElementById('blocoObsNotaA6').style.display = 'block';
+                    document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${p.observacoes}`;
+                } else {
+                    document.getElementById('blocoObsNotaA6').style.display = 'none';
+                }
+            } else {
+                htmlGerais = `<b>Nº PEDIDO:</b> ${p.codigo}<br><b>Entrada:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}<br><b>Contato:</b> ${p.contato}`;
+                
+                let rest = Math.max(0, p.totalGeral - p.entrada);
+                htmlFinanceiro = `Total Líquido: ${formatarMoeda(p.totalGeral)}<br>Pago Entrada: ${formatarMoeda(p.entrada)}<br>Forma Pagto: ${p.formaPagamento}<br>`;
+                htmlFinanceiro += rest > 0 ? `<span style="color:#cc0000">Restante: ${formatarMoeda(rest)}</span>` : `<span style="color:blue">SITUAÇÃO: PAGO</span>`;
+
+                if(p.observacoes && p.observacoes.trim() !== "") {
+                    document.getElementById('blocoObsNotaA6').style.display = 'block';
+                    document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${p.observacoes}`;
+                } else {
+                    document.getElementById('blocoObsNotaA6').style.display = 'none';
+                }
             }
 
-            const filtrados = cacheNuvemGlobal.filter(p => {
-                const cod = p.codigo.toLowerCase();
-                const cli = p.cliente.toLowerCase();
-                const data = p.dataHora.toLowerCase();
-                return cod.includes(termo) || cli.includes(termo) || data.includes(termo);
-            });
+            // Remonta as linhas de itens
+            if(p.itens) {
+                const arr = p.itens.split(' | ');
+                arr.forEach(row => {
+                    const idxX = row.indexOf('x ');
+                    const idxVal = row.lastIndexOf(' (R$ ');
+                    if(idxX !== -1) {
+                        const q = row.substring(0, idxX + 1);
+                        const d = idxVal !== -1 ? row.substring(idxX + 2, idxVal) : row.substring(idxX + 2);
+                        htmlItens += `<tr><td>${q}</td><td>${d}</td><td style="text-align: right;">-</td></tr>`;
+                    }
+                });
+            }
+            if(!htmlItens) htmlItens = '<tr><td colspan="3">Sem descrição de itens</td></tr>';
 
-            renderizarTabelaHistoricoFiltrada(filtrados);
+            document.getElementById('dadosGeraisNotaA6').innerHTML = htmlGerais;
+            document.getElementById('itensNotaA6').innerHTML = htmlItens;
+            document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
+
+            // Gera a foto
+            const alvo = document.getElementById('bloco-nota-a6');
+            const nomeArquivo = `${p.tipo.toUpperCase()}_${p.codigo}_REEMITIDO`;
+
+            setTimeout(() => {
+                html2canvas(alvo, { scale: 2, logging: false, useCORS: true, allowTaint: true }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `${nomeArquivo}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            }, 80);
         }
 
         function reabrirEEditarRegistroDaNuvem(codigoBuscado, dataHoraChave) {
             const item = cacheNuvemGlobal.find(p => p.codigo === codigoBuscado && p.dataHora === dataHoraChave);
             if(!item) return;
 
-            // Fixa as travas de segurança anti-duplicação na edição manual
             registroEmEdicaoManualDataHora = item.dataHora;
 
             alert(`Reabrindo e carregando ${item.tipo} #${item.codigo}...`);
@@ -1036,7 +1157,7 @@
         }
 
         function cancelarRegistroNaNuvem(codigoParaCancelar, dataHoraChave) {
-            if(!confirm(`Tem certeza que deseja ocultar o registro ${codigoParaCancelar}?`)) return;
+            if(!confirm(`Tem certeza que deseja marcar o registro ${codigoParaCancelar} como Cancelado?`)) return;
 
             const item = cacheNuvemGlobal.find(p => p.codigo === codigoParaCancelar && p.dataHora === dataHoraChave);
             if(!item) return;
@@ -1054,7 +1175,7 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(pacoteCancelamento)
             }).then(() => {
-                alert("Registro ocultado com sucesso.");
+                alert("Registro cancelado com sucesso.");
                 puxarDadosDaNuvem();
             });
         }
@@ -1194,7 +1315,7 @@
         function limparTodosItens(tipo) {
             const container = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
             container.innerHTML = '';
-            adicionarLinhaGenerico(tipo);
+            adicionarLinhaGenerico(tipo); // Garante a linha inicial padrão aberta
         }
 
         function limparDesconto(tipo) {
