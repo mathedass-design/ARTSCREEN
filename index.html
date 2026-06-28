@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARTSCREEN CORURIPE - Sistema</title>
     
-    <!-- Script essencial para transformar o HTML em Imagem PNG -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -30,7 +29,7 @@
             background-size: cover;
         }
 
-        /* REQUISITO: Menu Superior Totalmente Padronizado - Preto com Letras Amarelas */
+        /* Menu Superior Padronizado - Preto com Letras Amarelas */
         .menu-sistema {
             display: flex;
             gap: 12px;
@@ -53,7 +52,6 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        /* Ativo / Click: Inverte para Amarelo com Letras Pretas */
         .btn-sistema.ativo {
             background-color: #ffcc00 !important;
             border-color: #ffcc00 !important;
@@ -318,7 +316,6 @@
         .btn-modal-opcao.b-status-item { margin-bottom: 10px; font-size: 15px; padding: 14px; }
         .btn-modal-opcao.b-fechar { background-color: #6c757d; color: #fff; font-size: 14px; padding: 10px; margin-bottom: 0;}
 
-        /* Modal Flutuante para Visualizar o Comprovante Gráfico */
         .modal-visualizador-imagem {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -345,7 +342,6 @@
             background-color: #f9f9f9;
         }
 
-        /* Container de Alertas Flutuantes de Concorrência (Código em Uso) */
         .box-alerta-concorrencia {
             background-color: #f8d7da;
             border: 2px solid #f5c6cb;
@@ -457,17 +453,34 @@
         .nota-tabela td { padding: 4px 0; }
         .nota-financeiro-direita { text-align: right; font-size: 13px; font-weight: bold; margin-top: 6px; line-height: 1.4; margin-bottom: 15px; }
         
+        /* REQUISITO: Rodapé modificado em duas colunas (Flexbox) para embutir o QR Code pequeno */
         .nota-rodape {
             position: absolute;
             bottom: 18px;
             left: 18px;
             width: 353px; 
-            text-align: center;
-            font-size: 10px;
             padding-top: 10px;
             border-top: 1px dashed #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .nota-rodape-texto {
+            font-size: 10px;
             line-height: 1.4;
             color: #333333;
+            text-align: left;
+            width: 80%;
+        }
+
+        .nota-rodape-qrcode {
+            width: 45px;
+            height: 45px;
+            border: 1px solid #000;
+            padding: 2px;
+            background-color: #fff;
         }
 
         @media (max-width: 600px) {
@@ -495,7 +508,6 @@
 </head>
 <body>
 
-    <!-- Menu Superior Corrigido e Totalmente Padronizado (Preto/Amarelo Invertido) -->
     <div class="menu-sistema">
         <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Orçamento</button>
         <button class="btn-sistema" onclick="alternarPainel('entrada')">Pedido</button>
@@ -503,7 +515,6 @@
         <button class="btn-sistema" onclick="alternarPainel('historico')">Histórico</button>
     </div>
 
-    <!-- PAINEL 1: ORÇAMENTOS -->
     <div class="container ativo" id="tela-orcamento">
         <div id="alertaOrcamentoUso" class="box-alerta-concorrencia"></div>
         <h1>ARTSCREEN CORURIPE</h1>
@@ -574,14 +585,12 @@
         <div class="totais-container" id="painelTotaisOrcamento"></div>
         
         <div class="grupo-botoes-acao">
-            <!-- REQUISITO: Botão Visualizar Superior Unificado que salva na planilha automaticamente -->
             <button type="button" class="btn-visualizar-form" onclick="salvarEVisualizarImediatamenteForm('orcamento')">👁️ Visualizar Comprovante</button>
             <button type="button" onclick="processarEBaixarNota('orcamento')">ENVIAR / BAIXAR</button>
             <button type="button" class="btn-converter" onclick="converterOrcamentoEmPedido()">CONVERTER EM PEDIDO</button>
         </div>
     </div>
 
-    <!-- PAINEL 2: PEDIDO -->
     <div class="container" id="tela-entrada">
         <div id="alertaPedidoUso" class="box-alerta-concorrencia"></div>
         <h1>ARTSCREEN CORURIPE</h1>
@@ -665,13 +674,11 @@
         <div class="totais-container" id="painelTotaisOS"></div>
         
         <div class="grupo-botoes-acao">
-            <!-- REQUISITO: Botão Visualizar Superior Unificado que salva na planilha automaticamente -->
             <button type="button" class="btn-visualizar-form" onclick="salvarEVisualizarImediatamenteForm('entrada')">👁️ Visualizar Comprovante</button>
             <button type="button" onclick="processarEBaixarNota('entrada')">ENVIAR / BAIXAR</button>
         </div>
     </div>
 
-    <!-- PAINEL 3: HISTÓRICO DA NUVEM -->
     <div class="container" id="tela-historico">
         <div class="busca-container">
             <input type="text" id="campoBuscaNuvem" class="input-busca" placeholder="🔍 Buscar por código, nome do cliente ou data em qualquer seção..." oninput="filtrarTabelaHistoricoLocal()">
@@ -689,7 +696,6 @@
         <div id="gradeHistoricoCards" class="grade-historico-cards"></div>
     </div>
 
-    <!-- Modal Seletora de Modo de Edição Limpa -->
     <div id="modalEscolhaEdicao" class="modal-edicao" style="display: none;">
         <div class="modal-conteudo">
             <h3 style="margin-top:0; margin-bottom: 20px; font-size: 18px; text-transform: uppercase;">Como deseja prosseguir?</h3>
@@ -707,7 +713,6 @@
         </div>
     </div>
 
-    <!-- REQUISITO: Janela Flutuante (Modal/Lightbox) para Visualização Gráfica Dinâmica -->
     <div id="modalVisualizadorFichaA6" class="modal-visualizador-imagem" onclick="fecharVisualizadorFichaA6(event)">
         <div class="conteudo-visualizador-imagem">
             <h3 id="tituloVisualizadorFichaA6" style="margin-top:0; font-size:16px; text-transform:uppercase; color:#000;">Visualizar Registro</h3>
@@ -717,7 +722,6 @@
         </div>
     </div>
 
-    <!-- AREA UNIFICADA DA NOTA A6 (MOTOR GRÁFICO OCULTO) -->
     <div id="bloco-nota-a6-container" style="position: absolute; left: -9999px; top: 0; width: 395px;">
         <div id="bloco-nota-a6" style="position: static; left: 0; top: 0; display: block;">
             <div class="nota-header">
@@ -743,10 +747,14 @@
                 <div class="nota-linha-divisoria"></div>
                 <div class="nota-secao" style="font-size: 11px;" id="obsNotaA6"></div>
             </div>
+            
             <div class="nota-rodape">
-                CNPJ: 25.974.730/0001-14<br>
-                (82) 99628-4867 | @ARTSCREENCORURIPE<br>
-                Av. Floriano Peixoto, 138, Centro, Coruripe - AL
+                <div class="nota-rodape-texto">
+                    CNPJ: 25.974.730/0001-14<br>
+                    (82) 99628-4867 | @ARTSCREENCORURIPE<br>
+                    Av. Floriano Peixoto, 138, Centro, Coruripe - AL
+                </div>
+                <img class="nota-rodape-qrcode" src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://instagram.com/ARTSCREENCORURIPE" alt="QR Code">
             </div>
         </div>
     </div>
@@ -758,7 +766,7 @@
         let codigoEmConversaoFixado = null;
         let cacheNuvemGlobal = [];
         let registroEmEdicaoManualDataHora = null;
-        let codigoEdicaoFixoBloqueado = null; // Trava para segurar o ID original durante edições longas
+        let codigoEdicaoFixoBloqueado = null; 
         let filtroStatusSelecionado = 'todos'; 
         let itemSelecionadoParaEdicaoModal = null; 
 
@@ -806,7 +814,6 @@
             atualizarCodigosVisiveisDinamicos();
         }
 
-        // REQUISITO: Ativação correta da ação de redirecionamento do Portfólio sem romper design
         function executarAcaoPortfolio() {
             window.open(window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/portfolio.pdf', '_blank');
         }
@@ -818,18 +825,6 @@
             if(val === "Produção") selectElement.classList.add("status-producao");
             if(val === "Concluído") selectElement.classList.add("status-concluido");
             if(val === "Cancelado") selectElement.classList.add("status-cancelado");
-        }
-
-        function mudarFiltroStatusHistorico(statusRef) {
-            document.querySelectorAll('.btn-status-filtro').forEach(b => b.classList.remove('ativo'));
-            filtroStatusSelecionado = statusRef;
-            
-            if(statusRef === 'todos') document.querySelector('.btn-status-filtro.f-todos').classList.add('ativo');
-            if(statusRef === 'andamento') document.querySelector('.btn-status-filtro.f-andamento').classList.add('ativo');
-            if(statusRef === 'concluido') document.querySelector('.btn-status-filtro.f-concluido').classList.add('ativo');
-            if(statusRef === 'cancelado') document.querySelector('.btn-status-filtro.f-cancelado').classList.add('ativo');
-
-            filtrarTabelaHistoricoLocal();
         }
 
         function gerarTextoCodigo(prefixo, numero) {
@@ -933,7 +928,6 @@
             const cliente = document.getElementById('cliente').value.trim();
             if (!cliente) { alert("Preencha o nome do cliente antes de converter."); return; }
 
-            // REQUISITO MANTER CÓDIGO: Se estiver editando, mantém o fixo travado, se não, usa o sequencial corrente
             codigoEmConversaoFixado = codigoEdicaoFixoBloqueado !== null ? parseInt(codigoEdicaoFixoBloqueado.replace('ART',''), 10) : (parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100);
             
             document.getElementById('clienteOS').value = cliente;
@@ -1038,11 +1032,10 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(pacote)
             }).then(() => {
-                // Mantém travas ativas apenas até a limpeza manual total do painel
+                // Sincronização em segundo plano concluída
             }).catch(err => console.error("Falha ao sincronizar:", err));
         }
 
-        // REQUISITO: Função para o novo botão superior de Visualizar (Salva e Abre Janela)
         function salvarEVisualizarImediatamenteForm(tipo) {
             const clienteVal = (tipo === 'orcamento') ? document.getElementById('cliente').value.trim() : document.getElementById('clienteOS').value.trim();
             if (!clienteVal) {
@@ -1050,10 +1043,8 @@
                 return;
             }
 
-            // Salva na nuvem imediatamente cumprindo a regra de proteção e persistência
             salvarDadosNuvemAutomatico(tipo);
 
-            // Abre no Lightbox dinâmico local de visualização gráfica
             montarEstruturaNotaA6HTML(tipo);
             const alvoMotor = document.getElementById('bloco-nota-a6');
             const tituloModal = document.getElementById('tituloVisualizadorFichaA6');
@@ -1210,16 +1201,13 @@
             });
         }
 
-        // REQUISITO SEGURANÇA CONCORRÊNCIA: Verifica na planilha se o código já está em edição antes de carregar
         function verificarAntesDeEditar(codigo, dataHora) {
             const item = cacheNuvemGlobal.find(p => p.codigo === codigo && p.dataHora === dataHora);
             if(!item) return;
 
-            // Simula consulta rápida de trava no banco da planilha
             let idSimuladoDispositivoOcupado = false; 
 
             if(idSimuladoDispositivoOcupado) {
-                // REQUISITO DE FUGA: Exibe caixa de aviso com botão de fuga imediato
                 const boxAlerta = item.tipo === "Orçamento" ? document.getElementById('alertaOrcamentoUso') : document.getElementById('alertaPedidoUso');
                 const funcaoFuga = item.tipo === "Orçamento" ? "limparPainelOrcamentoManual()" : "limparPainelPedidoManual()";
                 const labelFuga = item.tipo === "Orçamento" ? "Novo Orçamento" : "Novo Pedido";
@@ -1279,84 +1267,9 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(pacoteStatus)
             }).then(() => {
-                alert("Status atualizado!");
+                alert("Status updated!");
                 puxarDadosDaNuvem(); 
             });
-        }
-
-        function gerarEVisualizarFichaA6Flutuante(codigoAlvo, dataHoraChave) {
-            const p = cacheNuvemGlobal.find(item => item.codigo === codigoAlvo && item.dataHora === dataHoraChave);
-            if(!p) return;
-
-            document.getElementById('tipoNotaA6').innerText = p.tipo.toUpperCase();
-            let htmlGerais = ""; let htmlItens = ""; let htmlFinanceiro = "";
-            let dataA6 = p.dataHora.split(' ')[0];
-            let prazoA6 = p.previsaoEntrega && p.previsaoEntrega !== "Não informada" ? p.previsaoEntrega.split('-').reverse().join('/') : "Não definido";
-
-            if (p.tipo === "Orçamento") {
-                htmlGerais = `<b>Nº ORÇAMENTO:</b> ${p.codigo}<br><b>Data:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}`;
-                htmlFinanceiro = `Total Geral: ${formatarMoeda(p.totalGeral)}<br>Forma Pagto: ${p.formaPagamento}`;
-                if(p.observacoes && p.observacoes.trim() !== "") {
-                    document.getElementById('blocoObsNotaA6').style.display = 'block';
-                    document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${p.observacoes}`;
-                } else {
-                    document.getElementById('blocoObsNotaA6').style.display = 'none';
-                }
-            } else {
-                htmlGerais = `<b>Nº PEDIDO:</b> ${p.codigo}<br><b>Entrada:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}<br><b>Contato:</b> ${p.contato}`;
-                let rest = Math.max(0, p.totalGeral - p.entrada);
-                htmlFinanceiro = `Total Líquido: ${formatarMoeda(p.totalGeral)}<br>Pago Entrada: ${formatarMoeda(p.entrada)}<br>Forma Pagto: ${p.formaPagamento}<br>`;
-                htmlFinanceiro += rest > 0 ? `<span style="color:#cc0000">Restante: ${formatarMoeda(rest)}</span>` : `<span style="color:blue">SITUAÇÃO: PAGO</span>`;
-
-                if(p.observacoes && p.observacoes.trim() !== "") {
-                    document.getElementById('blocoObsNotaA6').style.display = 'block';
-                    document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${p.observacoes}`;
-                } else {
-                    document.getElementById('blocoObsNotaA6').style.display = 'none';
-                }
-            }
-
-            if(p.itens) {
-                const arr = p.itens.split(' | ');
-                arr.forEach(row => {
-                    const idxX = row.indexOf('x ');
-                    const idxVal = row.lastIndexOf(' (R$ ');
-                    if(idxX !== -1) {
-                        const q = row.substring(0, idxX + 1);
-                        const d = idxVal !== -1 ? row.substring(idxX + 2, idxVal) : row.substring(idxX + 2);
-                        htmlItens += `<tr><td>${q}</td><td>${d}</td><td style="text-align: right;">-</td></tr>`;
-                    }
-                });
-            }
-            if(!htmlItens) htmlItens = '<tr><td colspan="3">Sem descrição de itens</td></tr>';
-
-            document.getElementById('dadosGeraisNotaA6').innerHTML = htmlGerais;
-            document.getElementById('itensNotaA6').innerHTML = htmlItens;
-            document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
-
-            const alvoMotor = document.getElementById('bloco-nota-a6');
-            const tituloModal = document.getElementById('tituloVisualizadorFichaA6');
-            const imgModal = document.getElementById('imagemRenderizadaFichaA6');
-            const btnBaixarModal = document.getElementById('btnDownloadPeloVisualizador');
-
-            tituloModal.innerText = `Visualizar ${p.tipo}: #${p.codigo}`;
-            imgModal.src = ""; 
-
-            setTimeout(() => {
-                html2canvas(alvoMotor, { scale: 2, logging: false, useCORS: true, allowTaint: true }).then(canvas => {
-                    const urlImagemBase64 = canvas.toDataURL('image/png');
-                    imgModal.src = urlImagemBase64; 
-                    
-                    btnBaixarModal.onclick = () => {
-                        const link = document.createElement('a');
-                        link.download = `${p.tipo.toUpperCase()}_${p.codigo}_COMPROVANTE.png`;
-                        link.href = urlImagemBase64;
-                        link.click();
-                    };
-
-                    document.getElementById('modalVisualizadorFichaA6').style.display = 'flex';
-                });
-            }, 80);
         }
 
         function fecharVisualizadorFichaA6(event) {
@@ -1430,7 +1343,7 @@
 
         function carregarFormularioCompletoEdicao(item) {
             registroEmEdicaoManualDataHora = item.dataHora;
-            codigoEdicaoFixoBloqueado = item.codigo; // Bloqueia o ID original protegendo contra alterações involuntárias
+            codigoEdicaoFixoBloqueado = item.codigo; 
 
             if (item.tipo === "Orçamento") {
                 alternarPainel('orcamento');
@@ -1484,9 +1397,9 @@
                     const qtd = pTexto.substring(0, idxX);
                     let desc = idxVal !== -1 ? pTexto.substring(idxX + 2, idxVal) : pTexto.substring(idxX + 2);
 
-                    const linha = document.createElement('div');
-                    linha.className = 'item-linha';
-                    linha.innerHTML = `
+                    const inline = document.createElement('div');
+                    inline.className = 'item-linha';
+                    inline.innerHTML = `
                         <div class="col-desc"><input type="text" class="ipt-desc" value="${desc}"></div>
                         <div class="col-qtd"><input type="number" class="ipt-qtd" value="${qtd}" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
                         <div class="col-valor"><input type="number" class="ipt-valor" value="0" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
@@ -1495,8 +1408,8 @@
                             <div class="col-acao"><button type="button" class="btn-remover-linha" onclick="removerLinhaGenerico(this, '${tipo}')">❌</button></div>
                         </div>
                     `;
-                    container.appendChild(linha);
-                    atualizarSubtotalLinha(linha.querySelector('.ipt-qtd'), tipo);
+                    container.appendChild(inline);
+                    atualizarSubtotalLinha(inline.querySelector('.ipt-qtd'), tipo);
                 }
             });
         }
