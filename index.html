@@ -86,7 +86,7 @@
 
         .container.ativo { display: block; }
 
-        h1, h2 {
+        h1 {
             font-size: 24px;
             font-weight: bold;
             margin-top: 0;
@@ -95,35 +95,12 @@
             color: #000;
         }
 
-        .header-controle-novo {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        /* Ajustes dos botões Novo Orçamento/Pedido no topo */
-        .btn-novo-registro {
-            background-color: #000000;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .btn-novo-registro:hover { background-color: #222222; }
-
-        /* REQUISITO: Bloco do código com alinhamento em linha e botão preto */
+        /* REQUISITO: Bloco de código alinhado em linha com o botão Novo Registro Preto */
         .bloco-codigo-linha {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 25px; /* Aumentado espaçamento para distanciar do Nome do Cliente */
+            margin-bottom: 25px;
         }
 
         .codigo-os-destaque {
@@ -135,9 +112,9 @@
             display: inline-block;
         }
 
-        .btn-ver-de-novo {
+        .btn-novo-registro-preto {
             background-color: #000000;
-            color: #ffffff;
+            color: white;
             border: 1px solid #000000;
             padding: 8px 14px;
             font-size: 14px;
@@ -147,9 +124,8 @@
             transition: background 0.2s;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .btn-ver-de-novo:hover { background-color: #222222; }
+        .btn-novo-registro-preto:hover { background-color: #222222; }
 
-        /* REQUISITO: Margem de segurança reforçada nos campos do cliente */
         .form-group-cliente {
             margin-top: 10px;
             margin-bottom: 15px;
@@ -253,11 +229,11 @@
         .status-concluido { background-color: #d4edda !important; color: #155724 !important; font-weight: bold; }
         .status-cancelado { background-color: #f8d7da !important; color: #721c24 !important; font-weight: bold; }
 
-        /* Filtros por Botões Coloridos no Histórico */
+        /* Filtros no Histórico */
         .menu-status-historico {
             display: flex;
             gap: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         .btn-status-filtro {
             flex: 1;
@@ -269,6 +245,8 @@
             text-transform: uppercase;
             text-align: center;
         }
+        .btn-status-filtro.f-todos { background-color: #e9ecef; color: #495057; border-color: #ced4da; }
+        .btn-status-filtro.f-todos.ativo { background-color: #6c757d !important; color: #fff !important; border-color: #5a6268; }
         .btn-status-filtro.f-andamento { background-color: #fff3cd; color: #856404; border-color: #ffeeba; }
         .btn-status-filtro.f-andamento.ativo { background-color: #ffcc00 !important; color: #000 !important; border-color: #b38f00; }
         .btn-status-filtro.f-concluido { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
@@ -276,7 +254,56 @@
         .btn-status-filtro.f-cancelado { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
         .btn-status-filtro.f-cancelado.ativo { background-color: #dc3545 !important; color: #fff !important; border-color: #bd2130; }
 
-        /* Modal Seletora de Edição */
+        /* REQUISITO: Estrutura em Grade de 3 Colunas para o Histórico */
+        .grade-historico-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        /* Estilização Individual dos Retângulos (Cards) */
+        .card-registro {
+            border: 1px solid #ddd;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+
+        .card-header-tipo {
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            border-bottom: 1px dashed rgba(0,0,0,0.1);
+            padding-bottom: 3px;
+        }
+
+        .card-title-codigo {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .card-body-info {
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 12px;
+            flex-grow: 1;
+        }
+
+        .card-footer-acoes {
+            display: flex;
+            gap: 6px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+            padding-top: 10px;
+        }
+
+        /* Modal Seletora de Edição Limpa */
         .modal-edicao {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -304,7 +331,6 @@
             cursor: pointer;
             text-transform: uppercase;
         }
-        /* REQUISITO: Removidos emojis e corrigidos nomes nas opções */
         .btn-modal-opcao.b-pedido { background-color: #007bff; color: #fff; }
         .btn-modal-opcao.b-status { background-color: #ffcc00; color: #000; }
         .btn-modal-opcao.b-status-item { margin-bottom: 10px; font-size: 15px; padding: 14px; }
@@ -362,30 +388,18 @@
             box-sizing: border-box;
         }
 
-        .tabela-historico {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 14px;
-        }
-        .tabela-historico th, .tabela-historico td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-        .tabela-historico th { background-color: #000; color: #fff; }
-        .tabela-historico tr:nth-child(even) { background-color: #f9f9f9; }
-        
         .btn-tabela {
-            padding: 5px 8px;
-            font-size: 12px;
+            flex: 1;
+            padding: 8px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
             border: none;
             color: #fff;
-            margin-right: 4px;
+            text-align: center;
+            text-transform: uppercase;
         }
-        .btn-tab-editar { background-color: #ffc107; color: #000; }
+        .btn-tab-editar { background-color: #0056b3; }
         .btn-tab-excluir { background-color: #dc3545; }
         .btn-tab-baixar { background-color: #17a2b8; }
 
@@ -450,9 +464,11 @@
             .grid-financeiro { grid-template-columns: 1fr; gap: 10px; }
             .grupo-botoes-acao { flex-direction: column; gap: 8px; }
             .grupo-botoes-acao button { width: 100%; padding: 14px; }
-            .tabela-historico { font-size: 11px; display: block; overflow-x: auto; }
-            .menu-status-historico { flex-direction: row; gap: 4px; }
-            .btn-status-filtro { padding: 8px 4px; font-size: 11px; }
+            
+            /* Responsivo para os cards em celulares (vira 1 coluna) */
+            .grade-historico-cards { grid-template-columns: 1fr; gap: 12px; }
+            .menu-status-historico { flex-wrap: wrap; gap: 4px; }
+            .btn-status-filtro { padding: 8px 4px; font-size: 11px; flex: unset; width: 48%; }
         }
     </style>
 </head>
@@ -463,24 +479,19 @@
         <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Orçamento</button>
         <button class="btn-sistema" onclick="alternarPainel('entrada')">Pedido</button>
         <button class="btn-sistema btn-portfolio" onclick="window.open(window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/portfolio.pdf', '_blank')">Portfólio</button>
-        <!-- REQUISITO: Removido emoji de nuvem do menu superior -->
         <button class="btn-sistema btn-nuvem-menu" onclick="alternarPainel('historico')">Histórico</button>
     </div>
 
     <!-- PAINEL 1: ORÇAMENTOS -->
     <div class="container ativo" id="tela-orcamento">
-        <div class="header-controle-novo">
-            <h1>ARTSCREEN CORURIPE</h1>
-            <button class="btn-novo-registro" onclick="limparPainelOrcamentoManual()">Novo Orçamento</button>
-        </div>
+        <h1>ARTSCREEN CORURIPE</h1>
         
-        <!-- REQUISITO: Alinhamento em linha do código e botão 'Ver de novo' em preto fosco -->
+        <!-- REQUISITO: Botão Novo Registro na mesma linha do número e em cor Preta -->
         <div class="bloco-codigo-linha">
             <div class="codigo-os-destaque" id="exibicaoCodigoOrcamento">Nº ORÇAMENTO: #ART00100</div>
-            <button type="button" class="btn-ver-de-novo" onclick="reemitirNotaA6PelosFormulariosLocal('orcamento')">Ver de novo</button>
+            <button type="button" class="btn-novo-registro-preto" onclick="limparPainelOrcamentoManual()">Novo Orçamento</button>
         </div>
 
-        <!-- REQUISITO: Margem de segurança aplicada no grupo do cliente -->
         <div class="form-group form-group-cliente">
             <div class="header-field">
                 <label for="cliente">Cliente</label>
@@ -549,18 +560,14 @@
 
     <!-- PAINEL 2: PEDIDO -->
     <div class="container" id="tela-entrada">
-        <div class="header-controle-novo">
-            <h1>ARTSCREEN CORURIPE</h1>
-            <button class="btn-novo-registro" onclick="limparPainelPedidoManual()">Novo Pedido</button>
-        </div>
+        <h1>ARTSCREEN CORURIPE</h1>
         
-        <!-- REQUISITO: Alinhamento em linha do código e botão 'Ver de novo' em preto fosco -->
+        <!-- REQUISITO: Botão Novo Registro na mesma linha do número e em cor Preta -->
         <div class="bloco-codigo-linha">
             <div class="codigo-os-destaque" id="exibicaoCodigoOS">Nº PEDIDO: #ART00100</div>
-            <button type="button" class="btn-ver-de-novo" onclick="reemitirNotaA6PelosFormulariosLocal('entrada')">Ver de novo</button>
+            <button type="button" class="btn-novo-registro-preto" onclick="limparPainelPedidoManual()">Novo Pedido</button>
         </div>
 
-        <!-- REQUISITO: Margem de segurança aplicada no grupo do cliente -->
         <div class="form-group form-group-cliente">
             <div class="header-field">
                 <label for="clienteOS">Cliente</label>
@@ -641,43 +648,34 @@
 
     <!-- PAINEL 3: HISTÓRICO DA NUVEM -->
     <div class="container" id="tela-historico">
-        <!-- REQUISITO COMPROVADO EM image_3fb1e1.png: Inicia direto da Lupa da barra de busca -->
+        <!-- REQUISITO COMPROVADO: Começa direto da Lupa da barra de busca -->
         <div class="busca-container">
             <input type="text" id="campoBuscaNuvem" class="input-busca" placeholder="🔍 Buscar por código, nome do cliente ou data em qualquer seção..." oninput="filtrarTabelaHistoricoLocal()">
         </div>
 
+        <!-- REQUISITO: Nova aba 'Todos' adicionada à listagem de botões -->
         <div class="menu-status-historico">
-            <button class="btn-status-filtro f-andamento ativo" onclick="mudarFiltroStatusHistorico('andamento')">🟡 Em Andamento</button>
+            <button class="btn-status-filtro f-todos ativo" onclick="mudarFiltroStatusHistorico('todos')">⚪ Todos</button>
+            <button class="btn-status-filtro f-andamento" onclick="mudarFiltroStatusHistorico('andamento')">🟡 Em Andamento</button>
             <button class="btn-status-filtro f-concluido" onclick="mudarFiltroStatusHistorico('concluido')">🟢 Concluídos</button>
             <button class="btn-status-filtro f-cancelado" onclick="mudarFiltroStatusHistorico('cancelado')">🔴 Cancelados</button>
         </div>
 
         <button type="button" class="btn-add-item" onclick="puxarDadosDaNuvem()">🔄 Atualizar Lista</button>
         
-        <table class="tabela-historico">
-            <thead>
-                <tr>
-                    <th>Código</th>
-                    <th>Tipo</th>
-                    <th>Cliente</th>
-                    <th>Total</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="corpoTabelaNuvem">
-                <tr><td colspan="5">Clique em atualizar para carregar os registros...</td></tr>
-            </tbody>
-        </table>
+        <!-- REQUISITO: Removida a tabela de linhas. Agora os dados entram em uma grade flexível de Cards -->
+        <div id="gradeHistoricoCards" class="grade-historico-cards">
+            <!-- Os blocos retangulares serão injetados dinamicamente aqui -->
+        </div>
     </div>
 
-    <!-- REQUISITO: Modal Seletora de Modo de Edição Limpa, Sem Emojis e Correção Geral -->
+    <!-- Modal Seletora de Modo de Edição Limpa -->
     <div id="modalEscolhaEdicao" class="modal-edicao" style="display: none;">
         <div class="modal-conteudo">
             <h3 style="margin-top:0; margin-bottom: 20px; font-size: 18px; text-transform: uppercase;">Como deseja prosseguir?</h3>
             <button class="btn-modal-opcao b-pedido" id="btnModalEditarTudo">Editar Pedido Completo</button>
             <button class="btn-modal-opcao b-status" id="btnModalEditarStatus">Editar Apenas Status</button>
             
-            <!-- REQUISITO: Sub-Painel de Status para clique direto sem digitação de número -->
             <div id="subPainelSelecaoStatusRapido" style="display: none; margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 15px;">
                 <h4 style="margin-top:0; margin-bottom:12px; font-size:14px; text-transform:uppercase;">Escolha o Novo Status:</h4>
                 <button class="btn-modal-opcao b-status b-status-item status-producao" onclick="executarMudancaStatusDiretaNuvem('Produção')">Em Produção</button>
@@ -730,7 +728,7 @@
         let codigoEmConversaoFixado = null;
         let cacheNuvemGlobal = [];
         let registroEmEdicaoManualDataHora = null;
-        let filtroStatusSelecionado = 'andamento';
+        let filtroStatusSelecionado = 'todos'; // Modificado para iniciar na aba de Todos
         let itemSelecionadoParaEdicaoModal = null; 
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -790,6 +788,7 @@
             document.querySelectorAll('.btn-status-filtro').forEach(b => b.classList.remove('ativo'));
             filtroStatusSelecionado = statusRef;
             
+            if(statusRef === 'todos') document.querySelector('.btn-status-filtro.f-todos').classList.add('ativo');
             if(statusRef === 'andamento') document.querySelector('.btn-status-filtro.f-andamento').classList.add('ativo');
             if(statusRef === 'concluido') document.querySelector('.btn-status-filtro.f-concluido').classList.add('ativo');
             if(statusRef === 'cancelado') document.querySelector('.btn-status-filtro.f-cancelado').classList.add('ativo');
@@ -1032,26 +1031,9 @@
             }, 100);
         }
 
-        // Função do botão preto 'Ver de novo' local dos formulários de cadastro
-        function reemitirNotaA6PelosFormulariosLocal(tipo) {
-            montarEstruturaNotaA6HTML(tipo);
-            const alvo = document.getElementById('bloco-nota-a6');
-            const numPuroSalvo = (tipo === 'orcamento') ? parseInt(localStorage.getItem('numSequencialUnificado'), 10) : (codigoEmConversaoFixado !== null ? codigoEmConversaoFixado : parseInt(localStorage.getItem('numSequencialUnificado'), 10));
-            const numTextoFormatado = gerarTextoCodigo('ART', numPuroSalvo);
-            
-            setTimeout(() => {
-                html2canvas(alvo, { scale: 2, logging: false, useCORS: true, allowTaint: true }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = `REEMISSAO_${tipo.toUpperCase()}_#${numTextoFormatado}.png`;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                });
-            }, 50);
-        }
-
         function puxarDadosDaNuvem() {
-            const corpo = document.getElementById('corpoTabelaNuvem');
-            corpo.innerHTML = `<tr><td colspan="5">⏳ Consultando banco de dados na nuvem, aguarde...</td></tr>`;
+            const grade = document.getElementById('gradeHistoricoCards');
+            grade.innerHTML = `<div style="grid-column: span 3; text-align:center; padding:20px;">⏳ Consultando banco de dados na nuvem, aguarde...</div>`;
 
             fetch(GOOGLE_API_URL)
                 .then(res => res.json())
@@ -1059,15 +1041,18 @@
                     cacheNuvemGlobal = dados; 
                     filtrarTabelaHistoricoLocal();
                 }).catch(() => {
-                    corpo.innerHTML = `<tr><td colspan="5" style="color:red">Erro ao carregar dados da nuvem.</td></tr>`;
+                    grade.innerHTML = `<div style="grid-column: span 3; text-align:center; color:red; padding:20px;">Erro ao carregar dados da nuvem.</div>`;
                 });
         }
 
+        // REQUISITO: Filtro estruturado em Grade por Abas e Lupa Global
         function filtrarTabelaHistoricoLocal() {
             const termoBusca = document.getElementById('campoBuscaNuvem').value.toLowerCase().trim();
             
             let dadosFiltradosStatus = cacheNuvemGlobal.filter(p => {
-                if (filtroStatusSelecionado === 'andamento') {
+                if (filtroStatusSelecionado === 'todos') {
+                    return p.status !== "Cancelado"; // Mostra orçamentos e pedidos ativos juntos
+                } else if (filtroStatusSelecionado === 'andamento') {
                     return p.status === "Aberto" || p.status === "Produção" || p.status === "Definir Status" || !p.status;
                 } else if (filtroStatusSelecionado === 'concluido') {
                     return p.status === "Concluído";
@@ -1085,34 +1070,63 @@
                 });
             }
 
-            renderizarTabelaHistoricoFinal(dadosFiltradosStatus);
+            renderizarGradeCardsFinal(dadosFiltradosStatus);
         }
 
-        function renderizarTabelaHistoricoFinal(listaFiltrada) {
-            const corpo = document.getElementById('corpoTabelaNuvem');
-            corpo.innerHTML = "";
+        // REQUISITO: Geração estrutural dos Retângulos em 3 Colunas com cor baseada no status
+        function renderizarGradeCardsFinal(listaFiltrada) {
+            const grade = document.getElementById('gradeHistoricoCards');
+            grade.innerHTML = "";
 
             const itensOrdenados = listaFiltrada.reverse();
 
             if(itensOrdenados.length === 0) {
-                corpo.innerHTML = `<tr><td colspan="5">Nenhum registro encontrado nesta seção.</td></tr>`;
+                grade.innerHTML = `<div style="grid-column: span 3; text-align:center; padding:20px;">Nenhum registro encontrado nesta seção.</div>`;
                 return;
             }
 
             itensOrdenados.forEach(p => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><b>${p.codigo}</b></td>
-                    <td>${p.tipo}</td>
-                    <td>${p.cliente}</td>
-                    <td>${formatarMoeda(p.totalGeral)}</td>
-                    <td>
-                        <button class="btn-tabela btn-tab-editar" onclick="abrirModalEscolhaEdicao('${p.codigo}', '${p.dataHora}')">✏️</button>
+                // Mapeamento dinâmico das cores do retângulo
+                let corFundoCard = "#ffffff"; 
+                let corTextoCard = "#333333";
+                
+                if (p.status === "Produção" || p.status === "Aberto" || p.status === "Definir Status" || !p.status) {
+                    corFundoCard = "#fff3cd"; // Amarelo
+                    corTextoCard = "#856404";
+                } else if (p.status === "Concluído") {
+                    corFundoCard = "#d4edda"; // Verde
+                    corTextoCard = "#155724";
+                } else if (p.status === "Cancelado") {
+                    corFundoCard = "#f8d7da"; // Vermelho
+                    corTextoCard = "#721c24";
+                }
+
+                // Criação do bloco do Card
+                const card = document.createElement('div');
+                card.className = "card-registro";
+                card.style.backgroundColor = corFundoCard;
+                card.style.color = corTextoCard;
+                card.style.borderColor = corTextoCard;
+
+                // Injeta as informações e os botões de ação limpos dentro do card
+                card.innerHTML = `
+                    <div>
+                        <!-- REQUISITO: Nome se é Pedido ou Orçamento no topo de cada card -->
+                        <div class="card-header-tipo">[${p.tipo.toUpperCase()}]</div>
+                        <div class="card-title-codigo">#${p.codigo}</div>
+                        <div class="card-body-info">
+                            <b>Cliente:</b> ${p.cliente}<br>
+                            <b>Data:</b> ${p.dataHora.split(' ')[0]}<br>
+                            <b>Total:</b> ${formatarMoeda(p.totalGeral)}
+                        </div>
+                    </div>
+                    <div class="card-footer-acoes">
+                        <button class="btn-tabela btn-tab-editar" onclick="abrirModalEscolhaEdicao('${p.codigo}', '${p.dataHora}')" title="Editar">✏️</button>
                         <button class="btn-tabela btn-tab-baixar" onclick="baixarComprovanteDiretoDoHistorial('${p.codigo}', '${p.dataHora}')" title="Baixar Comprovante">📥</button>
-                        ${p.status !== 'Cancelado' ? `<button class="btn-tabela btn-tab-excluir" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')">🗑️</button>` : ''}
-                    </td>
+                        ${p.status !== 'Cancelado' ? `<button class="btn-tabela btn-tab-excluir" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')" title="Ocultar">🗑️</button>` : ''}
+                    </div>
                 `;
-                corpo.appendChild(tr);
+                grade.appendChild(card);
             });
         }
 
@@ -1129,7 +1143,6 @@
                 carregarFormularioCompletoEdicao(itemSelecionadoParaEdicaoModal);
             };
 
-            // REQUISITO: Altera o clique do botão para abrir o subset de opções diretas na tela do modal
             document.getElementById('btnModalEditarStatus').onclick = () => {
                 if(itemSelecionadoParaEdicaoModal.tipo === "Orçamento") {
                     alert("Orçamentos não possuem controle de produção.");
@@ -1144,7 +1157,6 @@
             document.getElementById('subPainelSelecaoStatusRapido').style.display = 'none';
         }
 
-        // REQUISITO AUTOMAÇÃO DO STATUS: Função acionada por clique direto que atualiza e fecha tudo na hora
         function executarMudancaStatusDiretaNuvem(statusMapeado) {
             fecharModalEscolhaEdicao();
             alert("Salvando alteração diretamente na nuvem...");
@@ -1164,7 +1176,7 @@
                 body: JSON.stringify(pacoteStatus)
             }).then(() => {
                 alert("Status atualizado!");
-                puxarDadosDaNuvem(); // Recarrega o histórico geral
+                puxarDadosDaNuvem(); 
             });
         }
 
@@ -1427,6 +1439,7 @@
             document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
         }
 
+        // REQUISITO CUIDADO COM OS CÓDIGOS: Botões Novo Registro limpam a tela e forçam a consulta à planilha
         function limparPainelOrcamentoManual() {
             registroEmEdicaoManualDataHora = null;
             document.getElementById('cliente').value = '';
@@ -1438,7 +1451,7 @@
             document.getElementById('validade30Dias').checked = false;
             limparTodosItens('orcamento');
             
-            alert("Abertura confirmada. Sincronizando numeração sequencial...");
+            alert("Gerando próxima numeração livre na nuvem...");
             sincronizarProximoCodigoComANuvem();
         }
 
@@ -1457,7 +1470,7 @@
             document.getElementById('obsOS').value = '';
             limparTodosItens('entrada');
             
-            alert("Abertura confirmada. Sincronizando numeração sequencial...");
+            alert("Gerando próxima numeração livre na nuvem...");
             sincronizarProximoCodigoComANuvem();
         }
 
