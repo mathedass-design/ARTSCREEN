@@ -249,6 +249,15 @@
             background-color: #222222;
         }
 
+        /* Estilo do novo botão de conversão */
+        .grupo-botoes-acao button.btn-converter {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .grupo-botoes-acao button.btn-converter:hover {
+            background-color: #218838;
+        }
+
         .checkbox-group {
             display: flex;
             align-items: center;
@@ -264,7 +273,7 @@
             cursor: pointer;
         }
 
-        /* REESTRUTURAÇÃO DO BLOCO A6 - RODAPÉ CORRIGIDO NA BASE CENTRALIZADO */
+        /* CONFIGURAÇÃO DO BLOCO A6 PARA CAPTURA */
         #bloco-nota-a6 {
             position: absolute;
             left: -9999px;
@@ -321,12 +330,11 @@
             margin-bottom: 15px;
         }
         
-        /* CORREÇÃO DO CSS: Força o rodapé a ficar na base absoluta da imagem, centralizado */
         .nota-rodape {
             position: absolute;
             bottom: 18px;
             left: 18px;
-            width: 353px; /* Largura exata descontando o padding interno de 18px da nota */
+            width: 353px; 
             text-align: center;
             font-size: 10px;
             padding-top: 10px;
@@ -361,7 +369,6 @@
     <div class="menu-sistema">
         <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Orçamento</button>
         <button class="btn-sistema" onclick="alternarPainel('entrada')">Pedido</button>
-        <!-- CORREÇÃO DO LINK DO PORTFÓLIO: Abre direto a partir da raiz do domínio -->
         <button class="btn-sistema btn-portfolio" onclick="window.open(window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/portfolio.pdf', '_blank')">Portfólio</button>
     </div>
 
@@ -396,9 +403,54 @@
             <input type="number" id="desconto" value="0" min="0" step="any" oninput="calcularGenerico('orcamento')">
         </div>
 
+        <!-- REQUISITO: Forma de Pagamento e Parcelas no Orçamento -->
+        <div class="grid-financeiro">
+            <div class="form-group">
+                <label for="formaPagamentoOrcamento">Forma de Pagamento</label>
+                <select id="formaPagamentoOrcamento" onchange="verificarFormaPagamentoOrcamento()">
+                    <option value="PIX">PIX</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                    <option value="Débito">Cartão de Débito</option>
+                    <option value="Crédito">Cartão de Crédito</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="blocoParcelasOrcamento" style="display: none;">
+                <label for="parcelasOrcamento">Vezes (Parcelamento)</label>
+                <select id="parcelasOrcamento">
+                    <option value="1x">1x (À vista)</option>
+                    <option value="2x">2x</option>
+                    <option value="3x">3x</option>
+                    <option value="4x">4x</option>
+                    <option value="5x">5x</option>
+                    <option value="6x">6x</option>
+                    <option value="7x">7x</option>
+                    <option value="8x">8x</option>
+                    <option value="9x">9x</option>
+                    <option value="10x">10x</option>
+                    <option value="11x">11x</option>
+                    <option value="12x">12x</option>
+                    <option value="13x">13x</option>
+                    <option value="14x">14x</option>
+                    <option value="15x">15x</option>
+                    <option value="16x">16x</option>
+                    <option value="17x">17x</option>
+                    <option value="18x">18x</option>
+                    <option value="19x">19x</option>
+                    <option value="20x">20x</option>
+                </select>
+            </div>
+        </div>
+
         <div class="form-group">
             <label for="dataEntregaOrcamento">Previsão de Entrega</label>
             <input type="date" id="dataEntregaOrcamento">
+        </div>
+
+        <!-- REQUISITO: Campo de Observações no Orçamento -->
+        <div class="form-group">
+            <label for="obsOrcamento">Observações do Orçamento</label>
+            <textarea id="obsOrcamento" rows="3" placeholder="Observações adicionais para o cliente..."></textarea>
         </div>
 
         <label class="checkbox-group">
@@ -408,8 +460,10 @@
 
         <div class="totais-container" id="painelTotaisOrcamento"></div>
         
+        <!-- REQUISITO: Botão de Conversão Direta adicionado -->
         <div class="grupo-botoes-acao">
             <button type="button" onclick="processarEBaixarNota('orcamento')">ENVIAR / BAIXAR</button>
+            <button type="button" class="btn-converter" onclick="converterOrcamentoEmPedido()">CONVERTER EM PEDIDO</button>
         </div>
     </div>
 
@@ -456,7 +510,7 @@
         <div class="grid-financeiro">
             <div class="form-group">
                 <label for="formaPagamentoOS">Forma de Pagamento</label>
-                <select id="formaPagamentoOS" onchange="verificarFormaPagamento()">
+                <select id="formaPagamentoOS" onchange="verificarFormaPagamentoOS()">
                     <option value="PIX">PIX</option>
                     <option value="Dinheiro">Dinheiro</option>
                     <option value="Débito">Cartão de Débito</option>
@@ -508,7 +562,7 @@
         </div>
     </div>
 
-    <!-- AREA UNIFICADA DO MODELO DE NOTA A6 (MANTIDA ABSOLUTA EM ZONA SEGURA) -->
+    <!-- AREA UNIFICADA DO MODELO DE NOTA A6 (ZONA SEGURA) -->
     <div id="bloco-nota-a6">
         <div class="nota-header">
             <div class="nota-titulo">ARTSCREEN CORURIPE</div>
@@ -541,17 +595,15 @@
     </div>
 
     <script>
-        let numOrcamentoAtual = parseInt(localStorage.getItem('numOrcamentoPuro'), 10);
-        if (isNaN(numOrcamentoAtual) || numOrcamentoAtual < 100) {
-            numOrcamentoAtual = 100;
-            localStorage.setItem('numOrcamentoPuro', '100');
+        // REQUISITO: Unificação completa da numeração sequencial em um único motor
+        let numSequencialUnificado = parseInt(localStorage.getItem('numSequencialUnificado'), 10);
+        if (isNaN(numSequencialUnificado) || numSequencialUnificado < 100) {
+            numSequencialUnificado = 100;
+            localStorage.setItem('numSequencialUnificado', '100');
         }
 
-        let numOSAtual = parseInt(localStorage.getItem('numOSPuro'), 10);
-        if (isNaN(numOSAtual) || numOSAtual < 100) {
-            numOSAtual = 100;
-            localStorage.setItem('numOSPuro', '100');
-        }
+        // Variável de controle para congelar o ID durante a conversão estável
+        let codigoEmConversaoFixado = null;
 
         const conteudoItensOrcamento = document.getElementById('conteudoItensOrcamento');
         const conteudoItensOS = document.getElementById('conteudoItensOS');
@@ -583,14 +635,24 @@
         }
 
         function atualizarCodigosVisiveisDinamicos() {
-            const nOrc = parseInt(localStorage.getItem('numOrcamentoPuro'), 10) || 100;
-            const nOS = parseInt(localStorage.getItem('numOSPuro'), 10) || 100;
+            const numAtual = parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100;
             
-            document.getElementById('exibicaoCodigoOrcamento').innerText = `Nº ORÇAMENTO: #${gerarTextoCodigo('ART', nOrc)}`;
-            document.getElementById('exibicaoCodigoOS').innerText = `Nº PEDIDO: #${gerarTextoCodigo('ART', nOS)}`;
+            // Mostra o próximo número da fila sequencial para ambos os lados
+            document.getElementById('exibicaoCodigoOrcamento').innerText = `Nº ORÇAMENTO: #${gerarTextoCodigo('ART', numAtual)}`;
+            
+            if (codigoEmConversaoFixado !== null) {
+                document.getElementById('exibicaoCodigoOS').innerText = `Nº PEDIDO: #${gerarTextoCodigo('ART', codigoEmConversaoFixado)}`;
+            } else {
+                document.getElementById('exibicaoCodigoOS').innerText = `Nº PEDIDO: #${gerarTextoCodigo('ART', numAtual)}`;
+            }
         }
 
-        function verificarFormaPagamento() {
+        function verificarFormaPagamentoOrcamento() {
+            const forma = document.getElementById('formaPagamentoOrcamento').value;
+            document.getElementById('blocoParcelasOrcamento').style.display = (forma === 'Crédito') ? 'block' : 'none';
+        }
+
+        function verificarFormaPagamentoOS() {
             const forma = document.getElementById('formaPagamentoOS').value;
             document.getElementById('blocoParcelasOS').style.display = (forma === 'Crédito') ? 'block' : 'none';
         }
@@ -672,6 +734,61 @@
             }
         }
 
+        // REQUISITO: Clonagem absoluta e inteligente de dados entre abas
+        function converterOrcamentoEmPedido() {
+            const cliente = document.getElementById('cliente').value.trim();
+            if (!cliente) {
+                alert("Por favor, preencha pelo menos o nome do cliente antes de converter.");
+                return;
+            }
+
+            // Fixa o ID numérico atual para travar o mesmo número no pedido
+            codigoEmConversaoFixado = parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100;
+
+            // Transfere campos diretos
+            document.getElementById('clienteOS').value = cliente;
+            document.getElementById('descontoOS').value = document.getElementById('desconto').value;
+            document.getElementById('dataEntregaOS').value = document.getElementById('dataEntregaOrcamento').value;
+            document.getElementById('obsOS').value = document.getElementById('obsOrcamento').value;
+            
+            // Transfere pagamentos
+            const formaPgto = document.getElementById('formaPagamentoOrcamento').value;
+            document.getElementById('formaPagamentoOS').value = formaPgto;
+            verificarFormaPagamentoOS();
+            if (formaPgto === 'Crédito') {
+                document.getElementById('parcelasOS').value = document.getElementById('parcelasOrcamento').value;
+            }
+
+            // Clona a grade de itens dinâmicos
+            conteudoItensOS.innerHTML = '';
+            conteudoItensOrcamento.querySelectorAll('.item-linha').forEach(linhaOrigem => {
+                const desc = linhaOrigem.querySelector('.ipt-desc').value;
+                const qtd = linhaOrigem.querySelector('.ipt-qtd').value;
+                const valor = linhaOrigem.querySelector('.ipt-valor').value;
+
+                const novaLinha = document.createElement('div');
+                novaLinha.className = 'item-linha';
+                novaLinha.innerHTML = `
+                    <div class="col-desc"><input type="text" class="ipt-desc" value="${desc}" placeholder="Serviço / Produto"></div>
+                    <div class="col-qtd"><input type="number" class="ipt-qtd" value="${qtd}" placeholder="Qtd" min="1" oninput="atualizarSubtotalLinha(this, 'entrada')"></div>
+                    <div class="col-valor"><input type="number" class="ipt-valor" value="${valor}" placeholder="Valor Unit." min="0" step="any" oninput="atualizarSubtotalLinha(this, 'entrada')"></div>
+                    <div class="linha-mobile-total-remover">
+                        <div class="col-total">Total: R$ 0,00</div>
+                        <div class="col-acao"><button type="button" class="btn-remover-linha" onclick="removerLinhaGenerico(this, 'entrada')">❌</button></div>
+                    </div>
+                `;
+                conteudoItensOS.appendChild(novaLinha);
+                
+                // Recalcula o subtotal da linha recém-criada
+                const iptQtd = novaLinha.querySelector('.ipt-qtd');
+                atualizarSubtotalLinha(iptQtd, 'entrada');
+            });
+
+            // Direciona o foco do usuário para o painel de pedidos
+            alternarPainel('entrada');
+            alert(`Orçamento convertido! Código #${gerarTextoCodigo('ART', codigoEmConversaoFixado)} fixado para este Pedido.`);
+        }
+
         function montarEstruturaNotaA6HTML(tipo) {
             const agora = new Date();
             const dataStr = agora.toLocaleDateString('pt-BR');
@@ -684,9 +801,12 @@
             if (tipo === 'orcamento') {
                 document.getElementById('tipoNotaA6').innerText = "ORÇAMENTO";
                 const cliente = document.getElementById('cliente').value.trim() || "Não informado";
-                const numAtual = parseInt(localStorage.getItem('numOrcamentoPuro'), 10) || 100;
+                const numAtual = parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100;
                 const desconto = parseFloat(document.getElementById('desconto').value) || 0;
                 const checkedValidade = document.getElementById('validade30Dias').checked;
+                const formaPagto = document.getElementById('formaPagamentoOrcamento').value;
+                const parcelas = document.getElementById('parcelasOrcamento').value;
+                const obsOrc = document.getElementById('obsOrcamento').value.trim();
 
                 let prazoOrcamento = document.getElementById('dataEntregaOrcamento').value;
                 if(prazoOrcamento) {
@@ -715,13 +835,22 @@
                 });
 
                 const totalGeral = Math.max(0, subtotal - desconto);
+                let detalhePagto = formaPagto;
+                if(formaPagto === 'Crédito') detalhePagto += ` (${parcelas})`;
+
                 htmlFinanceiro = `Subtotal: ${formatarMoeda(subtotal)}<br>`;
                 if(desconto > 0) htmlFinanceiro += `Desconto: - ${formatarMoeda(desconto)}<br>`;
-                htmlFinanceiro += `Total Geral: ${formatarMoeda(totalGeral)}`;
+                htmlFinanceiro += `Total Geral: ${formatarMoeda(totalGeral)}<br>`;
+                htmlFinanceiro += `Forma Pagto: ${detalhePagto}`;
                 
-                if (checkedValidade) {
+                // Consolida observações estruturadas na foto do Orçamento
+                let textoObsFinal = "";
+                if (obsOrc) textoObsFinal += `<b>OBSERVAÇÕES:</b><br>${obsOrc}<br>`;
+                if (checkedValidade) textoObsFinal += `${obsOrc ? '<br>' : ''}Este orçamento possui validade de 30 dias.`;
+
+                if (textoObsFinal !== "") {
                     document.getElementById('blocoObsNotaA6').style.display = 'block';
-                    document.getElementById('obsNotaA6').innerHTML = `Este orçamento possui validade de 30 dias.`;
+                    document.getElementById('obsNotaA6').innerHTML = textoObsFinal;
                 } else {
                     document.getElementById('blocoObsNotaA6').style.display = 'none';
                 }
@@ -735,7 +864,9 @@
                 const formaPagto = document.getElementById('formaPagamentoOS').value;
                 const parcelas = document.getElementById('parcelasOS').value;
                 const obs = document.getElementById('obsOS').value.trim() || "Nenhuma";
-                const numOS = parseInt(localStorage.getItem('numOSPuro'), 10) || 100;
+                
+                // Determina o ID usado na impressão gráfica (congelado ou novo da fila)
+                const numOS = (codigoEmConversaoFixado !== null) ? codigoEmConversaoFixado : (parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100);
                 
                 let dataEntrega = document.getElementById('dataEntregaOS').value;
                 if(dataEntrega) {
@@ -796,8 +927,16 @@
             montarEstruturaNotaA6HTML(tipo);
             
             const alvo = document.getElementById('bloco-nota-a6');
-            const numPuroSalvo = (tipo === 'orcamento') ? parseInt(localStorage.getItem('numOrcamentoPuro'), 10) : parseInt(localStorage.getItem('numOSPuro'), 10);
-            const numTextoFormatado = gerarTextoCodigo('ART', numPuroSalvo);
+            
+            // Define qual id numérico fixar no nome do arquivo baixado
+            let numPuroUtilizado;
+            if (tipo === 'entrada' && codigoEmConversaoFixado !== null) {
+                numPuroUtilizado = codigoEmConversaoFixado;
+            } else {
+                numPuroUtilizado = parseInt(localStorage.getItem('numSequencialUnificado'), 10);
+            }
+            
+            const numTextoFormatado = gerarTextoCodigo('ART', numPuroUtilizado);
             
             const agora = new Date();
             const diaStr = String(agora.getDate()).padStart(2, '0');
@@ -821,10 +960,13 @@
                     link.href = canvas.toDataURL('image/png');
                     link.click();
 
-                    if (tipo === 'orcamento') {
-                        localStorage.setItem('numOrcamentoPuro', String(numPuroSalvo + 1));
+                    // REQUISITO: Gerencia o avanço sequencial do motor único de ID
+                    if (tipo === 'entrada' && codigoEmConversaoFixado !== null) {
+                        // Se veio de conversão, limpa a trava de ID e NÃO consome um novo número da fila
+                        codigoEmConversaoFixado = null;
                     } else {
-                        localStorage.setItem('numOSPuro', String(numPuroSalvo + 1));
+                        // Orçamentos e Pedidos inéditos sobem a fila global normalmente (+1)
+                        localStorage.setItem('numSequencialUnificado', String(numPuroUtilizado + 1));
                     }
                     
                     atualizarCodigosVisiveisDinamicos();
@@ -839,19 +981,26 @@
         function limparPainelOrcamentoManual() {
             document.getElementById('cliente').value = '';
             document.getElementById('desconto').value = '0';
+            document.getElementById('formaPagamentoOrcamento').value = 'PIX';
+            verificarFormaPagamentoOrcamento();
             document.getElementById('dataEntregaOrcamento').value = '';
+            document.getElementById('obsOrcamento').value = '';
             document.getElementById('validade30Dias').checked = false;
             limparTodosItens('orcamento');
         }
 
         function limparPainelPedidoManual() {
+            codigoEmConversaoFixado = null; // Reseta travas de conversões anteriores
             document.getElementById('clienteOS').value = '';
             document.getElementById('whatsappOS').value = '';
             document.getElementById('descontoOS').value = '0';
             document.getElementById('valorEntradaOS').value = '0';
+            document.getElementById('formaPagamentoOS').value = 'PIX';
+            verificarFormaPagamentoOS();
             document.getElementById('dataEntregaOS').value = '';
             document.getElementById('obsOS').value = '';
             limparTodosItens('entrada');
+            atualizarCodigosVisiveisDinamicos();
         }
 
         function limparTodosItens(tipo) {
