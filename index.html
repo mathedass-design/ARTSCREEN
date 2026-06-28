@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARTSCREEN CORURIPE - Sistema</title>
     
+    <!-- Script essencial para transformar o HTML em Imagem PNG -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -244,9 +245,6 @@
         .grupo-botoes-acao button.btn-converter { background-color: #28a745; border-color: #28a745; }
         .grupo-botoes-acao button.btn-converter:hover { background-color: #218838; }
 
-        .grupo-botoes-acao button.btn-nuvem-salvar { background-color: #007bff; border-color: #007bff; }
-        .grupo-botoes-acao button.btn-nuvem-salvar:hover { background-color: #0056b3; }
-
         .checkbox-group {
             display: flex;
             align-items: center;
@@ -294,7 +292,7 @@
             margin-right: 4px;
         }
         .btn-tab-editar { background-color: #ffc107; color: #000; }
-        .btn-tab-excluir { background-color: #dc3545; }
+        .btn-tabela.btn-tab-excluir { background-color: #dc3545; }
 
         /* DESIGN DA FICHA GRAFICA A6 SEGURO ANTI-ERRO */
         #bloco-nota-a6 {
@@ -363,6 +361,7 @@
 </head>
 <body>
 
+    <!-- Menu Superior -->
     <div class="menu-sistema">
         <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Orçamento</button>
         <button class="btn-sistema" onclick="alternarPainel('entrada')">Pedido</button>
@@ -370,6 +369,7 @@
         <button class="btn-sistema btn-nuvem-menu" onclick="alternarPainel('historico')">☁️ Histórico</button>
     </div>
 
+    <!-- PAINEL 1: ORÇAMENTOS -->
     <div class="container ativo" id="tela-orcamento">
         <h1>ARTSCREEN CORURIPE</h1>
         <div class="codigo-os-destaque" id="exibicaoCodigoOrcamento">Nº ORÇAMENTO: #ART00100</div>
@@ -438,10 +438,10 @@
         <div class="grupo-botoes-acao">
             <button type="button" onclick="processarEBaixarNota('orcamento')">ENVIAR / BAIXAR</button>
             <button type="button" class="btn-converter" onclick="converterOrcamentoEmPedido()">CONVERTER EM PEDIDO</button>
-            <button type="button" class="btn-nuvem-salvar" onclick="salvarDadosNaNuvem('orcamento')">☁️ SALVAR NA NUVEM</button>
         </div>
     </div>
 
+    <!-- PAINEL 2: PEDIDO -->
     <div class="container" id="tela-entrada">
         <h1>ARTSCREEN CORURIPE</h1>
         <div class="codigo-os-destaque" id="exibicaoCodigoOS">Nº PEDIDO: #ART00100</div>
@@ -522,10 +522,10 @@
         
         <div class="grupo-botoes-acao">
             <button type="button" onclick="processarEBaixarNota('entrada')">ENVIAR / BAIXAR</button>
-            <button type="button" class="btn-nuvem-salvar" onclick="salvarDadosNaNuvem('entrada')">☁️ SALVAR NA NUVEM</button>
         </div>
     </div>
 
+    <!-- PAINEL 3: HISTÓRICO DA NUVEM -->
     <div class="container" id="tela-historico">
         <h2>☁️ Banco de Dados em Nuvem</h2>
         <p>Lista de pedidos e orçamentos integrados em tempo real na sua planilha Google.</p>
@@ -553,6 +553,7 @@
         </table>
     </div>
 
+    <!-- AREA UNIFICADA DA NOTA A6 -->
     <div id="bloco-nota-a6-container" style="position: absolute; left: -9999px; top: 0; width: 395px;">
         <div id="bloco-nota-a6" style="position: static; left: 0; top: 0; display: block;">
             <div class="nota-header">
@@ -589,21 +590,38 @@
     <script>
         const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbyjE_DML-7o-Y_ZDReD7h5sUuBugTIq32fYsPwzD-ElwLT73JTp8Ji8_RY9txuMUa0u/exec";
 
-        let numSequencialUnificado = parseInt(localStorage.getItem('numSequencialUnificado'), 10);
-        if (isNaN(numSequencialUnificado) || numSequencialUnificado < 100) {
-            numSequencialUnificado = 100;
-            localStorage.setItem('numSequencialUnificado', '100');
-        }
-
+        let numSequencialUnificado = 100;
         let codigoEmConversaoFixado = null;
         let cacheNuvemGlobal = [];
+        let registroEmEdicaoManualDataHora = null; // Evita conflitos ao salvar edições de duplicados
 
         const conteudoItensOrcamento = document.getElementById('conteudoItensOrcamento');
         const conteudoItensOS = document.getElementById('conteudoItensOS');
 
-        adicionarLineDefault('orcamento');
-        adicionarLineDefault('entrada');
-        atualizarCodigosVisiveisDinamicos();
+        // REQUISITO: Sincronizar código com a planilha assim que o sistema abre
+        window.addEventListener('DOMContentLoaded', () => {
+            sincronizarProximoCodigoComANuvem();
+        });
+
+        function sincronizarProximoCodigoComANuvem() {
+            fetch(GOOGLE_API_URL)
+                .then(res => res.json())
+                .then(dados => {
+                    if (dados && dados.length > 0) {
+                        let numeros = dados.map(item => {
+                            let num = parseInt(item.codigo.replace('ART', ''), 10);
+                            return isNaN(num) ? 100 : num;
+                        });
+                        let maiorNumero = Math.max(...numeros);
+                        let proximoNumero = maiorNumero + 1;
+                        if (proximoNumero < 100) proximoNumero = 100;
+                        
+                        localStorage.setItem('numSequencialUnificado', String(proximoNumero));
+                        atualizarCodigosVisiveisDinamicos();
+                    }
+                })
+                .catch(err => console.error("Falha ao puxar sequência inicial:", err));
+        }
 
         function alternarPainel(painel) {
             document.querySelectorAll('.btn-sistema').forEach(b => b.classList.remove('ativo'));
@@ -623,7 +641,6 @@
             atualizarCodigosVisiveisDinamicos();
         }
 
-        // Dinâmica visual do status
         function atualizarCorDoSelectStatus(selectElement) {
             const val = selectElement.value;
             selectElement.className = ""; 
@@ -768,7 +785,8 @@
 
         function extrairPacoteDadosDoFormulario(tipo) {
             const agora = new Date();
-            const dataHoraStr = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+            // Mantém a chave original se for uma edição manual para o script não duplicar a linha à toa
+            const dataHoraStr = registroEmEdicaoManualDataHora ? registroEmEdicaoManualDataHora : (agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}));
             
             let numPuro = (tipo === 'orcamento') 
                 ? (parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100)
@@ -797,7 +815,8 @@
                     formaPagamento: document.getElementById('formaPagamentoOrcamento').value + (document.getElementById('formaPagamentoOrcamento').value === 'Crédito' ? ` (${document.getElementById('parcelasOrcamento').value})` : ''),
                     previsaoEntrega: document.getElementById('dataEntregaOrcamento').value || "Não informada",
                     observacoes: document.getElementById('obsOrcamento').value.trim() + (document.getElementById('validade30Dias').checked ? " [Validade 30 dias]" : ""),
-                    status: "Aberto", totalGeral: Math.max(0, subtotal - desc)
+                    status: "Aberto", totalGeral: Math.max(0, subtotal - desc),
+                    origemEdicao: registroEmEdicaoManualDataHora ? true : false
                 };
             } else {
                 const desc = parseFloat(document.getElementById('descontoOS').value) || 0;
@@ -810,16 +829,15 @@
                     previsaoEntrega: document.getElementById('dataEntregaOS').value || "Não informada",
                     observacoes: document.getElementById('obsOS').value.trim(), 
                     status: document.getElementById('statusDoPedidoForm').value, 
-                    totalGeral: Math.max(0, subtotal - desc)
+                    totalGeral: Math.max(0, subtotal - desc),
+                    origemEdicao: registroEmEdicaoManualDataHora ? true : false
                 };
             }
         }
 
-        function salvarDadosNaNuvem(tipo) {
+        function salvarDadosNuvemAutomatico(tipo) {
             const pacote = extrairPacoteDadosDoFormulario(tipo);
-            if (!pacote.cliente || pacote.cliente === "Não informado") { alert("Por favor, digite o nome do cliente antes de salvar."); return; }
-
-            alert("Salvando na nuvem... Aguarde confirmação.");
+            if (!pacote.cliente || pacote.cliente === "Não informado") return;
 
             fetch(GOOGLE_API_URL, {
                 method: "POST",
@@ -827,14 +845,20 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(pacote)
             }).then(() => {
-                alert(`Sucesso! Código ${pacote.codigo} integrado na planilha.`);
-                if (tipo === 'entrada') codigoEmConversaoFixado = null;
-            }).catch(err => {
-                alert("Erro ao conectar com a nuvem.");
-            });
+                // Limpa os estados de edição após o salvamento seguro
+                registroEmEdicaoManualDataHora = null;
+            }).catch(err => console.error("Falha ao sincronizar:", err));
         }
 
         function processarEBaixarNota(tipo) {
+            const clienteVal = (tipo === 'orcamento') ? document.getElementById('cliente').value.trim() : document.getElementById('clienteOS').value.trim();
+            if (!clienteVal) {
+                alert("Por favor, digite o nome do cliente antes de Enviar / Baixar.");
+                return;
+            }
+
+            salvarDadosNuvemAutomatico(tipo);
+
             montarEstruturaNotaA6HTML(tipo);
             const alvo = document.getElementById('bloco-nota-a6');
             const numPuroSalvo = (tipo === 'orcamento') ? parseInt(localStorage.getItem('numSequencialUnificado'), 10) : (codigoEmConversaoFixado !== null ? codigoEmConversaoFixado : parseInt(localStorage.getItem('numSequencialUnificado'), 10));
@@ -862,7 +886,6 @@
                     }
                     atualizarCodigosVisiveisDinamicos();
                 }).catch((err) => {
-                    console.error(err);
                     alert('Erro na captura da imagem. Tente atualizar a página.');
                 });
             }, 100);
@@ -907,7 +930,7 @@
                     <td><span style="color:${statusCor}; font-weight:bold">${p.status || "Não Definido"}</span></td>
                     <td>
                         <button class="btn-tabela btn-tab-editar" onclick="reabrirEEditarRegistroDaNuvem('${p.codigo}', '${p.dataHora}')">✏️ Editar</button>
-                        <button class="btn-tabela btn-tab-excluir" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')">🗑️ Ocultar</button>
+                        <button class="btn-tabela btn-tab-excluir" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')">Ocultar</button>
                     </td>
                 `;
                 corpo.appendChild(tr);
@@ -934,6 +957,9 @@
         function reabrirEEditarRegistroDaNuvem(codigoBuscado, dataHoraChave) {
             const item = cacheNuvemGlobal.find(p => p.codigo === codigoBuscado && p.dataHora === dataHoraChave);
             if(!item) return;
+
+            // Fixa as travas de segurança anti-duplicação na edição manual
+            registroEmEdicaoManualDataHora = item.dataHora;
 
             alert(`Reabrindo e carregando ${item.tipo} #${item.codigo}...`);
 
@@ -1033,7 +1059,6 @@
             });
         }
 
-        // REQUISITO: Montagem Limpa e Condicional do Comprovante A6 para o cliente
         function montarEstruturaNotaA6HTML(tipo) {
             const agora = new Date();
             const dataStr = agora.toLocaleDateString('pt-BR');
@@ -1079,7 +1104,6 @@
                 let textoObsFinal = obsOrc ? `<b>OBSERVAÇÕES:</b><br>${obsOrc}` : "";
                 if (checkedValidade) textoObsFinal += `${obsOrc ? '<br><br>' : ''}Este orçamento possui validade de 30 dias.`;
 
-                // Só exibe se houver texto digitado ou caixa de 30 dias marcada
                 if (textoObsFinal !== "") {
                     document.getElementById('blocoObsNotaA6').style.display = 'block';
                     document.getElementById('obsNotaA6').innerHTML = textoObsFinal;
@@ -1123,7 +1147,6 @@
                 htmlFinanceiro += `Total Líquido: ${formatarMoeda(totalGeral)}<br>Pago Entrada: ${formatarMoeda(valorEntrada)}<br>Forma Pagto: ${detalhePagto}<br>`;
                 htmlFinanceiro += restante > 0 ? `<span style="color:#cc0000">Restante: ${formatarMoeda(restante)}</span>` : `<span style="color:blue">SITUAÇÃO: PAGO</span>`;
 
-                // Só exibe o bloco se o usuário realmente preencheu alguma observação
                 if (obs !== "") {
                     document.getElementById('blocoObsNotaA6').style.display = 'block';
                     document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${obs}`;
@@ -1139,6 +1162,7 @@
         }
 
         function limparPainelOrcamentoManual() {
+            registroEmEdicaoManualDataHora = null;
             document.getElementById('cliente').value = '';
             document.getElementById('desconto').value = '0';
             document.getElementById('formaPagamentoOrcamento').value = 'PIX';
@@ -1147,10 +1171,12 @@
             document.getElementById('obsOrcamento').value = '';
             document.getElementById('validade30Dias').checked = false;
             limparTodosItens('orcamento');
+            sincronizarProximoCodigoComANuvem();
         }
 
         function limparPainelPedidoManual() {
             codigoEmConversaoFixado = null;
+            registroEmEdicaoManualDataHora = null;
             document.getElementById('clienteOS').value = '';
             document.getElementById('whatsappOS').value = '';
             document.getElementById('descontoOS').value = '0';
@@ -1162,7 +1188,7 @@
             document.getElementById('dataEntregaOS').value = '';
             document.getElementById('obsOS').value = '';
             limparTodosItens('entrada');
-            atualizarCodigosVisiveisDinamicos();
+            sincronizarProximoCodigoComANuvem();
         }
 
         function limparTodosItens(tipo) {
