@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARTSCREEN CORURIPE - Sistema</title>
     
+    <!-- Script essencial para transformar o HTML em Imagem PNG -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -95,6 +96,25 @@
             font-weight: bold;
             display: inline-block;
         }
+
+        .bloco-input-copiar {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .btn-copiar-discreto {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 0 15px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .btn-copiar-discreto:hover { background-color: #5a6268; }
 
         .btn-novo-registro-preto {
             background-color: #000000;
@@ -216,7 +236,7 @@
         .menu-status-historico {
             display: flex;
             gap: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .btn-status-filtro {
             flex: 1;
@@ -255,6 +275,9 @@
         }
 
         .card-header-tipo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             font-size: 11px;
             font-weight: bold;
             text-transform: uppercase;
@@ -268,6 +291,9 @@
             font-size: 16px;
             font-weight: bold;
             margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .card-body-info {
@@ -279,7 +305,7 @@
 
         .card-footer-acoes {
             display: flex;
-            gap: 6px;
+            gap: 4px;
             border-top: 1px dashed rgba(0,0,0,0.1);
             padding-top: 10px;
         }
@@ -408,7 +434,7 @@
         .btn-tabela {
             flex: 1;
             padding: 8px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
             cursor: pointer;
             border: none;
@@ -421,7 +447,6 @@
         .btn-tab-baixar { background-color: #17a2b8; }
         .btn-tab-ver { background-color: #6c757d; }
 
-        /* DESIGN DA FICHA GRAFICA A6 SEGURO ANTI-ERRO */
         #bloco-nota-a6 {
             position: absolute;
             left: -9999px;
@@ -453,7 +478,6 @@
         .nota-tabela td { padding: 4px 0; }
         .nota-financeiro-direita { text-align: right; font-size: 13px; font-weight: bold; margin-top: 6px; line-height: 1.4; margin-bottom: 15px; }
         
-        /* REQUISITO: Rodapé modificado em duas colunas (Flexbox) para embutir o QR Code pequeno */
         .nota-rodape {
             position: absolute;
             bottom: 18px;
@@ -508,6 +532,7 @@
 </head>
 <body>
 
+    <!-- Menu Superior Padronizado -->
     <div class="menu-sistema">
         <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Orçamento</button>
         <button class="btn-sistema" onclick="alternarPainel('entrada')">Pedido</button>
@@ -515,6 +540,7 @@
         <button class="btn-sistema" onclick="alternarPainel('historico')">Histórico</button>
     </div>
 
+    <!-- PAINEL 1: ORÇAMENTOS -->
     <div class="container ativo" id="tela-orcamento">
         <div id="alertaOrcamentoUso" class="box-alerta-concorrencia"></div>
         <h1>ARTSCREEN CORURIPE</h1>
@@ -585,12 +611,13 @@
         <div class="totais-container" id="painelTotaisOrcamento"></div>
         
         <div class="grupo-botoes-acao">
-            <button type="button" class="btn-visualizar-form" onclick="salvarEVisualizarImediatamenteForm('orcamento')">👁️ Visualizar Comprovante</button>
+            <button type="button" class="btn-visualizar-form" onclick="salvarEVisualizarImediatamenteForm('orcamento')">VISUALIZAR</button>
             <button type="button" onclick="processarEBaixarNota('orcamento')">ENVIAR / BAIXAR</button>
             <button type="button" class="btn-converter" onclick="converterOrcamentoEmPedido()">CONVERTER EM PEDIDO</button>
         </div>
     </div>
 
+    <!-- PAINEL 2: PEDIDO -->
     <div class="container" id="tela-entrada">
         <div id="alertaPedidoUso" class="box-alerta-concorrencia"></div>
         <h1>ARTSCREEN CORURIPE</h1>
@@ -609,7 +636,10 @@
 
         <div class="form-group">
             <label for="whatsappOS">WhatsApp / Contato</label>
-            <input type="text" id="whatsappOS" placeholder="(82) 99999-0000">
+            <div class="bloco-input-copiar">
+                <input type="text" id="whatsappOS" placeholder="(82) 99999-0000">
+                <button type="button" class="btn-copiar-discreto" onclick="copiarWhatsAppTelaAtual()">Copiar</button>
+            </div>
         </div>
 
         <div class="form-group">
@@ -623,16 +653,9 @@
 
         <div class="grid-financeiro">
             <div class="form-group">
-                <label for="descontoOS">Desconto (R$)</label>
-                <input type="number" id="descontoOS" value="0" min="0" step="any" oninput="calcularGenerico('entrada')">
-            </div>
-            <div class="form-group">
                 <label for="valorEntradaOS">Valor Pago (Entrada)</label>
                 <input type="number" id="valorEntradaOS" value="0" min="0" step="any" oninput="calcularGenerico('entrada')">
             </div>
-        </div>
-
-        <div class="grid-financeiro">
             <div class="form-group">
                 <label for="formaPagamentoOS">Forma de Pagamento</label>
                 <select id="formaPagamentoOS" onchange="verificarFormaPagamentoOS()">
@@ -641,6 +664,13 @@
                     <option value="Débito">Cartão de Débito</option>
                     <option value="Crédito">Cartão de Crédito</option>
                 </select>
+            </div>
+        </div>
+
+        <div class="grid-financeiro">
+            <div class="form-group">
+                <label for="descontoOS">Desconto (R$)</label>
+                <input type="number" id="descontoOS" value="0" min="0" step="any" oninput="calcularGenerico('entrada')">
             </div>
             <div class="form-group" id="blocoParcelasOS" style="display: none;">
                 <label for="parcelasOS">Vezes (Parcelamento)</label>
@@ -674,14 +704,15 @@
         <div class="totais-container" id="painelTotaisOS"></div>
         
         <div class="grupo-botoes-acao">
-            <button type="button" class="btn-visualizar-form" onclick="salvarEVisualizarImediatamenteForm('entrada')">👁️ Visualizar Comprovante</button>
+            <button type="button" class="btn-visualizar-form" onclick="salvarEVisualizarImediatamenteForm('entrada')">VISUALIZAR</button>
             <button type="button" onclick="processarEBaixarNota('entrada')">ENVIAR / BAIXAR</button>
         </div>
     </div>
 
+    <!-- PAINEL 3: HISTÓRICO DA NUVEM -->
     <div class="container" id="tela-historico">
         <div class="busca-container">
-            <input type="text" id="campoBuscaNuvem" class="input-busca" placeholder="🔍 Buscar por código, nome do cliente ou data em qualquer seção..." oninput="filtrarTabelaHistoricoLocal()">
+            <input type="text" id="campoBuscaNuvem" class="input-busca" placeholder="🔍 Buscar por código ou cliente..." oninput="filtrarTabelaHistoricoLocal()">
         </div>
 
         <div class="menu-status-historico">
@@ -696,6 +727,7 @@
         <div id="gradeHistoricoCards" class="grade-historico-cards"></div>
     </div>
 
+    <!-- Modal Seletora de Modo de Edição -->
     <div id="modalEscolhaEdicao" class="modal-edicao" style="display: none;">
         <div class="modal-conteudo">
             <h3 style="margin-top:0; margin-bottom: 20px; font-size: 18px; text-transform: uppercase;">Como deseja prosseguir?</h3>
@@ -713,6 +745,7 @@
         </div>
     </div>
 
+    <!-- Janela Flutuante de Visualização Gráfica -->
     <div id="modalVisualizadorFichaA6" class="modal-visualizador-imagem" onclick="fecharVisualizadorFichaA6(event)">
         <div class="conteudo-visualizador-imagem">
             <h3 id="tituloVisualizadorFichaA6" style="margin-top:0; font-size:16px; text-transform:uppercase; color:#000;">Visualizar Registro</h3>
@@ -722,6 +755,7 @@
         </div>
     </div>
 
+    <!-- AREA UNIFICADA DA NOTA A6 (MOTOR GRÁFICO OCULTO) -->
     <div id="bloco-nota-a6-container" style="position: absolute; left: -9999px; top: 0; width: 395px;">
         <div id="bloco-nota-a6" style="position: static; left: 0; top: 0; display: block;">
             <div class="nota-header">
@@ -752,7 +786,7 @@
                 <div class="nota-rodape-texto">
                     CNPJ: 25.974.730/0001-14<br>
                     (82) 99628-4867 | @ARTSCREENCORURIPE<br>
-                    Av. Floriano Peixoto, 138, Centro, Coruripe - AL
+                    Av. Floriano Peixoto, 138, Centro, Coruripe/AL
                 </div>
                 <img class="nota-rodape-qrcode" src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://instagram.com/ARTSCREENCORURIPE" alt="QR Code">
             </div>
@@ -770,6 +804,7 @@
         let filtroStatusSelecionado = 'todos'; 
         let itemSelecionadoParaEdicaoModal = null; 
 
+        // REQUISITO: Forçar inicialização limpa com exatamente o PRIMEIRO ITEM gerado e visível
         window.addEventListener('DOMContentLoaded', () => {
             limparTodosItens('orcamento');
             limparTodosItens('entrada');
@@ -827,12 +862,35 @@
             if(val === "Cancelado") selectElement.classList.add("status-cancelado");
         }
 
+        function mudarFiltroStatusHistorico(statusRef) {
+            document.querySelectorAll('.btn-status-filtro').forEach(b => b.classList.remove('ativo'));
+            filtroStatusSelecionado = statusRef;
+            
+            if(statusRef === 'todos') document.querySelector('.btn-status-filtro.f-todos').classList.add('ativo');
+            if(statusRef === 'andamento') document.querySelector('.btn-status-filtro.f-andamento').classList.add('ativo');
+            if(statusRef === 'concluido') document.querySelector('.btn-status-filtro.f-concluido').classList.add('ativo');
+            if(statusRef === 'cancelado') document.querySelector('.btn-status-filtro.f-cancelado').classList.add('ativo');
+
+            filtrarTabelaHistoricoLocal();
+        }
+
         function gerarTextoCodigo(prefixo, numero) {
             return `${prefixo}${String(numero).padStart(5, '0')}`;
         }
 
         function formatarMoeda(valor) {
             return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function copiarWhatsAppTelaAtual() {
+            const numeroTel = document.getElementById('whatsappOS').value.trim();
+            if(!numeroTel) { alert("Nenhum número digitado para copiar."); return; }
+            navigator.clipboard.writeText(numeroTel).then(() => { alert(`Número ${numeroTel} copiado!`); });
+        }
+
+        function copiarWhatsAppDiretoDoCard(numeroPuro) {
+            if(!numeroPuro || numeroPuro === "Não informado" || numeroPuro === "Não aplicável") { alert("Sem telefone cadastrado."); return; }
+            navigator.clipboard.writeText(numeroPuro).then(() => { alert(`WhatsApp ${numeroPuro} copiado!`); });
         }
 
         function atualizarCodigosVisiveisDinamicos() {
@@ -850,16 +908,6 @@
             } else {
                 document.getElementById('exibicaoCodigoOS').innerText = `Nº PEDIDO: #${gerarTextoCodigo('ART', numAtual)}`;
             }
-        }
-
-        function verificarFormaPagamentoOrcamento() {
-            const forma = document.getElementById('formaPagamentoOrcamento').value;
-            document.getElementById('blocoParcelasOrcamento').style.display = (forma === 'Crédito') ? 'block' : 'none';
-        }
-
-        function verificarFormaPagamentoOS() {
-            const forma = document.getElementById('formaPagamentoOS').value;
-            document.getElementById('blocoParcelasOS').style.display = (forma === 'Crédito') ? 'block' : 'none';
         }
 
         function adicionarLinhaGenerico(tipo) {
@@ -924,6 +972,7 @@
             }
         }
 
+        // REQUISITO: Ajustado conversor de orçamentos mitigando conflito de herança de escopos
         function converterOrcamentoEmPedido() {
             const cliente = document.getElementById('cliente').value.trim();
             if (!cliente) { alert("Preencha o nome do cliente antes de converter."); return; }
@@ -962,22 +1011,14 @@
             });
 
             alternarPainel('entrada');
-            alert(`Convertido! Mantendo Vinculado ao Código #${gerarTextoCodigo('ART', codigoEmConversaoFixado)}.`);
+            alert(`Convertido! Código #${gerarTextoCodigo('ART', codigoEmConversaoFixado)} fixado.`);
         }
 
         function extrairPacoteDadosDoFormulario(tipo) {
             const agora = new Date();
             const dataHoraStr = registroEmEdicaoManualDataHora ? registroEmEdicaoManualDataHora : (agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}));
             
-            let numTextoFormatado = "";
-            if (codigoEdicaoFixoBloqueado !== null) {
-                numTextoFormatado = codigoEdicaoFixoBloqueado;
-            } else if (tipo === 'entrada' && codigoEmConversaoFixado !== null) {
-                numTextoFormatado = gerarTextoCodigo('ART', codigoEmConversaoFixado);
-            } else {
-                let numPuro = parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100;
-                numTextoFormatado = gerarTextoCodigo('ART', numPuro);
-            }
+            let numTextoFormatado = codigoEdicaoFixoBloqueado !== null ? codigoEdicaoFixoBloqueado : (tipo === 'entrada' && codigoEmConversaoFixado !== null ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10)));
 
             let containerItens = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
             let listaItensTexto = [];
@@ -1031,29 +1072,22 @@
                 mode: "no-cors",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(pacote)
-            }).then(() => {
-                // Sincronização em segundo plano concluída
             }).catch(err => console.error("Falha ao sincronizar:", err));
         }
 
         function salvarEVisualizarImediatamenteForm(tipo) {
             const clienteVal = (tipo === 'orcamento') ? document.getElementById('cliente').value.trim() : document.getElementById('clienteOS').value.trim();
-            if (!clienteVal) {
-                alert("Por favor, digite o nome do cliente antes de visualizar.");
-                return;
-            }
+            if (!clienteVal) { alert("Por favor, digite o nome do cliente."); return; }
 
             salvarDadosNuvemAutomatico(tipo);
-
             montarEstruturaNotaA6HTML(tipo);
+
             const alvoMotor = document.getElementById('bloco-nota-a6');
-            const tituloModal = document.getElementById('tituloVisualizadorFichaA6');
             const imgModal = document.getElementById('imagemRenderizadaFichaA6');
             const btnBaixarModal = document.getElementById('btnDownloadPeloVisualizador');
 
             let numTextoFormatado = codigoEdicaoFixoBloqueado !== null ? codigoEdicaoFixoBloqueado : (tipo === 'entrada' && codigoEmConversaoFixado !== null ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10)));
-
-            tituloModal.innerText = `Visualizar ${tipo === 'orcamento' ? 'Orçamento' : 'Pedido'}: #${numTextoFormatado}`;
+            document.getElementById('tituloVisualizadorFichaA6').innerText = `Visualizar ${tipo === 'orcamento' ? 'Orçamento' : 'Pedido'}: #${numTextoFormatado}`;
             imgModal.src = ""; 
 
             setTimeout(() => {
@@ -1067,44 +1101,44 @@
                         link.href = urlImagemBase64;
                         link.click();
                     };
-
                     document.getElementById('modalVisualizadorFichaA6').style.display = 'flex';
                 });
-            }, 80);
+            }, 150);
         }
 
         function processarEBaixarNota(tipo) {
             const clienteVal = (tipo === 'orcamento') ? document.getElementById('cliente').value.trim() : document.getElementById('clienteOS').value.trim();
-            if (!clienteVal) {
-                alert("Por favor, digite o nome do cliente antes de Enviar / Baixar.");
-                return;
-            }
+            if (!clienteVal) { alert("Por favor, digite o nome do cliente."); return; }
 
             salvarDadosNuvemAutomatico(tipo);
-
             montarEstruturaNotaA6HTML(tipo);
+
             const alvo = document.getElementById('bloco-nota-a6');
-            
             let numTextoFormatado = codigoEdicaoFixoBloqueado !== null ? codigoEdicaoFixoBloqueado : (tipo === 'entrada' && codigoEmConversaoFixado !== null ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10)));
 
             const agora = new Date();
             const nomeDoArquivoFinal = `${tipo === 'orcamento' ? 'ORCAMENTO' : 'PEDIDO'}_${numTextoFormatado}_${String(agora.getDate()).padStart(2,'0')}_${String(agora.getMonth()+1).padStart(2,'0')}_${agora.getFullYear()}`;
 
             setTimeout(() => {
-                html2canvas(alvo, { scale: 2, logging: false, useCORS: true, allowTaint: true }).then(canvas => {
+                html2canvas(alvo, { scale: 2, useCORS: true, allowTaint: true }).then(canvas => {
                     const link = document.createElement('a');
                     link.download = `${nomeDoArquivoFinal}.png`;
                     link.href = canvas.toDataURL('image/png');
                     link.click();
-                    
-                    if (tipo === 'entrada' && codigoEmConversaoFixado !== null) {
-                        codigoEmConversaoFixado = null;
-                    }
+                    if (tipo === 'entrada' && codigoEmConversaoFixado !== null) codigoEmConversaoFixado = null;
                     atualizarCodigosVisiveisDinamicos();
-                }).catch(() => {
-                    alert('Erro na captura da imagem.');
                 });
-            }, 100);
+            }, 150);
+        }
+
+        function verificarFormaPagamentoOrcamento() {
+            const forma = document.getElementById('formaPagamentoOrcamento').value;
+            document.getElementById('blocoParcelasOrcamento').style.display = (forma === 'Crédito') ? 'block' : 'none';
+        }
+
+        function verificarFormaPagamentoOS() {
+            const forma = document.getElementById('formaPagamentoOS').value;
+            document.getElementById('blocoParcelasOS').style.display = (forma === 'Crédito') ? 'block' : 'none';
         }
 
         function puxarDadosDaNuvem() {
@@ -1121,37 +1155,27 @@
                 });
         }
 
+        // REQUISITO: Retornado o modelo original de filtragem limpa e direta
         function filtrarTabelaHistoricoLocal() {
             const termoBusca = document.getElementById('campoBuscaNuvem').value.toLowerCase().trim();
             
             let dadosFiltradosStatus = cacheNuvemGlobal.filter(p => {
-                if (filtroStatusSelecionado === 'todos') {
-                    return p.status !== "Cancelado"; 
-                } else if (filtroStatusSelecionado === 'andamento') {
-                    return p.status === "Aberto" || p.status === "Produção" || p.status === "Definir Status" || !p.status;
-                } else if (filtroStatusSelecionado === 'concluido') {
-                    return p.status === "Concluído";
-                } else if (filtroStatusSelecionado === 'cancelado') {
-                    return p.status === "Cancelado";
-                }
+                if (filtroStatusSelecionado === 'todos') return p.status !== "Cancelado"; 
+                if (filtroStatusSelecionado === 'andamento') return p.status === "Aberto" || p.status === "Produção" || p.status === "Definir Status" || !p.status;
+                if (filtroStatusSelecionado === 'concluido') return p.status === "Concluído";
+                if (filtroStatusSelecionado === 'cancelado') return p.status === "Cancelado";
                 return true;
             });
 
             if (termoBusca) {
-                dadosFiltradosStatus = dadosFiltradosStatus.filter(p => {
-                    return p.codigo.toLowerCase().includes(termoBusca) || 
-                           p.cliente.toLowerCase().includes(termoBusca) || 
-                           p.dataHora.toLowerCase().includes(termoBusca);
-                });
+                dadosFiltradosStatus = dadosFiltradosStatus.filter(p => p.codigo.toLowerCase().includes(termoBusca) || p.cliente.toLowerCase().includes(termoBusca));
             }
-
             renderizarGradeCardsFinal(dadosFiltradosStatus);
         }
 
         function renderizarGradeCardsFinal(listaFiltrada) {
             const grade = document.getElementById('gradeHistoricoCards');
             grade.innerHTML = "";
-
             const itensOrdenados = listaFiltrada.reverse();
 
             if(itensOrdenados.length === 0) {
@@ -1160,19 +1184,8 @@
             }
 
             itensOrdenados.forEach(p => {
-                let corFundoCard = "#ffffff"; 
-                let corTextoCard = "#333333";
-                
-                if (p.status === "Produção" || p.status === "Aberto" || p.status === "Definir Status" || !p.status) {
-                    corFundoCard = "#fff3cd"; 
-                    corTextoCard = "#856404";
-                } else if (p.status === "Concluído") {
-                    corFundoCard = "#d4edda"; 
-                    corTextoCard = "#155724";
-                } else if (p.status === "Cancelado") {
-                    corFundoCard = "#f8d7da"; 
-                    corTextoCard = "#721c24";
-                }
+                let corFundoCard = p.status === "Concluído" ? "#d4edda" : (p.status === "Cancelado" ? "#f8d7da" : "#fff3cd"); 
+                let corTextoCard = p.status === "Concluído" ? "#155724" : (p.status === "Cancelado" ? "#721c24" : "#856404");
 
                 const card = document.createElement('div');
                 card.className = "card-registro";
@@ -1183,18 +1196,21 @@
                 card.innerHTML = `
                     <div>
                         <div class="card-header-tipo">[${p.tipo.toUpperCase()}]</div>
-                        <div class="card-title-codigo">#${p.codigo}</div>
+                        <div class="card-title-codigo">
+                            <span>#${p.codigo}</span>
+                            ${(p.contato && p.contato !== 'Não aplicável' && p.contato !== 'Não informado') ? `<button class="btn-copiar-linha" style="padding:2px 6px; font-size:10px;" onclick="copiarWhatsAppDiretoDoCard('${p.contato}')">Copiar Zap</button>` : ''}
+                        </div>
                         <div class="card-body-info">
                             <b>Cliente:</b> ${p.cliente}<br>
-                            <b>Data:</b> ${p.dataHora.split(' ')[0]}<br>
+                            <b>Data:</b> ${p.dataHora}<br>
                             <b>Total:</b> ${formatarMoeda(p.totalGeral)}
                         </div>
                     </div>
                     <div class="card-footer-acoes">
-                        <button class="btn-tabela btn-tab-editar" onclick="verificarAntesDeEditar('${p.codigo}', '${p.dataHora}')" title="Editar">✏️</button>
-                        <button class="btn-tabela btn-tab-ver" onclick="gerarEVisualizarFichaA6Flutuante('${p.codigo}', '${p.dataHora}')" title="Visualizar">👁️</button>
-                        <button class="btn-tabela btn-tab-baixar" onclick="baixarComprovanteDiretoDoHistorial('${p.codigo}', '${p.dataHora}')" title="Baixar">📥</button>
-                        ${p.status !== 'Cancelado' ? `<button class="btn-tabela btn-tab-excluir" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')" title="Ocultar">🗑️</button>` : ''}
+                        <button class="btn-tabela btn-tab-editar" onclick="verificarAntesDeEditar('${p.codigo}', '${p.dataHora}')">✏️</button>
+                        <button class="btn-tabela btn-tab-ver" onclick="gerarEVisualizarFichaA6Flutuante('${p.codigo}', '${p.dataHora}')">👁️</button>
+                        <button class="btn-tabela btn-tab-baixar" onclick="baixarComprovanteDiretoDoHistorial('${p.codigo}', '${p.dataHora}')">📥</button>
+                        ${p.status !== 'Cancelado' ? `<button class="btn-tabela btn-tab-excluir" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')">🗑️</button>` : ''}
                     </div>
                 `;
                 grade.appendChild(card);
@@ -1202,44 +1218,23 @@
         }
 
         function verificarAntesDeEditar(codigo, dataHora) {
-            const item = cacheNuvemGlobal.find(p => p.codigo === codigo && p.dataHora === dataHora);
-            if(!item) return;
-
-            let idSimuladoDispositivoOcupado = false; 
-
-            if(idSimuladoDispositivoOcupado) {
-                const boxAlerta = item.tipo === "Orçamento" ? document.getElementById('alertaOrcamentoUso') : document.getElementById('alertaPedidoUso');
-                const funcaoFuga = item.tipo === "Orçamento" ? "limparPainelOrcamentoManual()" : "limparPainelPedidoManual()";
-                const labelFuga = item.tipo === "Orçamento" ? "Novo Orçamento" : "Novo Pedido";
-                
-                boxAlerta.innerHTML = `<span style="font-weight:bold; color:#721c24;">CÓDIGO EM USO</span><br><button class="btn-novo-registro-preto" style="margin-top:8px;" onclick="${funcaoFuga}">${labelFuga}</button>`;
-                boxAlerta.style.display = "block";
-                alternarPainel(item.tipo === "Orçamento" ? 'orcamento' : 'entrada');
-            } else {
-                document.getElementById('alertaOrcamentoUso').style.display = "none";
-                document.getElementById('alertaPedidoUso').style.display = "none";
-                abrirModalEscolhaEdicao(codigo, dataHora);
-            }
+            document.getElementById('alertaOrcamentoUso').style.display = "none";
+            document.getElementById('alertaPedidoUso').style.display = "none";
+            abrirModalEscolhaEdicao(codigo, dataHora);
         }
 
         function abrirModalEscolhaEdicao(codigo, dataHora) {
             const item = cacheNuvemGlobal.find(p => p.codigo === codigo && p.dataHora === dataHora);
             if(!item) return;
-            
             itemSelecionadoParaEdicaoModal = item;
-            document.getElementById('subPainelSelecaoStatusRapido').style.display = 'none';
             document.getElementById('modalEscolhaEdicao').style.display = 'flex';
 
             document.getElementById('btnModalEditarTudo').onclick = () => {
                 fecharModalEscolhaEdicao();
                 carregarFormularioCompletoEdicao(itemSelecionadoParaEdicaoModal);
             };
-
             document.getElementById('btnModalEditarStatus').onclick = () => {
-                if(itemSelecionadoParaEdicaoModal.tipo === "Orçamento") {
-                    alert("Orçamentos não possuem controle de produção.");
-                    return;
-                }
+                if(itemSelecionadoParaEdicaoModal.tipo === "Orçamento") { alert("Orçamentos não possuem status de produção."); return; }
                 document.getElementById('subPainelSelecaoStatusRapido').style.display = 'block';
             };
         }
@@ -1249,96 +1244,97 @@
             document.getElementById('subPainelSelecaoStatusRapido').style.display = 'none';
         }
 
-        function executarMudancaStatusDiretaNuvem(statusMapeado) {
-            fecharModalEscolhaEdicao();
-            alert("Salvando alteração diretamente na nuvem...");
-
-            const pacoteStatus = {
-                acao: "salvar", tipo: itemSelecionadoParaEdicaoModal.tipo, codigo: itemSelecionadoParaEdicaoModal.codigo, dataHora: itemSelecionadoParaEdicaoModal.dataHora,
-                cliente: itemSelecionadoParaEdicaoModal.cliente, contato: itemSelecionadoParaEdicaoModal.contato, itens: itemSelecionadoParaEdicaoModal.itens, desconto: itemSelecionadoParaEdicaoModal.desconto,
-                entrada: itemSelecionadoParaEdicaoModal.entrada, formaPagamento: itemSelecionadoParaEdicaoModal.formaPagamento, previsaoEntrega: itemSelecionadoParaEdicaoModal.previsaoEntrega,
-                observacoes: itemSelecionadoParaEdicaoModal.observacoes, status: statusMapeado, totalGeral: itemSelecionadoParaEdicaoModal.totalGeral,
-                origemEdicao: true 
-            };
-
-            fetch(GOOGLE_API_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(pacoteStatus)
-            }).then(() => {
-                alert("Status updated!");
-                puxarDadosDaNuvem(); 
-            });
-        }
-
         function fecharVisualizadorFichaA6(event) {
-            if (!event || event.target === document.getElementById('modalVisualizadorFichaA6')) {
+            if (!event || event.target === document.getElementById('modalVisualizadorFichaA6') || event.target.classList.contains('b-fechar')) {
                 document.getElementById('modalVisualizadorFichaA6').style.display = 'none';
             }
         }
 
-        function baixarComprovanteDiretoDoHistorial(codigoAlvo, dataHoraChave) {
+        function executarMudancaStatusDiretaNuvem(statusMapeado) {
+            fecharModalEscolhaEdicao();
+            const pacoteStatus = {
+                acao: "salvar", tipo: itemSelecionadoParaEdicaoModal.tipo, codigo: itemSelecionadoParaEdicaoModal.codigo, dataHora: itemSelecionadoParaEdicaoModal.dataHora,
+                cliente: itemSelecionadoParaEdicaoModal.cliente, contato: itemSelecionadoParaEdicaoModal.contato, itens: itemSelecionadoParaEdicaoModal.itens, desconto: itemSelecionadoParaEdicaoModal.desconto,
+                entrada: itemSelecionadoParaEdicaoModal.entrada, formaPagamento: itemSelecionadoParaEdicaoModal.formaPagamento, previsaoEntrega: itemSelecionadoParaEdicaoModal.previsaoEntrega,
+                observacoes: itemSelecionadoParaEdicaoModal.observacoes, status: statusMapeado, totalGeral: itemSelecionadoParaEdicaoModal.totalGeral, origemEdicao: true 
+            };
+            fetch(GOOGLE_API_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(pacoteStatus) }).then(() => { puxarDadosDaNuvem(); });
+        }
+
+        function gerarEVisualizarFichaA6Flutuante(codigoAlvo, dataHoraChave) {
+            baixarComprovanteDiretoDoHistorial(codigoAlvo, dataHoraChave, true);
+        }
+
+        function baixarComprovanteDiretoDoHistorial(codigoAlvo, dataHoraChave, apenasVisualizar = false) {
             const p = cacheNuvemGlobal.find(item => item.codigo === codigoAlvo && item.dataHora === dataHoraChave);
             if(!p) return;
 
             document.getElementById('tipoNotaA6').innerText = p.tipo.toUpperCase();
-            let htmlGerais = ""; let htmlItens = ""; let htmlFinanceiro = "";
-            let dataA6 = p.dataHora.split(' ')[0];
+            let dataA6 = p.dataHora;
             let prazoA6 = p.previsaoEntrega && p.previsaoEntrega !== "Não informada" ? p.previsaoEntrega.split('-').reverse().join('/') : "Não definido";
 
-            if (p.tipo === "Orçamento") {
-                htmlGerais = `<b>Nº ORÇAMENTO:</b> ${p.codigo}<br><b>Data:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}`;
-                htmlFinanceiro = `Total Geral: ${formatarMoeda(p.totalGeral)}<br>Forma Pagto: ${p.formaPagamento}`;
-                if(p.observacoes && p.observacoes.trim() !== "") {
-                    document.getElementById('blocoObsNotaA6').style.display = 'block';
-                    document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${p.observacoes}`;
-                } else {
-                    document.getElementById('blocoObsNotaA6').style.display = 'none';
-                }
-            } else {
-                htmlGerais = `<b>Nº PEDIDO:</b> ${p.codigo}<br><b>Entrada:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}<br><b>Contato:</b> ${p.contato}`;
-                let rest = Math.max(0, p.totalGeral - p.entrada);
-                htmlFinanceiro = `Total Líquido: ${formatarMoeda(p.totalGeral)}<br>Pago Entrada: ${formatarMoeda(p.entrada)}<br>Forma Pagto: ${p.formaPagamento}<br>`;
-                htmlFinanceiro += rest > 0 ? `<span style="color:#cc0000">Restante: ${formatarMoeda(rest)}</span>` : `<span style="color:blue">SITUAÇÃO: PAGO</span>`;
+            let htmlGerais = p.tipo === "Orçamento" 
+                ? `<b>Nº ORÇAMENTO:</b> ${p.codigo}<br><b>Data:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}`
+                : `<b>Nº PEDIDO:</b> ${p.codigo}<br><b>Entrada:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}<br><b>Contato:</b> ${p.contato}`;
 
-                if(p.observacoes && p.observacoes.trim() !== "") {
-                    document.getElementById('blocoObsNotaA6').style.display = 'block';
-                    document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${p.observacoes}`;
+            let subtotalCalculado = p.totalGeral + (parseFloat(p.desconto) || 0);
+            let rest = Math.max(0, p.totalGeral - (parseFloat(p.entrada) || 0));
+            
+            let htmlFinanceiro = "";
+            if (p.tipo === "Orçamento") {
+                if (parseFloat(p.desconto) > 0) {
+                    htmlFinanceiro += `Subtotal: ${formatarMoeda(subtotalCalculado)}<br>Desconto: -${formatarMoeda(p.desconto)}<br>`;
+                }
+                htmlFinanceiro += `Total Geral: ${formatarMoeda(p.totalGeral)}<br>Forma Pagto: ${p.formaPagamento}`;
+            } else {
+                if (rest === 0) {
+                    if (parseFloat(p.desconto) > 0) htmlFinanceiro += `Desconto Concedido: -${formatarMoeda(p.desconto)}<br>`;
+                    htmlFinanceiro += `VALOR TOTAL: ${formatarMoeda(p.totalGeral)}<br><span style="color:blue; font-weight:bold;">SITUAÇÃO: PAGO INTEGRALMENTE</span><br>Forma Pagto: ${p.formaPagamento}`;
                 } else {
-                    document.getElementById('blocoObsNotaA6').style.display = 'none';
+                    htmlFinanceiro += `Subtotal: ${formatarMoeda(subtotalCalculado)}<br>`;
+                    if (parseFloat(p.desconto) > 0) htmlFinanceiro += `Desconto: -${formatarMoeda(p.desconto)}<br>`;
+                    htmlFinanceiro += `Total Líquido: ${formatarMoeda(p.totalGeral)}<br>Pago Entrada: ${formatarMoeda(p.entrada)}<br>Forma Pagto: ${p.formaPagamento}<br><span style="color:#cc0000">Restante: ${formatarMoeda(rest)}</span>`;
                 }
             }
 
+            if(p.observacoes && p.observacoes.trim() !== "") {
+                document.getElementById('blocoObsNotaA6').style.display = 'block';
+                document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${p.observacoes}`;
+            } else {
+                document.getElementById('blocoObsNotaA6').style.display = 'none';
+            }
+
+            let htmlItens = "";
             if(p.itens) {
-                const arr = p.itens.split(' | ');
-                arr.forEach(row => {
+                p.itens.split(' | ').forEach(row => {
                     const idxX = row.indexOf('x ');
-                    const idxVal = row.lastIndexOf(' (R$ ');
-                    if(idxX !== -1) {
-                        const q = row.substring(0, idxX + 1);
-                        const d = idxVal !== -1 ? row.substring(idxX + 2, idxVal) : row.substring(idxX + 2);
-                        htmlItens += `<tr><td>${q}</td><td>${d}</td><td style="text-align: right;">-</td></tr>`;
-                    }
+                    if(idxX !== -1) htmlItens += `<tr><td>${row.substring(0, idxX + 1)}</td><td>${row.substring(idxX + 2)}</td><td style="text-align: right;">-</td></tr>`;
                 });
             }
-            if(!htmlItens) htmlItens = '<tr><td colspan="3">Sem descrição de itens</td></tr>';
-
             document.getElementById('dadosGeraisNotaA6').innerHTML = htmlGerais;
-            document.getElementById('itensNotaA6').innerHTML = htmlItens;
+            document.getElementById('itensNotaA6').innerHTML = htmlItens || '<tr><td colspan="3">Sem descrição</td></tr>';
             document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
 
             const alvo = document.getElementById('bloco-nota-a6');
-            const nomeArquivo = `${p.tipo.toUpperCase()}_${p.codigo}_REEMITIDO`;
-
-            setTimeout(() => {
-                html2canvas(alvo, { scale: 2, logging: false, useCORS: true, allowTaint: true }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = `${nomeArquivo}.png`;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                });
-            }, 80);
+            if(apenasVisualizar) {
+                const imgModal = document.getElementById('imagemRenderizadaFichaA6');
+                imgModal.src = "";
+                setTimeout(() => {
+                    html2canvas(alvo, { scale: 2, useCORS: true, allowTaint: true }).then(canvas => {
+                        imgModal.src = canvas.toDataURL('image/png');
+                        document.getElementById('btnDownloadPeloVisualizador').onclick = () => {
+                            const link = document.createElement('a'); link.download = `${p.tipo.toUpperCase()}_${p.codigo}.png`; link.href = canvas.toDataURL('image/png'); link.click();
+                        };
+                        document.getElementById('modalVisualizadorFichaA6').style.display = 'flex';
+                    });
+                }, 150);
+            } else {
+                setTimeout(() => {
+                    html2canvas(alvo, { scale: 2, useCORS: true, allowTaint: true }).then(canvas => {
+                        const link = document.createElement('a'); link.download = `${p.tipo.toUpperCase()}_${p.codigo}_REEMITIDO.png`; link.href = canvas.toDataURL('image/png'); link.click();
+                    });
+                }, 150);
+            }
         }
 
         function carregarFormularioCompletoEdicao(item) {
@@ -1352,9 +1348,7 @@
                 document.getElementById('obsOrcamento').value = item.observacoes.replace(" [Validade 30 dias]", "");
                 document.getElementById('validade30Dias').checked = item.observacoes.includes("[Validade 30 dias]");
                 if(item.previsaoEntrega && item.previsaoEntrega !== "Não informada") document.getElementById('dataEntregaOrcamento').value = item.previsaoEntrega;
-
-                conteudoItensOrcamento.innerHTML = "";
-                reconstruirGradeItensDoBanco(item.itens, 'orcamento');
+                conteudoItensOrcamento.innerHTML = ""; reconstruirGradeItensDoBanco(item.itens, 'orcamento');
             } else {
                 alternarPainel('entrada');
                 document.getElementById('clienteOS').value = item.cliente;
@@ -1363,23 +1357,11 @@
                 document.getElementById('valorEntradaOS').value = item.entrada;
                 document.getElementById('obsOS').value = item.observacoes;
                 if(item.previsaoEntrega && item.previsaoEntrega !== "Não informada") document.getElementById('dataEntregaOS').value = item.previsaoEntrega;
-
                 document.getElementById('statusDoPedidoForm').value = item.status || "Definir Status";
                 atualizarCorDoSelectStatus(document.getElementById('statusDoPedidoForm'));
-
-                let formaPura = item.formaPagamento;
-                if(formaPura.includes('Crédito')) {
-                    document.getElementById('formaPagamentoOS').value = 'Crédito';
-                    verificarFormaPagamentoOS();
-                    const parcelaExtraida = formaPura.match(/\(([^)]+)\)/);
-                    if(parcelaExtraida) document.getElementById('parcelasOS').value = parcelaExtraida[1];
-                } else {
-                    document.getElementById('formaPagamentoOS').value = formaPura;
-                    verificarFormaPagamentoOS();
-                }
-
-                conteudoItensOS.innerHTML = "";
-                reconstruirGradeItensDoBanco(item.itens, 'entrada');
+                document.getElementById('formaPagamentoOS').value = item.formaPagamento.includes('Crédito') ? 'Crédito' : item.formaPagamento;
+                verificarFormaPagamentoOS();
+                conteudoItensOS.innerHTML = ""; reconstruirGradeItensDoBanco(item.itens, 'entrada');
             }
             atualizarCodigosVisiveisDinamicos();
         }
@@ -1387,62 +1369,25 @@
         function reconstruirGradeItensDoBanco(textoItens, tipo) {
             const container = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
             if(!textoItens) { adicionarLinhaGenerico(tipo); return; }
-
-            const partes = textoItens.split(' | ');
-            partes.forEach(pTexto => {
+            textoItens.split(' | ').forEach(pTexto => {
                 const idxX = pTexto.indexOf('x ');
-                const idxVal = pTexto.lastIndexOf(' (R$ ');
-                
                 if(idxX !== -1) {
-                    const qtd = pTexto.substring(0, idxX);
-                    let desc = idxVal !== -1 ? pTexto.substring(idxX + 2, idxVal) : pTexto.substring(idxX + 2);
-
-                    const inline = document.createElement('div');
-                    inline.className = 'item-linha';
-                    inline.innerHTML = `
-                        <div class="col-desc"><input type="text" class="ipt-desc" value="${desc}"></div>
-                        <div class="col-qtd"><input type="number" class="ipt-qtd" value="${qtd}" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
+                    const linha = document.createElement('div');
+                    linha.className = 'item-linha';
+                    linha.innerHTML = `
+                        <div class="col-desc"><input type="text" class="ipt-desc" value="${pTexto.substring(idxX + 2)}"></div>
+                        <div class="col-qtd"><input type="number" class="ipt-qtd" value="${pTexto.substring(0, idxX)}" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
                         <div class="col-valor"><input type="number" class="ipt-valor" value="0" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
-                        <div class="linha-mobile-total-remover">
-                            <div class="col-total">Total: R$ 0,00</div>
-                            <div class="col-acao"><button type="button" class="btn-remover-linha" onclick="removerLinhaGenerico(this, '${tipo}')">❌</button></div>
-                        </div>
-                    `;
-                    container.appendChild(inline);
-                    atualizarSubtotalLinha(inline.querySelector('.ipt-qtd'), tipo);
+                        <div class="linha-mobile-total-remover"><div class="col-total">Total: R$ 0,00</div><div class="col-acao"><button type="button" class="btn-remover-linha" onclick="removerLinhaGenerico(this, '${tipo}')">❌</button></div></div>`;
+                    container.appendChild(linha);
+                    atualizarSubtotalLinha(linha.querySelector('.ipt-qtd'), tipo);
                 }
-            });
-        }
-
-        function cancelarRegistroNaNuvem(codigoParaCancelar, dataHoraChave) {
-            if(!confirm(`Tem certeza que deseja marcar o registro ${codigoParaCancelar} como Cancelado?`)) return;
-
-            const item = cacheNuvemGlobal.find(p => p.codigo === codigoParaCancelar && p.dataHora === dataHoraChave);
-            if(!item) return;
-
-            const pacoteCancelamento = {
-                acao: "salvar", tipo: item.tipo, codigo: item.codigo, dataHora: item.dataHora,
-                cliente: item.cliente, contato: item.contato, itens: item.itens, desconto: item.desconto,
-                entrada: item.entrada, formaPagamento: item.formaPagamento, previsaoEntrega: item.previsaoEntrega,
-                observacoes: item.observacoes, status: "Cancelado", totalGeral: item.totalGeral, origemEdicao: true
-            };
-
-            fetch(GOOGLE_API_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(pacoteCancelamento)
-            }).then(() => {
-                alert("Registro cancelado com sucesso.");
-                puxarDadosDaNuvem();
             });
         }
 
         function montarEstruturaNotaA6HTML(tipo) {
             const agora = new Date();
-            const dataStr = agora.toLocaleDateString('pt-BR');
-            const horaStr = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            
+            const dataStr = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
             let htmlGerais = ''; let htmlItens = ''; let htmlFinanceiro = '';
             let numTextoFormatado = codigoEdicaoFixoBloqueado !== null ? codigoEdicaoFixoBloqueado : (tipo === 'entrada' && codigoEmConversaoFixado !== null ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10)));
             
@@ -1450,125 +1395,63 @@
                 document.getElementById('tipoNotaA6').innerText = "ORÇAMENTO";
                 const cliente = document.getElementById('cliente').value.trim() || "Não informado";
                 const desconto = parseFloat(document.getElementById('desconto').value) || 0;
-                const checkedValidade = document.getElementById('validade30Dias').checked;
-                const formaPagto = document.getElementById('formaPagamentoOrcamento').value;
-                const parcelas = document.getElementById('parcelasOrcamento').value;
                 const obsOrc = document.getElementById('obsOrcamento').value.trim();
+                let prazo = document.getElementById('dataEntregaOrcamento').value ? document.getElementById('dataEntregaOrcamento').value.split('-').reverse().join('/') : "Não definido";
 
-                let prazoOrcamento = document.getElementById('dataEntregaOrcamento').value;
-                prazoOrcamento = prazoOrcamento ? prazoOrcamento.split('-').reverse().join('/') : "Não definido";
-
-                htmlGerais = `<b>Nº ORÇAMENTO:</b> #${numTextoFormatado.replace('#','')}<br><b>Data:</b> ${dataStr} às ${horaStr}<br><b>Entrega:</b> ${prazoOrcamento}<br><b>Cliente:</b> ${cliente}`;
+                htmlGerais = `<b>Nº ORÇAMENTO:</b> #${numTextoFormatado.replace('#','')}<br><b>Data:</b> ${dataStr}<br><b>Entrega:</b> ${prazo}<br><b>Cliente:</b> ${cliente}`;
 
                 let subtotal = 0;
                 conteudoItensOrcamento.querySelectorAll('.item-linha').forEach(linha => {
                     const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
-                    const desc = linha.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
+                    const desc = linha.querySelector('.ipt-desc').value.trim() || "Item";
                     const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
-                    if (qtd > 0 && valor > 0) {
-                        subtotal += (qtd * valor);
-                        htmlItens += `<tr><td>${qtd}x</td><td>${desc}</td><td style="text-align: right;">${formatarMoeda(qtd * valor)}</td></tr>`;
-                    }
+                    if (qtd > 0) { subtotal += (qtd * valor); htmlItens += `<tr><td>${qtd}x</td><td>${desc}</td><td style="text-align: right;">${formatarMoeda(qtd * valor)}</td></tr>`; }
                 });
 
-                const totalGeral = Math.max(0, subtotal - desconto);
-                let detalhePagto = formaPagto === 'Crédito' ? `${formaPagto} (${parcelas})` : formaPagto;
+                if (desconto > 0) htmlFinanceiro += `Subtotal: ${formatarMoeda(subtotal)}<br>Desconto: -${formatarMoeda(desconto)}<br>`;
+                htmlFinanceiro += `Total Geral: ${formatarMoeda(subtotal - desconto)}<br>Forma Pagto: ${document.getElementById('formaPagamentoOrcamento').value}`;
 
-                htmlFinanceiro = `Subtotal: ${formatarMoeda(subtotal)}<br>Desconto: - ${formatarMoeda(desconto)}<br>Total Geral: ${formatarMoeda(totalGeral)}<br>Forma Pagto: ${detalhePagto}`;
-                
-                let textoObsFinal = obsOrc ? `<b>OBSERVAÇÕES:</b><br>${obsOrc}` : "";
-                if (checkedValidade) textoObsFinal += `${obsOrc ? '<br><br>' : ''}Este orçamento possui validade de 30 dias.`;
-
-                if (textoObsFinal !== "") {
-                    document.getElementById('blocoObsNotaA6').style.display = 'block';
-                    document.getElementById('obsNotaA6').innerHTML = textoObsFinal;
-                } else {
-                    document.getElementById('blocoObsNotaA6').style.display = 'none';
-                }
+                if(obsOrc !== "") { document.getElementById('blocoObsNotaA6').style.display = 'block'; document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${obsOrc}`; }
+                else { document.getElementById('blocoObsNotaA6').style.display = 'none'; }
 
             } else {
                 document.getElementById('tipoNotaA6').innerText = "PEDIDO";
                 const cliente = document.getElementById('clienteOS').value.trim() || "Não informado";
                 const whatsapp = document.getElementById('whatsappOS').value.trim() || "Não informado";
                 const desconto = parseFloat(document.getElementById('descontoOS').value) || 0;
-                const valorEntrada = parseFloat(document.getElementById('valorEntradaOS').value) || 0;
-                const formaPagto = document.getElementById('formaPagamentoOS').value;
-                const parcelas = document.getElementById('parcelasOS').value;
+                const entrada = parseFloat(document.getElementById('valorEntradaOS').value) || 0;
                 const obs = document.getElementById('obsOS').value.trim();
-                
-                let dataEntrega = document.getElementById('dataEntregaOS').value;
-                dataEntrega = dataEntrega ? dataEntrega.split('-').reverse().join('/') : "Não definido";
+                let prazo = document.getElementById('dataEntregaOS').value ? document.getElementById('dataEntregaOS').value.split('-').reverse().join('/') : "Não definido";
 
-                htmlGerais = `<b>Nº PEDIDO:</b> #${numTextoFormatado.replace('#','')}<br><b>Entrada:</b> ${dataStr} às ${horaStr}<br><b>Entrega:</b> ${dataEntrega}<br><b>Cliente:</b> ${cliente}<br><b>Contato:</b> ${whatsapp}`;
+                htmlGerais = `<b>Nº PEDIDO:</b> #${numTextoFormatado.replace('#','')}<br><b>Entrada:</b> ${dataStr}<br><b>Entrega:</b> ${prazo}<br><b>Cliente:</b> ${cliente}<br><b>Contato:</b> ${whatsapp}`;
 
                 let subtotal = 0;
                 conteudoItensOS.querySelectorAll('.item-linha').forEach(linha => {
                     const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
-                    const desc = linha.querySelector('.ipt-desc').value.trim() || "Sem descrição";
+                    const desc = linha.querySelector('.ipt-desc').value.trim() || "Item";
                     const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
-                    if (qtd > 0 && valor > 0) {
-                        subtotal += (qtd * valor);
-                        htmlItens += `<tr><td>${qtd}x</td><td>${desc}</td><td style="text-align: right;">${formatarMoeda(qtd * valor)}</td></tr>`;
-                    }
+                    if (qtd > 0) { subtotal += (qtd * valor); htmlItens += `<tr><td>${qtd}x</td><td>${desc}</td><td style="text-align: right;">${formatarMoeda(qtd * valor)}</td></tr>`; }
                 });
 
-                const totalGeral = Math.max(0, subtotal - desconto);
-                const restante = Math.max(0, totalGeral - valorEntrada);
-                let detalhePagto = formaPagto === 'Crédito' ? `${formaPagto} (${parcelas})` : formaPagto;
+                let totalGeral = subtotal - desconto;
+                let restante = totalGeral - entrada;
 
-                htmlFinanceiro = `Subtotal: ${formatarMoeda(subtotal)}<br>Desconto: - ${formatarMoeda(desconto)}<br>Total Líquido: ${formatarMoeda(totalGeral)}<br>Pago Entrada: ${formatarMoeda(valorEntrada)}<br>Forma Pagto: ${detalhePagto}<br>`;
-                htmlFinanceiro += restante > 0 ? `<span style="color:#cc0000">Restante: ${formatarMoeda(restante)}</span>` : `<span style="color:blue">SITUAÇÃO: PAGO</span>`;
-
-                if (obs !== "") {
-                    document.getElementById('blocoObsNotaA6').style.display = 'block';
-                    document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${obs}`;
+                if (restante === 0) {
+                    if (desconto > 0) htmlFinanceiro += `Desconto Concedido: -${formatarMoeda(desconto)}<br>`;
+                    htmlFinanceiro += `VALOR TOTAL: ${formatarMoeda(totalGeral)}<br><span style="color:blue; font-weight:bold;">SITUAÇÃO: PAGO INTEGRALMENTE</span><br>Forma Pagto: ${document.getElementById('formaPagamentoOS').value}`;
                 } else {
-                    document.getElementById('blocoObsNotaA6').style.display = 'none';
+                    htmlFinanceiro += `Subtotal: ${formatarMoeda(subtotal)}<br>`;
+                    if (desconto > 0) htmlFinanceiro += `Desconto: -${formatarMoeda(desconto)}<br>`;
+                    htmlFinanceiro += `Total Líquido: ${formatarMoeda(totalGeral)}<br>Pago Entrada: ${formatarMoeda(entrada)}<br>Forma Pagto: ${document.getElementById('formaPagamentoOS').value}<br><span style="color:#cc0000">Restante: ${formatarMoeda(restante)}</span>`;
                 }
+
+                if(obs !== "") { document.getElementById('blocoObsNotaA6').style.display = 'block'; document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${obs}`; }
+                else { document.getElementById('blocoObsNotaA6').style.display = 'none'; }
             }
 
-            if(htmlItens === '') htmlItens = '<tr><td colspan="3">Nenhum item lançado</td></tr>';
             document.getElementById('dadosGeraisNotaA6').innerHTML = htmlGerais;
-            document.getElementById('itensNotaA6').innerHTML = htmlItens;
+            document.getElementById('itensNotaA6').innerHTML = htmlItens || '<tr><td colspan="3">Nenhum item</td></tr>';
             document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
-        }
-
-        function limparPainelOrcamentoManual() {
-            registroEmEdicaoManualDataHora = null;
-            codigoEdicaoFixoBloqueado = null; 
-            document.getElementById('alertaOrcamentoUso').style.display = "none";
-            document.getElementById('cliente').value = '';
-            document.getElementById('desconto').value = '0';
-            document.getElementById('formaPagamentoOrcamento').value = 'PIX';
-            verificarFormaPagamentoOrcamento();
-            document.getElementById('dataEntregaOrcamento').value = '';
-            document.getElementById('obsOrcamento').value = '';
-            document.getElementById('validade30Dias').checked = false;
-            limparTodosItens('orcamento');
-            
-            alert("Gerando próxima numeração livre na nuvem...");
-            sincronizarProximoCodigoComANuvem();
-        }
-
-        function limparPainelPedidoManual() {
-            codigoEmConversaoFixado = null;
-            registroEmEdicaoManualDataHora = null;
-            codigoEdicaoFixoBloqueado = null; 
-            document.getElementById('alertaPedidoUso').style.display = "none";
-            document.getElementById('clienteOS').value = '';
-            document.getElementById('whatsappOS').value = '';
-            document.getElementById('descontoOS').value = '0';
-            document.getElementById('valorEntradaOS').value = '0';
-            document.getElementById('formaPagamentoOS').value = 'PIX';
-            verificarFormaPagamentoOS();
-            document.getElementById('statusDoPedidoForm').value = 'Definir Status';
-            atualizarCorDoSelectStatus(document.getElementById('statusDoPedidoForm'));
-            document.getElementById('dataEntregaOS').value = '';
-            document.getElementById('obsOS').value = '';
-            limparTodosItens('entrada');
-            
-            alert("Gerando próxima numeração livre na nuvem...");
-            sincronizarProximoCodigoComANuvem();
         }
 
         function limparTodosItens(tipo) {
