@@ -104,8 +104,9 @@
             gap: 10px;
         }
 
+        /* Ajustes dos botões Novo Orçamento/Pedido no topo */
         .btn-novo-registro {
-            background-color: #28a745;
+            background-color: #000000;
             color: white;
             border: none;
             padding: 10px 18px;
@@ -115,7 +116,15 @@
             text-transform: uppercase;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .btn-novo-registro:hover { background-color: #218838; }
+        .btn-novo-registro:hover { background-color: #222222; }
+
+        /* REQUISITO: Bloco do código com alinhamento em linha e botão preto */
+        .bloco-codigo-linha {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px; /* Aumentado espaçamento para distanciar do Nome do Cliente */
+        }
 
         .codigo-os-destaque {
             background-color: #000;
@@ -124,6 +133,26 @@
             font-size: 16px;
             font-weight: bold;
             display: inline-block;
+        }
+
+        .btn-ver-de-novo {
+            background-color: #000000;
+            color: #ffffff;
+            border: 1px solid #000000;
+            padding: 8px 14px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn-ver-de-novo:hover { background-color: #222222; }
+
+        /* REQUISITO: Margem de segurança reforçada nos campos do cliente */
+        .form-group-cliente {
+            margin-top: 10px;
+            margin-bottom: 15px;
         }
 
         .form-group { margin-bottom: 15px; }
@@ -247,7 +276,7 @@
         .btn-status-filtro.f-cancelado { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
         .btn-status-filtro.f-cancelado.ativo { background-color: #dc3545 !important; color: #fff !important; border-color: #bd2130; }
 
-        /* Modal / Janela de Decisão ao Editar */
+        /* Modal Seletora de Edição */
         .modal-edicao {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -275,8 +304,10 @@
             cursor: pointer;
             text-transform: uppercase;
         }
+        /* REQUISITO: Removidos emojis e corrigidos nomes nas opções */
         .btn-modal-opcao.b-pedido { background-color: #007bff; color: #fff; }
         .btn-modal-opcao.b-status { background-color: #ffcc00; color: #000; }
+        .btn-modal-opcao.b-status-item { margin-bottom: 10px; font-size: 15px; padding: 14px; }
         .btn-modal-opcao.b-fechar { background-color: #6c757d; color: #fff; font-size: 14px; padding: 10px; margin-bottom: 0;}
 
         .totais-container {
@@ -432,19 +463,25 @@
         <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Orçamento</button>
         <button class="btn-sistema" onclick="alternarPainel('entrada')">Pedido</button>
         <button class="btn-sistema btn-portfolio" onclick="window.open(window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/portfolio.pdf', '_blank')">Portfólio</button>
-        <button class="btn-sistema btn-nuvem-menu" onclick="alternarPainel('historico')">☁️ Histórico</button>
+        <!-- REQUISITO: Removido emoji de nuvem do menu superior -->
+        <button class="btn-sistema btn-nuvem-menu" onclick="alternarPainel('historico')">Histórico</button>
     </div>
 
     <!-- PAINEL 1: ORÇAMENTOS -->
     <div class="container ativo" id="tela-orcamento">
-        <!-- REQUISITO: Botão Novo Orçamento Integrado no Topo -->
         <div class="header-controle-novo">
             <h1>ARTSCREEN CORURIPE</h1>
-            <button class="btn-novo-registro" onclick="limparPainelOrcamentoManual()">🆕 Novo Orçamento</button>
+            <button class="btn-novo-registro" onclick="limparPainelOrcamentoManual()">Novo Orçamento</button>
         </div>
-        <div class="codigo-os-destaque" id="exibicaoCodigoOrcamento">Nº ORÇAMENTO: #ART00100</div>
+        
+        <!-- REQUISITO: Alinhamento em linha do código e botão 'Ver de novo' em preto fosco -->
+        <div class="bloco-codigo-linha">
+            <div class="codigo-os-destaque" id="exibicaoCodigoOrcamento">Nº ORÇAMENTO: #ART00100</div>
+            <button type="button" class="btn-ver-de-novo" onclick="reemitirNotaA6PelosFormulariosLocal('orcamento')">Ver de novo</button>
+        </div>
 
-        <div class="form-group">
+        <!-- REQUISITO: Margem de segurança aplicada no grupo do cliente -->
+        <div class="form-group form-group-cliente">
             <div class="header-field">
                 <label for="cliente">Cliente</label>
             </div>
@@ -512,14 +549,19 @@
 
     <!-- PAINEL 2: PEDIDO -->
     <div class="container" id="tela-entrada">
-        <!-- REQUISITO: Botão Novo Pedido Integrado no Topo -->
         <div class="header-controle-novo">
             <h1>ARTSCREEN CORURIPE</h1>
-            <button class="btn-novo-registro" onclick="limparPainelPedidoManual()">🆕 Novo Pedido</button>
+            <button class="btn-novo-registro" onclick="limparPainelPedidoManual()">Novo Pedido</button>
         </div>
-        <div class="codigo-os-destaque" id="exibicaoCodigoOS">Nº PEDIDO: #ART00100</div>
+        
+        <!-- REQUISITO: Alinhamento em linha do código e botão 'Ver de novo' em preto fosco -->
+        <div class="bloco-codigo-linha">
+            <div class="codigo-os-destaque" id="exibicaoCodigoOS">Nº PEDIDO: #ART00100</div>
+            <button type="button" class="btn-ver-de-novo" onclick="reemitirNotaA6PelosFormulariosLocal('entrada')">Ver de novo</button>
+        </div>
 
-        <div class="form-group">
+        <!-- REQUISITO: Margem de segurança aplicada no grupo do cliente -->
+        <div class="form-group form-group-cliente">
             <div class="header-field">
                 <label for="clienteOS">Cliente</label>
             </div>
@@ -599,7 +641,7 @@
 
     <!-- PAINEL 3: HISTÓRICO DA NUVEM -->
     <div class="container" id="tela-historico">
-        <!-- REQUISITO: Removidos textos e títulos de cima, iniciando direto da Lupa da barra de busca (Conforme image_3fb1e1.png) -->
+        <!-- REQUISITO COMPROVADO EM image_3fb1e1.png: Inicia direto da Lupa da barra de busca -->
         <div class="busca-container">
             <input type="text" id="campoBuscaNuvem" class="input-busca" placeholder="🔍 Buscar por código, nome do cliente ou data em qualquer seção..." oninput="filtrarTabelaHistoricoLocal()">
         </div>
@@ -628,13 +670,22 @@
         </table>
     </div>
 
-    <!-- REQUISITO: Janela Modal Seletora Colorida de Modo de Edição -->
+    <!-- REQUISITO: Modal Seletora de Modo de Edição Limpa, Sem Emojis e Correção Geral -->
     <div id="modalEscolhaEdicao" class="modal-edicao" style="display: none;">
         <div class="modal-conteudo">
             <h3 style="margin-top:0; margin-bottom: 20px; font-size: 18px; text-transform: uppercase;">Como deseja prosseguir?</h3>
-            <button class="btn-modal-opcao b-pedido" id="btnModalEditarTudo">🔵 Editar Pedido Completo</button>
-            <button class="btn-modal-opcao b-status" id="btnModalEditarStatus"> Lay 🟡 Editar Apenas Status</button>
-            <button class="btn-modal-opcao b-fechar" onclick="fecharModalEscolhaEdicao()">Cancelar</button>
+            <button class="btn-modal-opcao b-pedido" id="btnModalEditarTudo">Editar Pedido Completo</button>
+            <button class="btn-modal-opcao b-status" id="btnModalEditarStatus">Editar Apenas Status</button>
+            
+            <!-- REQUISITO: Sub-Painel de Status para clique direto sem digitação de número -->
+            <div id="subPainelSelecaoStatusRapido" style="display: none; margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 15px;">
+                <h4 style="margin-top:0; margin-bottom:12px; font-size:14px; text-transform:uppercase;">Escolha o Novo Status:</h4>
+                <button class="btn-modal-opcao b-status b-status-item status-producao" onclick="executarMudancaStatusDiretaNuvem('Produção')">Em Produção</button>
+                <button class="btn-modal-opcao b-status b-status-item status-concluido" onclick="executarMudancaStatusDiretaNuvem('Concluído')">Concluído</button>
+                <button class="btn-modal-opcao b-status b-status-item status-cancelado" onclick="executarMudancaStatusDiretaNuvem('Cancelado')">Cancelado</button>
+            </div>
+
+            <button class="btn-modal-opcao b-fechar" style="margin-top:15px;" onclick="fecharModalEscolhaEdicao()">Cancelar</button>
         </div>
     </div>
 
@@ -680,8 +731,7 @@
         let cacheNuvemGlobal = [];
         let registroEmEdicaoManualDataHora = null;
         let filtroStatusSelecionado = 'andamento';
-        
-        let itemSelecionadoParaEdicaoModal = null; // Guarda cache do item clicado no histórico
+        let itemSelecionadoParaEdicaoModal = null; 
 
         window.addEventListener('DOMContentLoaded', () => {
             limparTodosItens('orcamento');
@@ -799,10 +849,10 @@
         }
 
         function atualizarSubtotalLinha(input, tipo) {
-            const linha = input.closest('.item-linha');
-            const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
-            const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
-            linha.querySelector('.col-total').innerText = 'Total: ' + formatarMoeda(qtd * valor);
+            const inline = input.closest('.item-linha');
+            const qtd = parseFloat(inline.querySelector('.ipt-qtd').value) || 0;
+            const valor = parseFloat(inline.querySelector('.ipt-valor').value) || 0;
+            inline.querySelector('.col-total').innerText = 'Total: ' + formatarMoeda(qtd * valor);
             calcularGenerico(tipo);
         }
 
@@ -939,12 +989,10 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(pacote)
             }).then(() => {
-                // Remove os estados de edição manual apenas após salvar
                 registroEmEdicaoManualDataHora = null;
             }).catch(err => console.error("Falha ao sincronizar:", err));
         }
 
-        // REQUISITO CUIDADO COM OS CÓDIGOS: Removido o incremento automático (+1) do download
         function processarEBaixarNota(tipo) {
             const clienteVal = (tipo === 'orcamento') ? document.getElementById('cliente').value.trim() : document.getElementById('clienteOS').value.trim();
             if (!clienteVal) {
@@ -963,7 +1011,12 @@
             const nomeDoArquivoFinal = `${tipo === 'orcamento' ? 'ORCAMENTO' : 'PEDIDO'}_${numTextoFormatado}_${String(agora.getDate()).padStart(2,'0')}_${String(agora.getMonth()+1).padStart(2,'0')}_${agora.getFullYear()}`;
 
             setTimeout(() => {
-                html2canvas(alvo, { scale: 2, logging: false, useCORS: true, allowTaint: true }).then(canvas => {
+                html2canvas(alvo, { 
+                    scale: 2, 
+                    logging: false, 
+                    useCORS: true, 
+                    allowTaint: true 
+                }).then(canvas => {
                     const link = document.createElement('a');
                     link.download = `${nomeDoArquivoFinal}.png`;
                     link.href = canvas.toDataURL('image/png');
@@ -977,6 +1030,23 @@
                     alert('Erro na captura da imagem.');
                 });
             }, 100);
+        }
+
+        // Função do botão preto 'Ver de novo' local dos formulários de cadastro
+        function reemitirNotaA6PelosFormulariosLocal(tipo) {
+            montarEstruturaNotaA6HTML(tipo);
+            const alvo = document.getElementById('bloco-nota-a6');
+            const numPuroSalvo = (tipo === 'orcamento') ? parseInt(localStorage.getItem('numSequencialUnificado'), 10) : (codigoEmConversaoFixado !== null ? codigoEmConversaoFixado : parseInt(localStorage.getItem('numSequencialUnificado'), 10));
+            const numTextoFormatado = gerarTextoCodigo('ART', numPuroSalvo);
+            
+            setTimeout(() => {
+                html2canvas(alvo, { scale: 2, logging: false, useCORS: true, allowTaint: true }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `REEMISSAO_${tipo.toUpperCase()}_#${numTextoFormatado}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            }, 50);
         }
 
         function puxarDadosDaNuvem() {
@@ -1037,7 +1107,6 @@
                     <td>${p.cliente}</td>
                     <td>${formatarMoeda(p.totalGeral)}</td>
                     <td>
-                        <!-- REQUISITO: Abre a nova janela modal seletora ao clicar -->
                         <button class="btn-tabela btn-tab-editar" onclick="abrirModalEscolhaEdicao('${p.codigo}', '${p.dataHora}')">✏️</button>
                         <button class="btn-tabela btn-tab-baixar" onclick="baixarComprovanteDiretoDoHistorial('${p.codigo}', '${p.dataHora}')" title="Baixar Comprovante">📥</button>
                         ${p.status !== 'Cancelado' ? `<button class="btn-tabela btn-tab-excluir" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')">🗑️</button>` : ''}
@@ -1047,31 +1116,58 @@
             });
         }
 
-        // REQUISITO: Controle da Janela Modal Seletora de Edição
         function abrirModalEscolhaEdicao(codigo, dataHora) {
             const item = cacheNuvemGlobal.find(p => p.codigo === codigo && p.dataHora === dataHora);
             if(!item) return;
             
             itemSelecionadoParaEdicaoModal = item;
+            document.getElementById('subPainelSelecaoStatusRapido').style.display = 'none';
             document.getElementById('modalEscolhaEdicao').style.display = 'flex';
 
-            // Configura os botões internos grandes com suas respectivas funções
             document.getElementById('btnModalEditarTudo').onclick = () => {
                 fecharModalEscolhaEdicao();
                 carregarFormularioCompletoEdicao(itemSelecionadoParaEdicaoModal);
             };
 
+            // REQUISITO: Altera o clique do botão para abrir o subset de opções diretas na tela do modal
             document.getElementById('btnModalEditarStatus').onclick = () => {
-                fecharModalEscolhaEdicao();
-                solicitarAlteracaoRapidaStatus(itemSelecionadoParaEdicaoModal);
+                if(itemSelecionadoParaEdicaoModal.tipo === "Orçamento") {
+                    alert("Orçamentos não possuem controle de produção.");
+                    return;
+                }
+                document.getElementById('subPainelSelecaoStatusRapido').style.display = 'block';
             };
         }
 
         function fecharModalEscolhaEdicao() {
             document.getElementById('modalEscolhaEdicao').style.display = 'none';
+            document.getElementById('subPainelSelecaoStatusRapido').style.display = 'none';
         }
 
-        // FUNÇÃO A: Carrega o formulário inteiro para edições completas
+        // REQUISITO AUTOMAÇÃO DO STATUS: Função acionada por clique direto que atualiza e fecha tudo na hora
+        function executarMudancaStatusDiretaNuvem(statusMapeado) {
+            fecharModalEscolhaEdicao();
+            alert("Salvando alteração diretamente na nuvem...");
+
+            const pacoteStatus = {
+                acao: "salvar", tipo: itemSelecionadoParaEdicaoModal.tipo, codigo: itemSelecionadoParaEdicaoModal.codigo, dataHora: itemSelecionadoParaEdicaoModal.dataHora,
+                cliente: itemSelecionadoParaEdicaoModal.cliente, contato: itemSelecionadoParaEdicaoModal.contato, itens: itemSelecionadoParaEdicaoModal.itens, desconto: itemSelecionadoParaEdicaoModal.desconto,
+                entrada: itemSelecionadoParaEdicaoModal.entrada, formaPagamento: itemSelecionadoParaEdicaoModal.formaPagamento, previsaoEntrega: itemSelecionadoParaEdicaoModal.previsaoEntrega,
+                observacoes: itemSelecionadoParaEdicaoModal.observacoes, status: statusMapeado, totalGeral: itemSelecionadoParaEdicaoModal.totalGeral,
+                origemEdicao: true 
+            };
+
+            fetch(GOOGLE_API_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(pacoteStatus)
+            }).then(() => {
+                alert("Status atualizado!");
+                puxarDadosDaNuvem(); // Recarrega o histórico geral
+            });
+        }
+
         function carregarFormularioCompletoEdicao(item) {
             registroEmEdicaoManualDataHora = item.dataHora;
 
@@ -1114,42 +1210,6 @@
                 conteudoItensOS.innerHTML = "";
                 reconstruirGradeItensDoBanco(item.itens, 'entrada');
             }
-        }
-
-        // FUNÇÃO B: Solicita apenas o novo status por um prompt rápido e envia isolado
-        function solicitarAlteracaoRapidaStatus(item) {
-            if(item.tipo === "Orçamento") {
-                alert("Orçamentos não possuem controle de produção. Para alterá-lo, use a opção 'Editar Pedido Completo'.");
-                return;
-            }
-
-            const novoStatusPrompt = prompt("Digite o número do novo Status:\n1 - Em Produção 🟡\n2 - Concluído 🟢\n3 - Cancelado 🔴", "1");
-            if(!novoStatusPrompt) return;
-
-            let statusMapeado = "Definir Status";
-            if(novoStatusPrompt === "1") statusMapeado = "Produção";
-            if(novoStatusPrompt === "2") statusMapeado = "Concluído";
-            if(novoStatusPrompt === "3") statusMapeado = "Cancelado";
-
-            alert("Sincronizando novo status na planilha, aguarde...");
-
-            const pacoteStatus = {
-                acao: "salvar", tipo: item.tipo, codigo: item.codigo, dataHora: item.dataHora,
-                cliente: item.cliente, contato: item.contato, itens: item.itens, desconto: item.desconto,
-                entrada: item.entrada, formaPagamento: item.formaPagamento, previsaoEntrega: item.previsaoEntrega,
-                observacoes: item.observacoes, status: statusMapeado, totalGeral: item.totalGeral,
-                origemEdicao: true // Força o script a sobrescrever apenas essa linha correspondente
-            };
-
-            fetch(GOOGLE_API_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(pacoteStatus)
-            }).then(() => {
-                alert("Status modificado com sucesso!");
-                puxarDadosDaNuvem();
-            });
         }
 
         function baixarComprovanteDiretoDoHistorial(codigoAlvo, dataHoraChave) {
@@ -1289,7 +1349,7 @@
                 const obsOrc = document.getElementById('obsOrcamento').value.trim();
 
                 let prazoOrcamento = document.getElementById('dataEntregaOrcamento').value;
-                prazoOrcamento = prazoOrcamento ? prazoOrcamento.split('-').reverse().join('/') : "Non definido";
+                prazoOrcamento = prazoOrcamento ? prazoOrcamento.split('-').reverse().join('/') : "Não definido";
 
                 htmlGerais = `<b>Nº ORÇAMENTO:</b> #${gerarTextoCodigo('ART', numAtual)}<br><b>Data:</b> ${dataStr} às ${horaStr}<br><b>Entrega:</b> ${prazoOrcamento}<br><b>Cliente:</b> ${cliente}`;
 
@@ -1367,7 +1427,6 @@
             document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
         }
 
-        // REQUISITO CUIDADO COM OS CÓDIGOS: Botões de Novo Registro Limpam e Puxam a Próxima numeração sequencial
         function limparPainelOrcamentoManual() {
             registroEmEdicaoManualDataHora = null;
             document.getElementById('cliente').value = '';
@@ -1379,7 +1438,7 @@
             document.getElementById('validade30Dias').checked = false;
             limparTodosItens('orcamento');
             
-            alert("Abertura confirmada. Gerando próxima numeração livre na planilha...");
+            alert("Abertura confirmada. Sincronizando numeração sequencial...");
             sincronizarProximoCodigoComANuvem();
         }
 
@@ -1398,7 +1457,7 @@
             document.getElementById('obsOS').value = '';
             limparTodosItens('entrada');
             
-            alert("Abertura confirmada. Gerando próxima numeração livre na planilha...");
+            alert("Abertura confirmada. Sincronizando numeração sequencial...");
             sincronizarProximoCodigoComANuvem();
         }
 
