@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARTSCREEN CORURIPE - Sistema</title>
     
+    <!-- Script essencial para transformar o HTML em Imagem PNG -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -141,7 +142,6 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 5px;
-            font-weight: bold;
         }
 
         label { font-size: 16px; color: #333; font-weight: bold; }
@@ -153,11 +153,6 @@
             font-size: 15px;
             margin-top: 10px;
             margin-bottom: 15px;
-            cursor: pointer;
-        }
-        .checkbox-group input {
-            width: 18px;
-            height: 18px;
             cursor: pointer;
         }
 
@@ -431,7 +426,7 @@
         .grupo-botoes-acao button:hover { background-color: #222222; }
         .grupo-botoes-acao button.btn-visualizar-form { background-color: #007bff; border-color: #007bff; width: 100%; flex: none; margin-bottom: 4px;}
         .grupo-botoes-acao button.btn-visualizar-form:hover { background-color: #0056b3; }
-        .grupo-botoes-acao button.btn-converter { background-color: #28a745; border-color: #28a745; }
+        .grupo-botoes-acao button.btn-converter { background-color: #28a745; border-color: #28a745; width: 100%; flex: none; margin-top: 4px; }
         .grupo-botoes-acao button.btn-converter:hover { background-color: #218838; }
 
         .busca-container {
@@ -547,6 +542,7 @@
 </head>
 <body>
 
+    <!-- Menu Superior Padronizado -->
     <div class="menu-sistema">
         <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Orçamento</button>
         <button class="btn-sistema" onclick="alternarPainel('entrada')">Pedido</button>
@@ -554,6 +550,7 @@
         <button class="btn-sistema" onclick="alternarPainel('historico')">Histórico</button>
     </div>
 
+    <!-- PAINEL 1: ORÇAMENTOS -->
     <div class="container ativo" id="tela-orcamento">
         <div id="alertaOrcamentoUso" class="box-alerta-concorrencia"></div>
         <h1>ARTSCREEN CORURIPE</h1>
@@ -630,6 +627,7 @@
         </div>
     </div>
 
+    <!-- PAINEL 2: PEDIDO -->
     <div class="container" id="tela-entrada">
         <div id="alertaPedidoUso" class="box-alerta-concorrencia"></div>
         <h1>ARTSCREEN CORURIPE</h1>
@@ -681,7 +679,7 @@
 
         <div class="grid-financeiro">
             <div class="form-group">
-                <label forgets="descontoOS">Desconto (R$)</label>
+                <label for="descontoOS">Desconto (R$)</label>
                 <input type="number" id="descontoOS" value="0" min="0" step="any" oninput="calcularGenerico('entrada')">
             </div>
             <div class="form-group" id="blocoParcelasOS" style="display: none;">
@@ -721,6 +719,7 @@
         </div>
     </div>
 
+    <!-- PAINEL 3: HISTÓRICO DA NUVEM -->
     <div class="container" id="tela-historico">
         <div class="busca-container">
             <input type="text" id="campoBuscaNuvem" class="input-busca" placeholder="🔍 Buscar por código ou cliente..." oninput="filtrarTabelaHistoricoLocal()">
@@ -738,6 +737,7 @@
         <div id="gradeHistoricoCards" class="grade-historico-cards"></div>
     </div>
 
+    <!-- Modal Seletora de Modo de Edição -->
     <div id="modalEscolhaEdicao" class="modal-edicao" style="display: none;">
         <div class="modal-conteudo">
             <h3 style="margin-top:0; margin-bottom: 20px; font-size: 18px; text-transform: uppercase;">Como deseja prosseguir?</h3>
@@ -755,6 +755,7 @@
         </div>
     </div>
 
+    <!-- Janela Flutuante de Visualização Gráfica -->
     <div id="modalVisualizadorFichaA6" class="modal-visualizador-imagem" onclick="fecharVisualizadorFichaA6(event)">
         <div class="conteudo-visualizador-imagem">
             <h3 id="tituloVisualizadorFichaA6" style="margin-top:0; font-size:16px; text-transform:uppercase; color:#000;">Visualizar Registro</h3>
@@ -764,6 +765,7 @@
         </div>
     </div>
 
+    <!-- AREA UNIFICADA DA NOTA A6 (MOTOR GRÁFICO OCULTO) -->
     <div id="bloco-nota-a6-container" style="position: absolute; left: -9999px; top: 0; width: 395px;">
         <div id="bloco-nota-a6" style="position: static; left: 0; top: 0; display: block;">
             <div class="nota-header">
@@ -804,6 +806,7 @@
     <script>
         const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbyjE_DML-7o-Y_ZDReD7h5sUuBugTIq32fYsPwzD-ElwLT73JTp8Ji8_RY9txuMUa0u/exec";
 
+        let numSequencialUnificado = 100;
         let codigoEmConversaoFixado = null;
         let cacheNuvemGlobal = [];
         let registroEmEdicaoManualDataHora = null;
@@ -837,10 +840,11 @@
                 .catch(err => console.error("Falha ao puxar sequência inicial:", err));
         }
 
-        // FUNÇÃO NOVO ORÇAMENTO
+        // REQUISITO: Ajustada a limpeza manual para resetar o ponteiro de data congelada
         function limparPainelOrcamentoManual() {
             registroEmEdicaoManualDataHora = null;
             codigoEdicaoFixoBloqueado = null;
+            document.getElementById('alertaOrcamentoUso').style.display = "none";
             document.getElementById('cliente').value = '';
             document.getElementById('desconto').value = '0';
             document.getElementById('formaPagamentoOrcamento').value = 'PIX';
@@ -852,11 +856,11 @@
             sincronizarProximoCodigoComANuvem();
         }
 
-        // FUNÇÃO NOVO PEDIDO
         function limparPainelPedidoManual() {
             registroEmEdicaoManualDataHora = null;
             codigoEdicaoFixoBloqueado = null;
             codigoEmConversaoFixado = null;
+            document.getElementById('alertaPedidoUso').style.display = "none";
             document.getElementById('clienteOS').value = '';
             document.getElementById('whatsappOS').value = '';
             document.getElementById('valorEntradaOS').value = '0';
@@ -931,6 +935,28 @@
         function copiarWhatsAppDiretoDoCard(numeroPuro) {
             if(!numeroPuro || numeroPuro === "Não informado" || numeroPuro === "Não aplicável") { alert("Sem telefone cadastrado."); return; }
             navigator.clipboard.writeText(numeroPuro).then(() => { alert(`WhatsApp ${numeroPuro} copiado!`); });
+        }
+
+        function formatarDataHoraLeituraHumana(dataBruta) {
+            if (!dataBruta) return "Não informada";
+            // REQUISITO: Se a data já estiver em formato BR (vinda da nova correção), retorna ela direta
+            if (dataBruta.includes('/') && dataBruta.includes(':')) return dataBruta;
+            
+            // Tratamento inteligente para os dados antigos no formato ISO com "T" e "Z" vistos no print image_4fae02.png
+            if (dataBruta.includes('T')) {
+                try {
+                    const d = new Date(dataBruta);
+                    if (!isNaN(d.getTime())) {
+                        const dia = String(d.getDate()).padStart(2, '0');
+                        const mes = String(d.getMonth() + 1).padStart(2, '0');
+                        const ano = d.getFullYear();
+                        const hora = String(d.getHours()).padStart(2, '0');
+                        const min = String(d.getMinutes()).padStart(2, '0');
+                        return `${dia}/${mes}/${ano} ${hora}:${min}`;
+                    }
+                } catch(e) {}
+            }
+            return dataBruta;
         }
 
         function atualizarCodigosVisiveisDinamicos() {
@@ -1012,506 +1038,14 @@
             }
         }
 
-        function converterOrcamentoEmPedido() {
-            const cliente = document.getElementById('cliente').value.trim();
-            if (!cliente) { alert("Preencha o nome do cliente antes de converter."); return; }
-
-            codigoEmConversaoFixado = codigoEdicaoFixoBloqueado !== null ? parseInt(codigoEdicaoFixoBloqueado.replace('ART',''), 10) : (parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100);
-            
-            document.getElementById('clienteOS').value = cliente;
-            document.getElementById('descontoOS').value = document.getElementById('desconto').value;
-            document.getElementById('dataEntregaOS').value = document.getElementById('dataEntregaOrcamento').value;
-            document.getElementById('obsOS').value = document.getElementById('obsOrcamento').value;
-            
-            const forma = document.getElementById('formaPagamentoOrcamento').value;
-            document.getElementById('formaPagamentoOS').value = forma;
-            verificarFormaPagamentoOS();
-            if (forma === 'Crédito') document.getElementById('parcelasOS').value = document.getElementById('parcelasOrcamento').value;
-
-            conteudoItensOS.innerHTML = '';
-            conteudoItensOrcamento.querySelectorAll('.item-linha').forEach(lo => {
-                const d = lo.querySelector('.ipt-desc').value;
-                const q = lo.querySelector('.ipt-qtd').value;
-                const v = lo.querySelector('.ipt-valor').value;
-
-                const nl = document.createElement('div');
-                nl.className = 'item-linha';
-                nl.innerHTML = `
-                    <div class="col-desc"><input type="text" class="ipt-desc" value="${d}"></div>
-                    <div class="col-qtd"><input type="number" class="ipt-qtd" value="${q}" oninput="atualizarSubtotalLinha(this, 'entrada')"></div>
-                    <div class="col-valor"><input type="number" class="ipt-valor" value="${v}" oninput="atualizarSubtotalLinha(this, 'entrada')"></div>
-                    <div class="linha-mobile-total-remover">
-                        <div class="col-total">Total: R$ 0,00</div>
-                        <div class="col-acao"><button type="button" class="btn-remover-linha" onclick="removerLinhaGenerico(this, 'entrada')">❌</button></div>
-                    </div>
-                `;
-                conteudoItensOS.appendChild(nl);
-                atualizarSubtotalLinha(nl.querySelector('.ipt-qtd'), 'entrada');
-            });
-
-            alternarPainel('entrada');
-            alert(`Convertido! Código #${gerarTextoCodigo('ART', codigoEmConversaoFixado)} fixado.`);
-        }
-
+        // REQUISITO: Data/Hora congelada na entrada gerada apenas no primeiro envio
         function extrairPacoteDadosDoFormulario(tipo) {
-            const agora = new Date();
-            const dataHoraStr = registroEmEdicaoManualDataHora ? registroEmEdicaoManualDataHora : (agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}));
-            
-            let numTextoFormatado = codigoEdicaoFixoBloqueado !== null ? codigoEdicaoFixoBloqueado : (tipo === 'entrada' && codigoEmConversaoFixado !== null ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10)));
-
-            let containerItens = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
-            let listaItensTexto = [];
-            let subtotal = 0;
-
-            containerItens.querySelectorAll('.item-linha').forEach(l => {
-                const q = parseFloat(l.querySelector('.ipt-qtd').value) || 0;
-                const d = l.querySelector('.ipt-desc').value.trim() || "Item";
-                const v = l.querySelector('.ipt-valor').value || 0;
-                if(q > 0) {
-                    subtotal += (q * v);
-                    listaItensTexto.push(`${q}x ${d} (${formatarMoeda(q*v)})`);
-                }
-            });
-
-            if (tipo === 'orcamento') {
-                const desc = parseFloat(document.getElementById('desconto').value) || 0;
-                return {
-                    acao: "salvar", tipo: "Orçamento", codigo: numTextoFormatado,
-                    dataHora: dataHoraStr, cliente: document.getElementById('cliente').value.trim() || "Não informado",
-                    contato: "Não aplicável", itens: listaItensTexto.join(' | '), desconto: desc, entrada: 0,
-                    formaPagamento: document.getElementById('formaPagamentoOrcamento').value + (document.getElementById('formaPagamentoOrcamento').value === 'Crédito' ? ` (${document.getElementById('parcelasOrcamento').value})` : ''),
-                    previsaoEntrega: document.getElementById('dataEntregaOrcamento').value || "Não informada",
-                    observacoes: document.getElementById('obsOrcamento').value.trim() + (document.getElementById('validade30Dias').checked ? " [Validade 30 dias]" : ""),
-                    status: "Aberto", totalGeral: Math.max(0, subtotal - desc),
-                    origemEdicao: (registroEmEdicaoManualDataHora || codigoEdicaoFixoBloqueado) ? true : false
-                };
+            let dataHoraStr = "";
+            if (registroEmEdicaoManualDataHora) {
+                dataHoraStr = registroEmEdicaoManualDataHora;
             } else {
-                const desc = parseFloat(document.getElementById('descontoOS').value) || 0;
-                return {
-                    acao: "salvar", tipo: "Pedido", codigo: numTextoFormatado,
-                    dataHora: dataHoraStr, cliente: document.getElementById('clienteOS').value.trim() || "Não informado",
-                    contato: document.getElementById('whatsappOS').value.trim() || "Não informado", itens: listaItensTexto.join(' | '),
-                    desconto: desc, entrada: parseFloat(document.getElementById('valorEntradaOS').value) || 0,
-                    formaPagamento: document.getElementById('formaPagamentoOS').value + (document.getElementById('formaPagamentoOS').value === 'Crédito' ? ` (${document.getElementById('parcelasOS').value})` : ''),
-                    previsaoEntrega: document.getElementById('dataEntregaOS').value || "Não informada",
-                    observacoes: document.getElementById('obsOS').value.trim(), 
-                    status: document.getElementById('statusDoPedidoForm').value, 
-                    totalGeral: Math.max(0, subtotal - desc),
-                    origemEdicao: (registroEmEdicaoManualDataHora || codigoEdicaoFixoBloqueado) ? true : false
-                };
-            }
-        }
-
-        function salvarDadosNuvemAutomatico(tipo) {
-            const pacote = extrairPacoteDadosDoFormulario(tipo);
-            if (!pacote.cliente || pacote.cliente === "Não informado") return;
-
-            fetch(GOOGLE_API_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(pacote)
-            }).catch(err => console.error("Falha ao sincronizar:", err));
-        }
-
-        function salvarEVisualizarImediatamenteForm(tipo) {
-            const clienteVal = (tipo === 'orcamento') ? document.getElementById('cliente').value.trim() : document.getElementById('clienteOS').value.trim();
-            if (!clienteVal) { alert("Por favor, digite o nome do cliente."); return; }
-
-            salvarDadosNuvemAutomatico(tipo);
-            montarEstruturaNotaA6HTML(tipo);
-
-            const alvoMotor = document.getElementById('bloco-nota-a6');
-            const imgModal = document.getElementById('imagemRenderizadaFichaA6');
-            const btnBaixarModal = document.getElementById('btnDownloadPeloVisualizador');
-
-            let numTextoFormatado = codigoEdicaoFixoBloqueado !== null ? codigoEdicaoFixoBloqueado : (tipo === 'entrada' && codigoEmConversaoFixado !== null ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10)));
-            document.getElementById('tituloVisualizadorFichaA6').innerText = `Visualizar ${tipo === 'orcamento' ? 'Orçamento' : 'Pedido'}: #${numTextoFormatado}`;
-            imgModal.src = ""; 
-
-            setTimeout(() => {
-                html2canvas(alvoMotor, { scale: 2, logging: false, useCORS: true, allowTaint: true }).then(canvas => {
-                    const urlImagemBase64 = canvas.toDataURL('image/png');
-                    imgModal.src = urlImagemBase64; 
-                    
-                    btnBaixarModal.onclick = () => {
-                        const link = document.createElement('a');
-                        link.download = `${tipo.toUpperCase()}_${numTextoFormatado}_COMPROVANTE.png`;
-                        link.href = urlImagemBase64;
-                        link.click();
-                    };
-                    document.getElementById('modalVisualizadorFichaA6').style.display = 'flex';
-                });
-            }, 150);
-        }
-
-        function processarEBaixarNota(tipo) {
-            const clienteVal = (tipo === 'orcamento') ? document.getElementById('cliente').value.trim() : document.getElementById('clienteOS').value.trim();
-            if (!clienteVal) { alert("Por favor, digite o nome do cliente."); return; }
-
-            salvarDadosNuvemAutomatico(tipo);
-            montarEstruturaNotaA6HTML(tipo);
-
-            const alvo = document.getElementById('bloco-nota-a6');
-            let numTextoFormatado = codigoEdicaoFixoBloqueado !== null ? codigoEdicaoFixoBloqueado : (tipo === 'entrada' && codigoEmConversaoFixado !== null ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10)));
-
-            const agora = new Date();
-            const nomeDoArquivoFinal = `${tipo === 'orcamento' ? 'ORCAMENTO' : 'PEDIDO'}_${numTextoFormatado}_${String(agora.getDate()).padStart(2,'0')}_${String(agora.getMonth()+1).padStart(2,'0')}_${agora.getFullYear()}`;
-
-            setTimeout(() => {
-                html2canvas(alvo, { scale: 2, useCORS: true, allowTaint: true }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = `${nomeDoArquivoFinal}.png`;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                    if (tipo === 'entrada' && codigoEmConversaoFixado !== null) codigoEmConversaoFixado = null;
-                    atualizarCodigosVisiveisDinamicos();
-                });
-            }, 150);
-        }
-
-        function verificarFormaPagamentoOrcamento() {
-            const forma = document.getElementById('formaPagamentoOrcamento').value;
-            document.getElementById('blocoParcelasOrcamento').style.display = (forma === 'Crédito') ? 'block' : 'none';
-        }
-
-        function verificarFormaPagamentoOS() {
-            const forma = document.getElementById('formaPagamentoOS').value;
-            document.getElementById('blocoParcelasOS').style.display = (forma === 'Crédito') ? 'block' : 'none';
-        }
-
-        function puxarDadosDaNuvem() {
-            const grade = document.getElementById('gradeHistoricoCards');
-            grade.innerHTML = `<div style="grid-column: span 3; text-align:center; padding:20px;">⏳ Consultando banco de dados na nuvem, aguarde...</div>`;
-
-            fetch(GOOGLE_API_URL)
-                .then(res => res.json())
-                .then(dados => {
-                    cacheNuvemGlobal = dados; 
-                    filtrarTabelaHistoricoLocal();
-                }).catch(() => {
-                    grade.innerHTML = `<div style="grid-column: span 3; text-align:center; color:red; padding:20px;">Erro ao carregar dados da nuvem.</div>`;
-                });
-        }
-
-        function filtrarTabelaHistoricoLocal() {
-            const termoBusca = document.getElementById('campoBuscaNuvem').value.toLowerCase().trim();
-            
-            let dadosFiltradosStatus = cacheNuvemGlobal.filter(p => {
-                if (filtroStatusSelecionado === 'todos') return p.status !== "Cancelado"; 
-                if (filtroStatusSelecionado === 'andamento') return p.status === "Aberto" || p.status === "Produção" || p.status === "Definir Status" || !p.status;
-                if (filtroStatusSelecionado === 'concluido') return p.status === "Concluído";
-                if (filtroStatusSelecionado === 'cancelado') return p.status === "Cancelado";
-                return true;
-            });
-
-            if (termoBusca) {
-                dadosFiltradosStatus = dadosFiltradosStatus.filter(p => p.codigo.toLowerCase().includes(termoBusca) || p.cliente.toLowerCase().includes(termoBusca));
-            }
-            renderizarGradeCardsFinal(dadosFiltradosStatus);
-        }
-
-        function renderizarGradeCardsFinal(listaFiltrada) {
-            const grade = document.getElementById('gradeHistoricoCards');
-            grade.innerHTML = "";
-            const itensOrdenados = listaFiltrada.reverse();
-
-            if(itensOrdenados.length === 0) {
-                grade.innerHTML = `<div style="grid-column: span 3; text-align:center; padding:20px;">Nenhum registro encontrado nesta seção.</div>`;
-                return;
-            }
-
-            itensOrdenados.forEach(p => {
-                let corFundoCard = p.status === "Concluído" ? "#d4edda" : (p.status === "Cancelado" ? "#f8d7da" : "#fff3cd"); 
-                let corTextoCard = p.status === "Concluído" ? "#155724" : (p.status === "Cancelado" ? "#721c24" : "#856404");
-
-                const card = document.createElement('div');
-                card.className = "card-registro";
-                card.style.backgroundColor = corFundoCard;
-                card.style.color = corTextoCard;
-                card.style.borderColor = corTextoCard;
-
-                card.innerHTML = `
-                    <div>
-                        <div class="card-header-tipo">[${p.tipo.toUpperCase()}]</div>
-                        <div class="card-title-codigo">
-                            <span>#${p.codigo}</span>
-                            ${(p.contato && p.contato !== 'Não aplicável' && p.contato !== 'Não informado') ? `<button class="btn-copiar-linha" style="padding:2px 6px; font-size:10px;" onclick="copiarWhatsAppDiretoDoCard('${p.contato}')">Copiar Zap</button>` : ''}
-                        </div>
-                        <div class="card-body-info">
-                            <b>Cliente:</b> ${p.cliente}<br>
-                            <b>Data:</b> ${p.dataHora}<br>
-                            <b>Total:</b> ${formatarMoeda(p.totalGeral)}
-                        </div>
-                    </div>
-                    <div class="card-footer-acoes">
-                        <button class="btn-tabela btn-tab-editar" onclick="verificarAntesDeEditar('${p.codigo}', '${p.dataHora}')">✏️</button>
-                        <button class="btn-tabela btn-tab-ver" onclick="gerarEVisualizarFichaA6Flutuante('${p.codigo}', '${p.dataHora}')">👁️</button>
-                        <button class="btn-tabela btn-tab-baixar" onclick="baixarComprovanteDiretoDoHistorial('${p.codigo}', '${p.dataHora}')">📥</button>
-                        ${p.status !== 'Cancelado' ? `<button class="btn-tabela btn-tab-excluir" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')">🗑️</button>` : ''}
-                    </div>
-                `;
-                grade.appendChild(card);
-            });
-        }
-
-        function verificarAntesDeEditar(codigo, dataHora) {
-            document.getElementById('alertaOrcamentoUso').style.display = "none";
-            document.getElementById('alertaPedidoUso').style.display = "none";
-            abrirModalEscolhaEdicao(codigo, dataHora);
-        }
-
-        function abrirModalEscolhaEdicao(codigo, dataHora) {
-            const item = cacheNuvemGlobal.find(p => p.codigo === codigo && p.dataHora === dataHora);
-            if(!item) return;
-            itemSelecionadoParaEdicaoModal = item;
-            document.getElementById('modalEscolhaEdicao').style.display = 'flex';
-
-            document.getElementById('btnModalEditarTudo').onclick = () => {
-                fecharModalEscolhaEdicao();
-                carregarFormularioCompletoEdicao(itemSelecionadoParaEdicaoModal);
-            };
-            document.getElementById('btnModalEditarStatus').onclick = () => {
-                if(itemSelecionadoParaEdicaoModal.tipo === "Orçamento") { alert("Orçamentos não possuem status de produção."); return; }
-                document.getElementById('subPainelSelecaoStatusRapido').style.display = 'block';
-            };
-        }
-
-        function fecharModalEscolhaEdicao() {
-            document.getElementById('modalEscolhaEdicao').style.display = 'none';
-            document.getElementById('subPainelSelecaoStatusRapido').style.display = 'none';
-        }
-
-        function fecharVisualizadorFichaA6(event) {
-            if (!event || event.target === document.getElementById('modalVisualizadorFichaA6') || event.target.classList.contains('b-fechar')) {
-                document.getElementById('modalVisualizadorFichaA6').style.display = 'none';
-            }
-        }
-
-        function executarMudancaStatusDiretaNuvem(statusMapeado) {
-            fecharModalEscolhaEdicao();
-            const pacoteStatus = {
-                acao: "salvar", tipo: itemSelecionadoParaEdicaoModal.tipo, codigo: itemSelecionadoParaEdicaoModal.codigo, dataHora: itemSelecionadoParaEdicaoModal.dataHora,
-                cliente: itemSelecionadoParaEdicaoModal.cliente, contato: itemSelecionadoParaEdicaoModal.contato, itens: itemSelecionadoParaEdicaoModal.itens, desconto: itemSelecionadoParaEdicaoModal.desconto,
-                entrada: itemSelecionadoParaEdicaoModal.entrada, formaPagamento: itemSelecionadoParaEdicaoModal.formaPagamento, previsaoEntrega: itemSelecionadoParaEdicaoModal.previsaoEntrega,
-                observacoes: itemSelecionadoParaEdicaoModal.observacoes, status: statusMapeado, totalGeral: itemSelecionadoParaEdicaoModal.totalGeral, origemEdicao: true 
-            };
-            fetch(GOOGLE_API_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(pacoteStatus) }).then(() => { puxarDadosDaNuvem(); });
-        }
-
-        function gerarEVisualizarFichaA6Flutuante(codigoAlvo, dataHoraChave) {
-            baixarComprovanteDiretoDoHistorial(codigoAlvo, dataHoraChave, true);
-        }
-
-        function baixarComprovanteDiretoDoHistorial(codigoAlvo, dataHoraChave, apenasVisualizar = false) {
-            const p = cacheNuvemGlobal.find(item => item.codigo === codigoAlvo && item.dataHora === dataHoraChave);
-            if(!p) return;
-
-            document.getElementById('tipoNotaA6').innerText = p.tipo.toUpperCase();
-            let dataA6 = p.dataHora;
-            let prazoA6 = p.previsaoEntrega && p.previsaoEntrega !== "Não informada" ? p.previsaoEntrega.split('-').reverse().join('/') : "Não definido";
-
-            let htmlGerais = p.tipo === "Orçamento" 
-                ? `<b>Nº ORÇAMENTO:</b> ${p.codigo}<br><b>Data:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}`
-                : `<b>Nº PEDIDO:</b> ${p.codigo}<br><b>Entrada:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}<br><b>Contato:</b> ${p.contato}`;
-
-            let subtotalCalculado = p.totalGeral + (parseFloat(p.desconto) || 0);
-            let rest = Math.max(0, p.totalGeral - (parseFloat(p.entrada) || 0));
-            
-            let htmlFinanceiro = "";
-            if (p.tipo === "Orçamento") {
-                if (parseFloat(p.desconto) > 0) {
-                    htmlFinanceiro += `Subtotal: ${formatarMoeda(subtotalCalculado)}<br>Desconto: -${formatarMoeda(p.desconto)}<br>`;
-                }
-                htmlFinanceiro += `Total Geral: ${formatarMoeda(p.totalGeral)}<br>Forma Pagto: ${p.formaPagamento}`;
-            } else {
-                if (rest === 0) {
-                    if (parseFloat(p.desconto) > 0) htmlFinanceiro += `Desconto Concedido: -${formatarMoeda(p.desconto)}<br>`;
-                    htmlFinanceiro += `VALOR TOTAL: ${formatarMoeda(p.totalGeral)}<br><span style="color:blue; font-weight:bold;">SITUAÇÃO: PAGO INTEGRALMENTE</span><br>Forma Pagto: ${p.formaPagamento}`;
-                } else {
-                    htmlFinanceiro += `Subtotal: ${formatarMoeda(subtotalCalculado)}<br>`;
-                    if (parseFloat(p.desconto) > 0) htmlFinanceiro += `Desconto: -${formatarMoeda(p.desconto)}<br>`;
-                    htmlFinanceiro += `Total Líquido: ${formatarMoeda(p.totalGeral)}<br>Pago Entrada: ${formatarMoeda(p.entrada)}<br>Forma Pagto: ${p.formaPagamento}<br><span style="color:#cc0000">Restante: ${formatarMoeda(rest)}</span>`;
-                }
-            }
-
-            let textoObsFinal = p.observacoes || "";
-            if (p.tipo === "Orçamento" && textoObsFinal.includes("[Validade 30 dias]")) {
-                textoObsFinal = textoObsFinal.replace(" [Validade 30 dias]", "") + "<br><span style='color:red; font-weight:bold;'>Orçamento válido por 30 dias</span>";
-            }
-
-            if(textoObsFinal.trim() !== "") {
-                document.getElementById('blocoObsNotaA6').style.display = 'block';
-                document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${textoObsFinal}`;
-            } else {
-                document.getElementById('blocoObsNotaA6').style.display = 'none';
-            }
-
-            let htmlItens = "";
-            if(p.itens) {
-                p.itens.split(' | ').forEach(row => {
-                    const idxX = row.indexOf('x ');
-                    if(idxX !== -1) htmlItens += `<tr><td>${row.substring(0, idxX + 1)}</td><td>${row.substring(idxX + 2)}</td><td style="text-align: right;">-</td></tr>`;
-                });
-            }
-            document.getElementById('dadosGeraisNotaA6').innerHTML = htmlGerais;
-            document.getElementById('itensNotaA6').innerHTML = htmlItens || '<tr><td colspan="3">Sem descrição</td></tr>';
-            document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
-
-            const alvo = document.getElementById('bloco-nota-a6');
-            if(apenasVisualizar) {
-                const imgModal = document.getElementById('imagemRenderizadaFichaA6');
-                imgModal.src = "";
-                setTimeout(() => {
-                    html2canvas(alvo, { scale: 2, useCORS: true, allowTaint: true }).then(canvas => {
-                        imgModal.src = canvas.toDataURL('image/png');
-                        document.getElementById('btnDownloadPeloVisualizador').onclick = () => {
-                            const link = document.createElement('a'); link.download = `${p.tipo.toUpperCase()}_${p.codigo}.png`; link.href = canvas.toDataURL('image/png'); link.click();
-                        };
-                        document.getElementById('modalVisualizadorFichaA6').style.display = 'flex';
-                    });
-                }, 150);
-            } else {
-                setTimeout(() => {
-                    html2canvas(alvo, { scale: 2, useCORS: true, allowTaint: true }).then(canvas => {
-                        const link = document.createElement('a'); link.download = `${p.tipo.toUpperCase()}_${p.codigo}_REEMITIDO.png`; link.href = canvas.toDataURL('image/png'); link.click();
-                    });
-                }, 150);
-            }
-        }
-
-        function carregarFormularioCompletoEdicao(item) {
-            registroEmEdicaoManualDataHora = item.dataHora;
-            codigoEdicaoFixoBloqueado = item.codigo; 
-
-            if (item.tipo === "Orçamento") {
-                alternarPainel('orcamento');
-                document.getElementById('cliente').value = item.cliente;
-                document.getElementById('desconto').value = item.desconto;
-                document.getElementById('obsOrcamento').value = item.observacoes.replace(" [Validade 30 dias]", "");
-                document.getElementById('validade30Dias').checked = item.observacoes.includes("[Validade 30 dias]");
-                if(item.previsaoEntrega && item.previsaoEntrega !== "Não informada") document.getElementById('dataEntregaOrcamento').value = item.previsaoEntrega;
-                conteudoItensOrcamento.innerHTML = ""; reconstruirGradeItensDoBanco(item.itens, 'orcamento');
-            } else {
-                alternarPainel('entrada');
-                document.getElementById('clienteOS').value = item.cliente;
-                document.getElementById('whatsappOS').value = item.contato === "Não informado" ? "" : item.contato;
-                document.getElementById('descontoOS').value = item.desconto;
-                document.getElementById('valorEntradaOS').value = item.entrada;
-                document.getElementById('obsOS').value = item.observacoes;
-                if(item.previsaoEntrega && item.previsaoEntrega !== "Não informada") document.getElementById('dataEntregaOS').value = item.previsaoEntrega;
-                document.getElementById('statusDoPedidoForm').value = item.status || "Definir Status";
-                atualizarCorDoSelectStatus(document.getElementById('statusDoPedidoForm'));
-                document.getElementById('formaPagamentoOS').value = item.formaPagamento.includes('Crédito') ? 'Crédito' : item.formaPagamento;
-                verificarFormaPagamentoOS();
-                conteudoItensOS.innerHTML = ""; reconstruirGradeItensDoBanco(item.itens, 'entrada');
-            }
-            atualizarCodigosVisiveisDinamicos();
-        }
-
-        function reconstruirGradeItensDoBanco(textoItens, tipo) {
-            const container = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
-            if(!textoItens) { adicionarLinhaGenerico(tipo); return; }
-            textoItens.split(' | ').forEach(pTexto => {
-                const idxX = pTexto.indexOf('x ');
-                if(idxX !== -1) {
-                    const linha = document.createElement('div');
-                    linha.className = 'item-linha';
-                    linha.innerHTML = `
-                        <div class="col-desc"><input type="text" class="ipt-desc" value="${pTexto.substring(idxX + 2)}"></div>
-                        <div class="col-qtd"><input type="number" class="ipt-qtd" value="${pTexto.substring(0, idxX)}" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
-                        <div class="col-valor"><input type="number" class="ipt-valor" value="0" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
-                        <div class="linha-mobile-total-remover"><div class="col-total">Total: R$ 0,00</div><div class="col-acao"><button type="button" class="btn-remover-linha" onclick="removerLinhaGenerico(this, '${tipo}')">❌</button></div></div>`;
-                    container.appendChild(linha);
-                    atualizarSubtotalLinha(linha.querySelector('.ipt-qtd'), tipo);
-                }
-            });
-        }
-
-        function montarEstruturaNotaA6HTML(tipo) {
-            const agora = new Date();
-            const dataStr = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            let htmlGerais = ''; let htmlItens = ''; let htmlFinanceiro = '';
-            let numTextoFormatado = codigoEdicaoFixoBloqueado !== null ? codigoEdicaoFixoBloqueado : (tipo === 'entrada' && codigoEmConversaoFixado !== null ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10)));
-            
-            if (tipo === 'orcamento') {
-                document.getElementById('tipoNotaA6').innerText = "ORÇAMENTO";
-                const cliente = document.getElementById('cliente').value.trim() || "Não informado";
-                const desconto = parseFloat(document.getElementById('desconto').value) || 0;
-                let obsOrc = document.getElementById('obsOrcamento').value.trim();
-                let prazo = document.getElementById('dataEntregaOrcamento').value ? document.getElementById('dataEntregaOrcamento').value.split('-').reverse().join('/') : "Não definido";
-
-                htmlGerais = `<b>Nº ORÇAMENTO:</b> #${numTextoFormatado.replace('#','')}<br><b>Data:</b> ${dataStr}<br><b>Entrega:</b> ${prazo}<br><b>Cliente:</b> ${cliente}`;
-
-                let subtotal = 0;
-                conteudoItensOrcamento.querySelectorAll('.item-linha').forEach(linha => {
-                    const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
-                    const desc = linha.querySelector('.ipt-desc').value.trim() || "Item";
-                    const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
-                    if (qtd > 0) { subtotal += (qtd * valor); htmlItens += `<tr><td>${qtd}x</td><td>${desc}</td><td style="text-align: right;">${formatarMoeda(qtd * valor)}</td></tr>`; }
-                });
-
-                if (desconto > 0) htmlFinanceiro += `Subtotal: ${formatarMoeda(subtotal)}<br>Desconto: -${formatarMoeda(desconto)}<br>`;
-                htmlFinanceiro += `Total Geral: ${formatarMoeda(subtotal - desconto)}<br>Forma Pagto: ${document.getElementById('formaPagamentoOrcamento').value}`;
-
-                if (document.getElementById('validade30Dias').checked) {
-                    obsOrc += (obsOrc !== "" ? "<br>" : "") + "<span style='color:red; font-weight:bold;'>Orçamento válido por 30 dias</span>";
-                }
-
-                if(obsOrc !== "") { document.getElementById('blocoObsNotaA6').style.display = 'block'; document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${obsOrc}`; }
-                else { document.getElementById('blocoObsNotaA6').style.display = 'none'; }
-
-            } else {
-                document.getElementById('tipoNotaA6').innerText = "PEDIDO";
-                const cliente = document.getElementById('clienteOS').value.trim() || "Não informado";
-                const whatsapp = document.getElementById('whatsappOS').value.trim() || "Não informado";
-                const desconto = parseFloat(document.getElementById('descontoOS').value) || 0;
-                const entrada = parseFloat(document.getElementById('valorEntradaOS').value) || 0;
-                const obs = document.getElementById('obsOS').value.trim();
-                let prazo = document.getElementById('dataEntregaOS').value ? document.getElementById('dataEntregaOS').value.split('-').reverse().join('/') : "Não definido";
-
-                htmlGerais = `<b>Nº PEDIDO:</b> #${numTextoFormatado.replace('#','')}<br><b>Entrada:</b> ${dataStr}<br><b>Entrega:</b> ${prazo}<br><b>Cliente:</b> ${cliente}<br><b>Contato:</b> ${whatsapp}`;
-
-                let subtotal = 0;
-                conteudoItensOS.querySelectorAll('.item-linha').forEach(linha => {
-                    const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
-                    const desc = linha.querySelector('.ipt-desc').value.trim() || "Item";
-                    const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
-                    if (qtd > 0) { subtotal += (qtd * valor); htmlItens += `<tr><td>${qtd}x</td><td>${desc}</td><td style="text-align: right;">${formatarMoeda(qtd * valor)}</td></tr>`; }
-                });
-
-                let totalGeral = subtotal - desconto;
-                let restante = totalGeral - entrada;
-
-                if (restante === 0) {
-                    if (desconto > 0) htmlFinanceiro += `Desconto Concedido: -${formatarMoeda(desconto)}<br>`;
-                    htmlFinanceiro += `VALOR TOTAL: ${formatarMoeda(totalGeral)}<br><span style="color:blue; font-weight:bold;">SITUAÇÃO: PAGO INTEGRALMENTE</span><br>Forma Pagto: ${document.getElementById('formaPagamentoOS').value}`;
-                } else {
-                    htmlFinanceiro += `Subtotal: ${formatarMoeda(subtotal)}<br>`;
-                    if (desconto > 0) htmlFinanceiro += `Desconto: -${formatarMoeda(desconto)}<br>`;
-                    htmlFinanceiro += `Total Líquido: ${formatarMoeda(totalGeral)}<br>Pago Entrada: ${formatarMoeda(entrada)}<br>Forma Pagto: ${document.getElementById('formaPagamentoOS').value}<br><span style="color:#cc0000">Restante: ${formatarMoeda(restante)}</span>`;
-                }
-
-                if(obs !== "") { document.getElementById('blocoObsNotaA6').style.display = 'block'; document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${obs}`; }
-                else { document.getElementById('blocoObsNotaA6').style.display = 'none'; }
-            }
-
-            document.getElementById('dadosGeraisNotaA6').innerHTML = htmlGerais;
-            document.getElementById('itensNotaA6').innerHTML = htmlItens || '<tr><td colspan="3">Nenhum item</td></tr>';
-            document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
-        }
-
-        function limparTodosItens(tipo) {
-            const container = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
-            container.innerHTML = '';
-            adicionarLinhaGenerico(tipo);
-        }
-
-        function limparDesconto(tipo) {
-            const input = (tipo === 'orcamento') ? document.getElementById('desconto') : document.getElementById('descontoOS');
-            input.value = '0';
-            calcularGenerico(tipo);
-        }
-    </script>
-</body>
-</html>
+                const agora = new Date();
+                const dia = String(agora.getDate()).padStart(2, '0');
+                const mes = String(agora.getMonth() + 1).padStart(2, '0');
+                const ano = agora.getFullYear();
+                const hora = String(agora.getHours()).padStartNormally I can help with things like this, but I don't seem to have access to that content. You can try again or ask me for something else.
