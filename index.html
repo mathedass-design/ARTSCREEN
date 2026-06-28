@@ -52,7 +52,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        /* REQUISITO: Aba ativa em destaque amarelo */
+        /* Aba ativa em destaque amarelo */
         .btn-sistema.ativo {
             background-color: #ffcc00 !important;
             border-color: #b38f00 !important;
@@ -198,7 +198,8 @@
             margin-bottom: 15px;
         }
 
-        /* REQUISITO Estilização Dinâmica das Cores do Status */
+        /* Estilização Dinâmica das Cores do Status */
+        .status-padrao { background-color: #ffffff !important; color: #495057 !important; }
         .status-producao { background-color: #fff3cd !important; color: #856404 !important; font-weight: bold; }
         .status-concluido { background-color: #d4edda !important; color: #155724 !important; font-weight: bold; }
         .status-cancelado { background-color: #f8d7da !important; color: #721c24 !important; font-weight: bold; }
@@ -257,7 +258,6 @@
         }
         .checkbox-group input { width: 18px; height: 18px; cursor: pointer; }
 
-        /* REQUISITO: Campo de busca estilizado */
         .busca-container {
             margin-bottom: 20px;
             width: 100%;
@@ -499,8 +499,9 @@
         </div>
 
         <div class="form-group">
-            <label for="statusDoPedidoForm">Status do Pedido</label>
-            <select id="statusDoPedidoForm" class="status-producao" onchange="atualizarCorDoSelectStatus(this)">
+            <label for="statusDoPedidoForm">Status do Pedido (Opcional)</label>
+            <select id="statusDoPedidoForm" class="status-padrao" onchange="atualizarCorDoSelectStatus(this)">
+                <option value="Definir Status" class="status-padrao">⚪ Definir Status</option>
                 <option value="Produção" class="status-producao">🟡 Em Produção</option>
                 <option value="Concluído" class="status-concluido">🟢 Concluído</option>
                 <option value="Cancelado" class="status-cancelado">🔴 Cancelado</option>
@@ -572,6 +573,7 @@
             </table>
             <div class="nota-linha-divisoria"></div>
             <div class="nota-financeiro-direita" id="financeiroNotaA6"></div>
+            
             <div id="blocoObsNotaA6" style="display:none;">
                 <div class="nota-linha-divisoria"></div>
                 <div class="nota-secao" style="font-size: 11px;" id="obsNotaA6"></div>
@@ -603,7 +605,6 @@
         adicionarLineDefault('entrada');
         atualizarCodigosVisiveisDinamicos();
 
-        // REQUISITO: Alternador dinâmico de abas com destaque amarelo
         function alternarPainel(painel) {
             document.querySelectorAll('.btn-sistema').forEach(b => b.classList.remove('ativo'));
             document.querySelectorAll('.container').forEach(c => c.classList.remove('ativo'));
@@ -622,10 +623,11 @@
             atualizarCodigosVisiveisDinamicos();
         }
 
-        // Altera a cor do campo de status dinamicamente no formulário
+        // Dinâmica visual do status
         function atualizarCorDoSelectStatus(selectElement) {
             const val = selectElement.value;
             selectElement.className = ""; 
+            if(val === "Definir Status") selectElement.classList.add("status-padrao");
             if(val === "Produção") selectElement.classList.add("status-producao");
             if(val === "Concluído") selectElement.classList.add("status-concluido");
             if(val === "Cancelado") selectElement.classList.add("status-cancelado");
@@ -807,7 +809,7 @@
                     formaPagamento: document.getElementById('formaPagamentoOS').value + (document.getElementById('formaPagamentoOS').value === 'Crédito' ? ` (${document.getElementById('parcelasOS').value})` : ''),
                     previsaoEntrega: document.getElementById('dataEntregaOS').value || "Não informada",
                     observacoes: document.getElementById('obsOS').value.trim(), 
-                    status: document.getElementById('statusDoPedidoForm').value, // Envia o status dinâmico do form
+                    status: document.getElementById('statusDoPedidoForm').value, 
                     totalGeral: Math.max(0, subtotal - desc)
                 };
             }
@@ -832,7 +834,6 @@
             });
         }
 
-        // CORREÇÃO: Função de Download Revisada e Segura
         function processarEBaixarNota(tipo) {
             montarEstruturaNotaA6HTML(tipo);
             const alvo = document.getElementById('bloco-nota-a6');
@@ -842,7 +843,6 @@
             const agora = new Date();
             const nomeDoArquivoFinal = `${tipo === 'orcamento' ? 'ORCAMENTO' : 'PEDIDO'}_${numTextoFormatado}_${String(agora.getDate()).padStart(2,'0')}_${String(agora.getMonth()+1).padStart(2,'0')}_${agora.getFullYear()}`;
 
-            // Executa a foto diretamente sem alterar posições de exibição
             setTimeout(() => {
                 html2canvas(alvo, { 
                     scale: 2, 
@@ -870,7 +870,7 @@
 
         function puxarDadosDaNuvem() {
             const corpo = document.getElementById('corpoTabelaNuvem');
-            corpo.innerHTML = `<tr><td colspan="6"> Surrey... 🔄 Consultando banco de dados na nuvem, aguarde...</td></tr>`;
+            corpo.innerHTML = `<tr><td colspan="6"> Consultando banco de dados na nuvem, aguarde...</td></tr>`;
 
             fetch(GOOGLE_API_URL)
                 .then(res => res.json())
@@ -882,12 +882,10 @@
                 });
         }
 
-        // Renderiza os dados do histórico sem ocultar nada, preservando duplicados
         function renderizarTabelaHistoricoFiltrada(listaPedidos) {
             const corpo = document.getElementById('corpoTabelaNuvem');
             corpo.innerHTML = "";
 
-            // REQUISITO: Exibe todos do mesmo jeito sem dar conflito se houver códigos iguais (Ordem decrescente de lançamento)
             const itensFiltrados = listaPedidos.filter(p => p.status !== "Cancelado").reverse();
 
             if(itensFiltrados.length === 0) {
@@ -896,7 +894,7 @@
             }
 
             itensFiltrados.forEach(p => {
-                let statusCor = "orange";
+                let statusCor = "gray";
                 if(p.status === "Produção") statusCor = "#b58900";
                 if(p.status === "Concluído") statusCor = "green";
 
@@ -906,17 +904,16 @@
                     <td>${p.tipo}</td>
                     <td>${p.cliente}</td>
                     <td>${formatarMoeda(p.totalGeral)}</td>
-                    <td><span style="color:${statusCor}; font-weight:bold">${p.status}</span></td>
+                    <td><span style="color:${statusCor}; font-weight:bold">${p.status || "Não Definido"}</span></td>
                     <td>
                         <button class="btn-tabela btn-tab-editar" onclick="reabrirEEditarRegistroDaNuvem('${p.codigo}', '${p.dataHora}')">✏️ Editar</button>
-                        <button class="btn-tabela btn-tab-excluir" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')">🗑️ Excluir</button>
+                        <button class="btn-tabela btn-tab-excluir" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')">🗑️ Ocultar</button>
                     </td>
                 `;
                 corpo.appendChild(tr);
             });
         }
 
-        // REQUISITO: Filtro inteligente local por Código, Nome ou Data
         function filtrarTabelaHistoricoLocal() {
             const termo = document.getElementById('campoBuscaNuvem').value.toLowerCase().trim();
             if(!termo) {
@@ -934,7 +931,6 @@
             renderizarTabelaHistoricoFiltrada(filtrados);
         }
 
-        // Reabre o registro buscando pelo código e carimbo de data/hora (anti-conflito para duplicados)
         function reabrirEEditarRegistroDaNuvem(codigoBuscado, dataHoraChave) {
             const item = cacheNuvemGlobal.find(p => p.codigo === codigoBuscado && p.dataHora === dataHoraChave);
             if(!item) return;
@@ -963,8 +959,7 @@
                 document.getElementById('obsOS').value = item.observacoes;
                 if(item.previsaoEntrega && item.previsaoEntrega !== "Não informada") document.getElementById('dataEntregaOS').value = item.previsaoEntrega;
 
-                // Restaura o Status do banco de dados e atualiza a cor dele no form
-                document.getElementById('statusDoPedidoForm').value = item.status || "Produção";
+                document.getElementById('statusDoPedidoForm').value = item.status || "Definir Status";
                 atualizarCorDoSelectStatus(document.getElementById('statusDoPedidoForm'));
 
                 let formaPura = item.formaPagamento;
@@ -1015,7 +1010,7 @@
         }
 
         function cancelarRegistroNaNuvem(codigoParaCancelar, dataHoraChave) {
-            if(!confirm(`Tem certeza que deseja ocultar e cancelar o registro ${codigoParaCancelar}?`)) return;
+            if(!confirm(`Tem certeza que deseja ocultar o registro ${codigoParaCancelar}?`)) return;
 
             const item = cacheNuvemGlobal.find(p => p.codigo === codigoParaCancelar && p.dataHora === dataHoraChave);
             if(!item) return;
@@ -1033,11 +1028,12 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(pacoteCancelamento)
             }).then(() => {
-                alert("Registro cancelado!");
+                alert("Registro ocultado com sucesso.");
                 puxarDadosDaNuvem();
             });
         }
 
+        // REQUISITO: Montagem Limpa e Condicional do Comprovante A6 para o cliente
         function montarEstruturaNotaA6HTML(tipo) {
             const agora = new Date();
             const dataStr = agora.toLocaleDateString('pt-BR');
@@ -1080,9 +1076,10 @@
                 if(desconto > 0) htmlFinanceiro += `Desconto: - ${formatarMoeda(desconto)}<br>`;
                 htmlFinanceiro += `Total Geral: ${formatarMoeda(totalGeral)}<br>Forma Pagto: ${detalhePagto}`;
                 
-                let textoObsFinal = obsOrc ? `<b>OBSERVAÇÕES:</b><br>${obsOrc}<br>` : "";
-                if (checkedValidade) textoObsFinal += `${obsOrc ? '<br>' : ''}Este orçamento possui validade de 30 dias.`;
+                let textoObsFinal = obsOrc ? `<b>OBSERVAÇÕES:</b><br>${obsOrc}` : "";
+                if (checkedValidade) textoObsFinal += `${obsOrc ? '<br><br>' : ''}Este orçamento possui validade de 30 dias.`;
 
+                // Só exibe se houver texto digitado ou caixa de 30 dias marcada
                 if (textoObsFinal !== "") {
                     document.getElementById('blocoObsNotaA6').style.display = 'block';
                     document.getElementById('obsNotaA6').innerHTML = textoObsFinal;
@@ -1098,8 +1095,7 @@
                 const valorEntrada = parseFloat(document.getElementById('valorEntradaOS').value) || 0;
                 const formaPagto = document.getElementById('formaPagamentoOS').value;
                 const parcelas = document.getElementById('parcelasOS').value;
-                const obs = document.getElementById('obsOS').value.trim() || "Nenhuma";
-                const statusOS = document.getElementById('statusDoPedidoForm').value;
+                const obs = document.getElementById('obsOS').value.trim();
                 
                 const numOS = (codigoEmConversaoFixado !== null) ? codigoEmConversaoFixado : (parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100);
                 let dataEntrega = document.getElementById('dataEntregaOS').value;
@@ -1127,8 +1123,13 @@
                 htmlFinanceiro += `Total Líquido: ${formatarMoeda(totalGeral)}<br>Pago Entrada: ${formatarMoeda(valorEntrada)}<br>Forma Pagto: ${detalhePagto}<br>`;
                 htmlFinanceiro += restante > 0 ? `<span style="color:#cc0000">Restante: ${formatarMoeda(restante)}</span>` : `<span style="color:blue">SITUAÇÃO: PAGO</span>`;
 
-                document.getElementById('blocoObsNotaA6').style.display = 'block';
-                document.getElementById('obsNotaA6').innerHTML = `<b>STATUS:</b> ${statusOS}<br><br><b>OBSERVAÇÕES:</b><br>${obs}`;
+                // Só exibe o bloco se o usuário realmente preencheu alguma observação
+                if (obs !== "") {
+                    document.getElementById('blocoObsNotaA6').style.display = 'block';
+                    document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${obs}`;
+                } else {
+                    document.getElementById('blocoObsNotaA6').style.display = 'none';
+                }
             }
 
             if(htmlItens === '') htmlItens = '<tr><td colspan="3">Nenhum item lançado</td></tr>';
@@ -1156,7 +1157,7 @@
             document.getElementById('valorEntradaOS').value = '0';
             document.getElementById('formaPagamentoOS').value = 'PIX';
             verificarFormaPagamentoOS();
-            document.getElementById('statusDoPedidoForm').value = 'Produção';
+            document.getElementById('statusDoPedidoForm').value = 'Definir Status';
             atualizarCorDoSelectStatus(document.getElementById('statusDoPedidoForm'));
             document.getElementById('dataEntregaOS').value = '';
             document.getElementById('obsOS').value = '';
