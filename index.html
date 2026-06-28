@@ -30,7 +30,7 @@
             background-size: cover;
         }
 
-        /* Menu de Seleção de Função */
+        /* REQUISITO 1: Menu Superior Discreto - Tudo Preto com Letras Amarelas */
         .menu-sistema {
             display: flex;
             gap: 12px;
@@ -44,34 +44,27 @@
             padding: 14px;
             font-size: 15px;
             font-weight: bold;
-            border: 1px solid #999;
-            background-color: #e0e0e0;
-            color: #333;
+            background-color: #000000 !important;
+            color: #ffcc00 !important;
+            border: 2px solid #ffcc00 !important;
             cursor: pointer;
             text-transform: uppercase;
             transition: all 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
+        /* Ao clicar, inverte: fica Amarelo com Letras Pretas */
         .btn-sistema.ativo {
             background-color: #ffcc00 !important;
-            border-color: #b38f00 !important;
+            border-color: #ffcc00 !important;
             color: #000000 !important;
         }
 
         .btn-portfolio {
-            background-color: #555555;
-            color: #ffffff;
-            border-color: #555555;
+            border-color: #555555 !important;
+            color: #ffffff !important;
         }
-        .btn-portfolio:hover { background-color: #333333; }
-
-        .btn-nuvem-menu {
-            background-color: #007bff;
-            color: #fff;
-            border-color: #007bff;
-        }
-        .btn-nuvem-menu:hover { background-color: #0056b3; }
+        .btn-portfolio:hover { background-color: #222222 !important; }
 
         .container {
             background-color: #ffffff;
@@ -86,7 +79,7 @@
 
         .container.ativo { display: block; }
 
-        h1 {
+        h1, h2 {
             font-size: 24px;
             font-weight: bold;
             margin-top: 0;
@@ -95,12 +88,12 @@
             color: #000;
         }
 
-        /* REQUISITO: Bloco de código alinhado em linha com o botão Novo Registro Preto */
+        /* REQUISITO: Bloco de código e botão Novo Registro na mesma linha */
         .bloco-codigo-linha {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 25px;
+            margin-bottom: 25px; /* Margem de segurança para afastar o Nome do Cliente */
         }
 
         .codigo-os-destaque {
@@ -254,7 +247,7 @@
         .btn-status-filtro.f-cancelado { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
         .btn-status-filtro.f-cancelado.ativo { background-color: #dc3545 !important; color: #fff !important; border-color: #bd2130; }
 
-        /* REQUISITO: Estrutura em Grade de 3 Colunas para o Histórico */
+        /* Estrutura em Grade de 3 Colunas para o Histórico */
         .grade-historico-cards {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -303,7 +296,7 @@
             padding-top: 10px;
         }
 
-        /* Modal Seletora de Edição Limpa */
+        /* Modais do Sistema (Sem Emojis) */
         .modal-edicao {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -335,6 +328,34 @@
         .btn-modal-opcao.b-status { background-color: #ffcc00; color: #000; }
         .btn-modal-opcao.b-status-item { margin-bottom: 10px; font-size: 15px; padding: 14px; }
         .btn-modal-opcao.b-fechar { background-color: #6c757d; color: #fff; font-size: 14px; padding: 10px; margin-bottom: 0;}
+
+        /* REQUISITO 2: Modal Flutuante para Visualizar o Comprovante Gráfico */
+        .modal-visualizador-imagem {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        .conteudo-visualizador-imagem {
+            background-color: #ffffff;
+            padding: 20px;
+            max-width: 430px;
+            width: 90%;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.5);
+            text-align: center;
+            position: relative;
+        }
+        .bloco-render-imagem-a6 {
+            max-width: 100%;
+            max-height: 400px;
+            border: 1px solid #ccc;
+            margin: 15px 0;
+            background-color: #f9f9f9;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+        }
 
         .totais-container {
             margin-top: 15px;
@@ -402,6 +423,7 @@
         .btn-tab-editar { background-color: #0056b3; }
         .btn-tab-excluir { background-color: #dc3545; }
         .btn-tab-baixar { background-color: #17a2b8; }
+        .btn-tab-ver { background-color: #6c757d; }
 
         /* DESIGN DA FICHA GRAFICA A6 SEGURO ANTI-ERRO */
         #bloco-nota-a6 {
@@ -465,7 +487,6 @@
             .grupo-botoes-acao { flex-direction: column; gap: 8px; }
             .grupo-botoes-acao button { width: 100%; padding: 14px; }
             
-            /* Responsivo para os cards em celulares (vira 1 coluna) */
             .grade-historico-cards { grid-template-columns: 1fr; gap: 12px; }
             .menu-status-historico { flex-wrap: wrap; gap: 4px; }
             .btn-status-filtro { padding: 8px 4px; font-size: 11px; flex: unset; width: 48%; }
@@ -474,19 +495,19 @@
 </head>
 <body>
 
-    <!-- Menu Superior -->
+    <!-- Menu Superior Corrigido (Preto/Amarelo Invertido) -->
     <div class="menu-sistema">
         <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Orçamento</button>
         <button class="btn-sistema" onclick="alternarPainel('entrada')">Pedido</button>
         <button class="btn-sistema btn-portfolio" onclick="window.open(window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/portfolio.pdf', '_blank')">Portfólio</button>
-        <button class="btn-sistema btn-nuvem-menu" onclick="alternarPainel('historico')">Histórico</button>
+        <button class="btn-sistema" onclick="alternarPainel('historico')">Histórico</button>
     </div>
 
     <!-- PAINEL 1: ORÇAMENTOS -->
     <div class="container ativo" id="tela-orcamento">
         <h1>ARTSCREEN CORURIPE</h1>
         
-        <!-- REQUISITO: Botão Novo Registro na mesma linha do número e em cor Preta -->
+        <!-- REQUISITO: Código e Botão Novo Alinhados na mesma linha (Sem "Ver de Novo") -->
         <div class="bloco-codigo-linha">
             <div class="codigo-os-destaque" id="exibicaoCodigoOrcamento">Nº ORÇAMENTO: #ART00100</div>
             <button type="button" class="btn-novo-registro-preto" onclick="limparPainelOrcamentoManual()">Novo Orçamento</button>
@@ -562,7 +583,7 @@
     <div class="container" id="tela-entrada">
         <h1>ARTSCREEN CORURIPE</h1>
         
-        <!-- REQUISITO: Botão Novo Registro na mesma linha do número e em cor Preta -->
+        <!-- REQUISITO: Código e Botão Novo Alinhados na mesma linha (Sem "Ver de Novo") -->
         <div class="bloco-codigo-linha">
             <div class="codigo-os-destaque" id="exibicaoCodigoOS">Nº PEDIDO: #ART00100</div>
             <button type="button" class="btn-novo-registro-preto" onclick="limparPainelPedidoManual()">Novo Pedido</button>
@@ -648,12 +669,10 @@
 
     <!-- PAINEL 3: HISTÓRICO DA NUVEM -->
     <div class="container" id="tela-historico">
-        <!-- REQUISITO COMPROVADO: Começa direto da Lupa da barra de busca -->
         <div class="busca-container">
             <input type="text" id="campoBuscaNuvem" class="input-busca" placeholder="🔍 Buscar por código, nome do cliente ou data em qualquer seção..." oninput="filtrarTabelaHistoricoLocal()">
         </div>
 
-        <!-- REQUISITO: Nova aba 'Todos' adicionada à listagem de botões -->
         <div class="menu-status-historico">
             <button class="btn-status-filtro f-todos ativo" onclick="mudarFiltroStatusHistorico('todos')">⚪ Todos</button>
             <button class="btn-status-filtro f-andamento" onclick="mudarFiltroStatusHistorico('andamento')">🟡 Em Andamento</button>
@@ -663,10 +682,7 @@
 
         <button type="button" class="btn-add-item" onclick="puxarDadosDaNuvem()">🔄 Atualizar Lista</button>
         
-        <!-- REQUISITO: Removida a tabela de linhas. Agora os dados entram em uma grade flexível de Cards -->
-        <div id="gradeHistoricoCards" class="grade-historico-cards">
-            <!-- Os blocos retangulares serão injetados dinamicamente aqui -->
-        </div>
+        <div id="gradeHistoricoCards" class="grade-historico-cards"></div>
     </div>
 
     <!-- Modal Seletora de Modo de Edição Limpa -->
@@ -678,7 +694,7 @@
             
             <div id="subPainelSelecaoStatusRapido" style="display: none; margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 15px;">
                 <h4 style="margin-top:0; margin-bottom:12px; font-size:14px; text-transform:uppercase;">Escolha o Novo Status:</h4>
-                <button class="btn-modal-opcao b-status b-status-item status-producao" onclick="executarMudancaStatusDiretaNuvem('Produção')">Em Produção</button>
+                <button class="btn-modal-opcao b-status b-status-item status-producao" onclick="executarMudancaStatusDiretaNuvem('Produção')">Em Fluido Produção</button>
                 <button class="btn-modal-opcao b-status b-status-item status-concluido" onclick="executarMudancaStatusDiretaNuvem('Concluído')">Concluído</button>
                 <button class="btn-modal-opcao b-status b-status-item status-cancelado" onclick="executarMudancaStatusDiretaNuvem('Cancelado')">Cancelado</button>
             </div>
@@ -687,7 +703,20 @@
         </div>
     </div>
 
-    <!-- AREA UNIFICADA DA NOTA A6 -->
+    <!-- REQUISITO 2: Janela Flutuante (Modal/Lightbox) para Visualização Gráfica Dinâmica -->
+    <div id="modalVisualizadorFichaA6" class="modal-visualizador-imagem" onclick="fecharVisualizadorFichaA6(event)">
+        <div class="conteudo-visualizador-imagem">
+            <h3 id="tituloVisualizadorFichaA6" style="margin-top:0; font-size:16px; text-transform:uppercase; color:#000;">Visualizar Registro</h3>
+            
+            <!-- A imagem gerada pelo canvas entra aqui temporariamente -->
+            <img id="imagemRenderizadaFichaA6" class="bloco-render-imagem-a6" alt="Carregando visualização gráfica...">
+            
+            <button class="btn-modal-opcao b-pedido" style="margin-bottom:0;" id="btnDownloadPeloVisualizador">Baixar Arquivo</button>
+            <button class="btn-modal-opcao b-fechar" style="margin-top:10px;" onclick="fecharVisualizadorFichaA6(null)">Fechar</button>
+        </div>
+    </div>
+
+    <!-- AREA UNIFICADA DA NOTA A6 (MOTOR GRÁFICO OCULTO) -->
     <div id="bloco-nota-a6-container" style="position: absolute; left: -9999px; top: 0; width: 395px;">
         <div id="bloco-nota-a6" style="position: static; left: 0; top: 0; display: block;">
             <div class="nota-header">
@@ -728,7 +757,7 @@
         let codigoEmConversaoFixado = null;
         let cacheNuvemGlobal = [];
         let registroEmEdicaoManualDataHora = null;
-        let filtroStatusSelecionado = 'todos'; // Modificado para iniciar na aba de Todos
+        let filtroStatusSelecionado = 'todos'; 
         let itemSelecionadoParaEdicaoModal = null; 
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -1010,12 +1039,7 @@
             const nomeDoArquivoFinal = `${tipo === 'orcamento' ? 'ORCAMENTO' : 'PEDIDO'}_${numTextoFormatado}_${String(agora.getDate()).padStart(2,'0')}_${String(agora.getMonth()+1).padStart(2,'0')}_${agora.getFullYear()}`;
 
             setTimeout(() => {
-                html2canvas(alvo, { 
-                    scale: 2, 
-                    logging: false, 
-                    useCORS: true, 
-                    allowTaint: true 
-                }).then(canvas => {
+                html2canvas(alvo, { scale: 2, logging: false, useCORS: true, allowTaint: true }).then(canvas => {
                     const link = document.createElement('a');
                     link.download = `${nomeDoArquivoFinal}.png`;
                     link.href = canvas.toDataURL('image/png');
@@ -1045,13 +1069,12 @@
                 });
         }
 
-        // REQUISITO: Filtro estruturado em Grade por Abas e Lupa Global
         function filtrarTabelaHistoricoLocal() {
             const termoBusca = document.getElementById('campoBuscaNuvem').value.toLowerCase().trim();
             
             let dadosFiltradosStatus = cacheNuvemGlobal.filter(p => {
                 if (filtroStatusSelecionado === 'todos') {
-                    return p.status !== "Cancelado"; // Mostra orçamentos e pedidos ativos juntos
+                    return p.status !== "Cancelado"; 
                 } else if (filtroStatusSelecionado === 'andamento') {
                     return p.status === "Aberto" || p.status === "Produção" || p.status === "Definir Status" || !p.status;
                 } else if (filtroStatusSelecionado === 'concluido') {
@@ -1073,7 +1096,6 @@
             renderizarGradeCardsFinal(dadosFiltradosStatus);
         }
 
-        // REQUISITO: Geração estrutural dos Retângulos em 3 Colunas com cor baseada no status
         function renderizarGradeCardsFinal(listaFiltrada) {
             const grade = document.getElementById('gradeHistoricoCards');
             grade.innerHTML = "";
@@ -1086,32 +1108,28 @@
             }
 
             itensOrdenados.forEach(p => {
-                // Mapeamento dinâmico das cores do retângulo
                 let corFundoCard = "#ffffff"; 
                 let corTextoCard = "#333333";
                 
                 if (p.status === "Produção" || p.status === "Aberto" || p.status === "Definir Status" || !p.status) {
-                    corFundoCard = "#fff3cd"; // Amarelo
+                    corFundoCard = "#fff3cd"; 
                     corTextoCard = "#856404";
                 } else if (p.status === "Concluído") {
-                    corFundoCard = "#d4edda"; // Verde
+                    corFundoCard = "#d4edda"; 
                     corTextoCard = "#155724";
                 } else if (p.status === "Cancelado") {
-                    corFundoCard = "#f8d7da"; // Vermelho
+                    corFundoCard = "#f8d7da"; 
                     corTextoCard = "#721c24";
                 }
 
-                // Criação do bloco do Card
                 const card = document.createElement('div');
                 card.className = "card-registro";
                 card.style.backgroundColor = corFundoCard;
                 card.style.color = corTextoCard;
                 card.style.borderColor = corTextoCard;
 
-                // Injeta as informações e os botões de ação limpos dentro do card
                 card.innerHTML = `
                     <div>
-                        <!-- REQUISITO: Nome se é Pedido ou Orçamento no topo de cada card -->
                         <div class="card-header-tipo">[${p.tipo.toUpperCase()}]</div>
                         <div class="card-title-codigo">#${p.codigo}</div>
                         <div class="card-body-info">
@@ -1122,12 +1140,101 @@
                     </div>
                     <div class="card-footer-acoes">
                         <button class="btn-tabela btn-tab-editar" onclick="abrirModalEscolhaEdicao('${p.codigo}', '${p.dataHora}')" title="Editar">✏️</button>
-                        <button class="btn-tabela btn-tab-baixar" onclick="baixarComprovanteDiretoDoHistorial('${p.codigo}', '${p.dataHora}')" title="Baixar Comprovante">📥</button>
+                        <!-- REQUISITO 2: Nova Opção "Visualizar" Gráfica sem forçar download automático -->
+                        <button class="btn-tabela btn-tab-ver" onclick="gerarEVisualizarFichaA6Flutuante('${p.codigo}', '${p.dataHora}')" title="Visualizar">👁️</button>
+                        <button class="btn-tabela btn-tab-baixar" onclick="baixarComprovanteDiretoDoHistorial('${p.codigo}', '${p.dataHora}')" title="Baixar">📥</button>
                         ${p.status !== 'Cancelado' ? `<button class="btn-tabela btn-tab-excluir" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')" title="Ocultar">🗑️</button>` : ''}
                     </div>
                 `;
                 grade.appendChild(card);
             });
+        }
+
+        // REQUISITO 2: Motor Gráfico que monta a Ficha A6 em background e joga na Tela Flutuante
+        function gerarEVisualizarFichaA6Flutuante(codigoAlvo, dataHoraChave) {
+            const p = cacheNuvemGlobal.find(item => item.codigo === codigoAlvo && item.dataHora === dataHoraChave);
+            if(!p) return;
+
+            // Injeta as informações textuais estruturadas no bloco do motor oculto
+            document.getElementById('tipoNotaA6').innerText = p.tipo.toUpperCase();
+            let htmlGerais = ""; let htmlItens = ""; let htmlFinanceiro = "";
+            let dataA6 = p.dataHora.split(' ')[0];
+            let prazoA6 = p.previsaoEntrega && p.previsaoEntrega !== "Não informada" ? p.previsaoEntrega.split('-').reverse().join('/') : "Não definido";
+
+            if (p.tipo === "Orçamento") {
+                htmlGerais = `<b>Nº ORÇAMENTO:</b> ${p.codigo}<br><b>Data:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}`;
+                htmlFinanceiro = `Total Geral: ${formatarMoeda(p.totalGeral)}<br>Forma Pagto: ${p.formaPagamento}`;
+                if(p.observacoes && p.observacoes.trim() !== "") {
+                    document.getElementById('blocoObsNotaA6').style.display = 'block';
+                    document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${p.observacoes}`;
+                } else {
+                    document.getElementById('blocoObsNotaA6').style.display = 'none';
+                }
+            } else {
+                htmlGerais = `<b>Nº PEDIDO:</b> ${p.codigo}<br><b>Entrada:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}<br><b>Contato:</b> ${p.contato}`;
+                let rest = Math.max(0, p.totalGeral - p.entrada);
+                htmlFinanceiro = `Total Líquido: ${formatarMoeda(p.totalGeral)}<br>Pago Entrada: ${formatarMoeda(p.entrada)}<br>Forma Pagto: ${p.formaPagamento}<br>`;
+                htmlFinanceiro += rest > 0 ? `<span style="color:#cc0000">Restante: ${formatarMoeda(rest)}</span>` : `<span style="color:blue">SITUAÇÃO: PAGO</span>`;
+
+                if(p.observacoes && p.observacoes.trim() !== "") {
+                    document.getElementById('blocoObsNotaA6').style.display = 'block';
+                    document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${p.observacoes}`;
+                } else {
+                    document.getElementById('blocoObsNotaA6').style.display = 'none';
+                }
+            }
+
+            if(p.itens) {
+                const arr = p.itens.split(' | ');
+                arr.forEach(row => {
+                    const idxX = row.indexOf('x ');
+                    const idxVal = row.lastIndexOf(' (R$ ');
+                    if(idxX !== -1) {
+                        const q = row.substring(0, idxX + 1);
+                        const d = idxVal !== -1 ? row.substring(idxX + 2, idxVal) : row.substring(idxX + 2);
+                        htmlItens += `<tr><td>${q}</td><td>${d}</td><td style="text-align: right;">-</td></tr>`;
+                    }
+                });
+            }
+            if(!htmlItens) htmlItens = '<tr><td colspan="3">Sem descrição de itens</td></tr>';
+
+            document.getElementById('dadosGeraisNotaA6').innerHTML = htmlGerais;
+            document.getElementById('itensNotaA6').innerHTML = htmlItens;
+            document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
+
+            // Transforma o bloco HTML oculto em imagem em tempo real para exibir na janela modal flutuante
+            const alvoMotor = document.getElementById('bloco-nota-a6');
+            const tituloModal = document.getElementById('tituloVisualizadorFichaA6');
+            const imgModal = document.getElementById('imagemRenderizadaFichaA6');
+            const btnBaixarModal = document.getElementById('btnDownloadPeloVisualizador');
+
+            tituloModal.innerText = `Visualizar ${p.tipo}: #${p.codigo}`;
+            imgModal.src = ""; // Reseta imagem antiga anterior
+
+            setTimeout(() => {
+                html2canvas(alvoMotor, { scale: 2, logging: false, useCORS: true, allowTaint: true }).then(canvas => {
+                    const urlImagemBase64 = canvas.toDataURL('image/png');
+                    imgModal.src = urlImagemBase64; // Joga o resultado final na tela
+                    
+                    // Configura o botão interno para download opcional caso decida baixar
+                    btnBaixarModal.onclick = () => {
+                        const link = document.createElement('a');
+                        link.download = `${p.tipo.toUpperCase()}_${p.codigo}_COMPROVANTE.png`;
+                        link.href = urlImagemBase64;
+                        link.click();
+                    };
+
+                    // Abre a janela flutuante preta na tela do usuário
+                    document.getElementById('modalVisualizadorFichaA6').style.display = 'flex';
+                });
+            }, 80);
+        }
+
+        function fecharVisualizadorFichaA6(event) {
+            // Fecha apenas se clicar no botão fechar ou na área preta vazia de fora do card
+            if (!event || event.target === document.getElementById('modalVisualizadorFichaA6')) {
+                document.getElementById('modalVisualizadorFichaA6').style.display = 'none';
+            }
         }
 
         function abrirModalEscolhaEdicao(codigo, dataHora) {
@@ -1178,50 +1285,6 @@
                 alert("Status atualizado!");
                 puxarDadosDaNuvem(); 
             });
-        }
-
-        function carregarFormularioCompletoEdicao(item) {
-            registroEmEdicaoManualDataHora = item.dataHora;
-
-            if (item.tipo === "Orçamento") {
-                alternarPainel('orcamento');
-                document.getElementById('exibicaoCodigoOrcamento').innerText = `Nº ORÇAMENTO: #${item.codigo}`;
-                document.getElementById('cliente').value = item.cliente;
-                document.getElementById('desconto').value = item.desconto;
-                document.getElementById('obsOrcamento').value = item.observacoes.replace(" [Validade 30 dias]", "");
-                document.getElementById('validade30Dias').checked = item.observacoes.includes("[Validade 30 dias]");
-                if(item.previsaoEntrega && item.previsaoEntrega !== "Não informada") document.getElementById('dataEntregaOrcamento').value = item.previsaoEntrega;
-
-                conteudoItensOrcamento.innerHTML = "";
-                reconstruirGradeItensDoBanco(item.itens, 'orcamento');
-            } else {
-                alternarPainel('entrada');
-                codigoEmConversaoFixado = parseInt(item.codigo.replace('ART', ''), 10);
-                document.getElementById('exibicaoCodigoOS').innerText = `Nº PEDIDO: #${item.codigo}`;
-                document.getElementById('clienteOS').value = item.cliente;
-                document.getElementById('whatsappOS').value = item.contato === "Não informado" ? "" : item.contato;
-                document.getElementById('descontoOS').value = item.desconto;
-                document.getElementById('valorEntradaOS').value = item.entrada;
-                document.getElementById('obsOS').value = item.observacoes;
-                if(item.previsaoEntrega && item.previsaoEntrega !== "Não informada") document.getElementById('dataEntregaOS').value = item.previsaoEntrega;
-
-                document.getElementById('statusDoPedidoForm').value = item.status || "Definir Status";
-                atualizarCorDoSelectStatus(document.getElementById('statusDoPedidoForm'));
-
-                let formaPura = item.formaPagamento;
-                if(formaPura.includes('Crédito')) {
-                    document.getElementById('formaPagamentoOS').value = 'Crédito';
-                    verificarFormaPagamentoOS();
-                    const parcelaExtraida = formaPura.match(/\(([^)]+)\)/);
-                    if(parcelaExtraida) document.getElementById('parcelasOS').value = parcelaExtraida[1];
-                } else {
-                    document.getElementById('formaPagamentoOS').value = formaPura;
-                    verificarFormaPagamentoOS();
-                }
-
-                conteudoItensOS.innerHTML = "";
-                reconstruirGradeItensDoBanco(item.itens, 'entrada');
-            }
         }
 
         function baixarComprovanteDiretoDoHistorial(codigoAlvo, dataHoraChave) {
@@ -1286,6 +1349,50 @@
                     link.click();
                 });
             }, 80);
+        }
+
+        function carregarFormularioCompletoEdicao(item) {
+            registroEmEdicaoManualDataHora = item.dataHora;
+
+            if (item.tipo === "Orçamento") {
+                alternarPainel('orcamento');
+                document.getElementById('exibicaoCodigoOrcamento').innerText = `Nº ORÇAMENTO: #${item.codigo}`;
+                document.getElementById('cliente').value = item.cliente;
+                document.getElementById('desconto').value = item.desconto;
+                document.getElementById('obsOrcamento').value = item.observacoes.replace(" [Validade 30 dias]", "");
+                document.getElementById('validade30Dias').checked = item.observacoes.includes("[Validade 30 dias]");
+                if(item.previsaoEntrega && item.previsaoEntrega !== "Não informada") document.getElementById('dataEntregaOrcamento').value = item.previsaoEntrega;
+
+                conteudoItensOrcamento.innerHTML = "";
+                reconstruirGradeItensDoBanco(item.itens, 'orcamento');
+            } else {
+                alternarPainel('entrada');
+                codigoEmConversaoFixado = parseInt(item.codigo.replace('ART', ''), 10);
+                document.getElementById('exibicaoCodigoOS').innerText = `Nº PEDIDO: #${item.codigo}`;
+                document.getElementById('clienteOS').value = item.cliente;
+                document.getElementById('whatsappOS').value = item.contato === "Não informado" ? "" : item.contato;
+                document.getElementById('descontoOS').value = item.desconto;
+                document.getElementById('valorEntradaOS').value = item.entrada;
+                document.getElementById('obsOS').value = item.observacoes;
+                if(item.previsaoEntrega && item.previsaoEntrega !== "Não informada") document.getElementById('dataEntregaOS').value = item.previsaoEntrega;
+
+                document.getElementById('statusDoPedidoForm').value = item.status || "Definir Status";
+                atualizarCorDoSelectStatus(document.getElementById('statusDoPedidoForm'));
+
+                let formaPura = item.formaPagamento;
+                if(formaPura.includes('Crédito')) {
+                    document.getElementById('formaPagamentoOS').value = 'Crédito';
+                    verificarFormaPagamentoOS();
+                    const parcelaExtraida = formaPura.match(/\(([^)]+)\)/);
+                    if(parcelaExtraida) document.getElementById('parcelasOS').value = parcelaExtraida[1];
+                } else {
+                    document.getElementById('formaPagamentoOS').value = formaPura;
+                    verificarFormaPagamentoOS();
+                }
+
+                conteudoItensOS.innerHTML = "";
+                reconstruirGradeItensDoBanco(item.itens, 'entrada');
+            }
         }
 
         function reconstruirGradeItensDoBanco(textoItens, tipo) {
@@ -1368,7 +1475,7 @@
                 let subtotal = 0;
                 conteudoItensOrcamento.querySelectorAll('.item-linha').forEach(linha => {
                     const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
-                    const desc = linha.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
+                    const desc = inline.querySelector('.ipt-desc').value.trim() || "Item sem descrição";
                     const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
                     if (qtd > 0 && valor > 0) {
                         subtotal += (qtd * valor);
@@ -1439,7 +1546,6 @@
             document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
         }
 
-        // REQUISITO CUIDADO COM OS CÓDIGOS: Botões Novo Registro limpam a tela e forçam a consulta à planilha
         function limparPainelOrcamentoManual() {
             registroEmEdicaoManualDataHora = null;
             document.getElementById('cliente').value = '';
