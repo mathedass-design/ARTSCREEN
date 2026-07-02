@@ -406,6 +406,7 @@
             margin-top: 5px;
         }
 
+        /* AJUSTE DOS BOTOES PRINCIPAIS */
         .grupo-botoes-acao {
             display: flex;
             gap: 12px;
@@ -429,9 +430,14 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .grupo-botoes-acao button:hover { background-color: #222222; }
-        .grupo-botoes-acao button.btn-visualizar-form { background-color: #007bff; border-color: #007bff; width: 100%; flex: none; margin-bottom: 4px;}
+        
+        .grupo-botoes-acao button.btn-salvar { background-color: #6f42c1; border-color: #6f42c1; width: 100%; flex: none; margin-bottom: 4px; font-size: 17px;}
+        .grupo-botoes-acao button.btn-salvar:hover { background-color: #59339d; }
+
+        .grupo-botoes-acao button.btn-visualizar-form { background-color: #007bff; border-color: #007bff; flex: 1; }
         .grupo-botoes-acao button.btn-visualizar-form:hover { background-color: #0056b3; }
-        .grupo-botoes-acao button.btn-converter { background-color: #28a745; border-color: #28a745; }
+        
+        .grupo-botoes-acao button.btn-converter { background-color: #28a745; border-color: #28a745; width: 100%; flex: none; margin-top: 4px;}
         .grupo-botoes-acao button.btn-converter:hover { background-color: #218838; }
 
         .busca-container {
@@ -548,19 +554,119 @@
 <body>
 
     <div class="menu-sistema">
-        <button class="btn-sistema ativo" onclick="alternarPainel('orcamento')">Orçamento</button>
-        <button class="btn-sistema" onclick="alternarPainel('entrada')">Pedido</button>
+        <button class="btn-sistema ativo" onclick="alternarPainel('entrada')">Pedido</button>
+        <button class="btn-sistema" onclick="alternarPainel('orcamento')">Orçamento</button>
         <button class="btn-sistema" onclick="executarAcaoPortfolio()">Portfólio</button>
         <button class="btn-sistema" onclick="alternarPainel('historico')">Histórico</button>
     </div>
 
-    <div class="container ativo" id="tela-orcamento">
+    <div class="container ativo" id="tela-entrada">
+        <div id="alertaPedidoUso" class="box-alerta-concorrencia"></div>
+        <h1>ARTSCREEN CORURIPE</h1>
+        
+        <div class="bloco-codigo-linha">
+            <div class="codigo-os-destaque" id="exibicaoCodigoOS">Nº PEDIDO: #ART00100</div>
+            <button type="button" class="btn-novo-registro-preto" onclick="limparPainelPedidoManual()">Novo - Limpar Tudo</button>
+        </div>
+
+        <div class="form-group form-group-cliente">
+            <div class="header-field">
+                <label for="clienteOS">Cliente</label>
+            </div>
+            <input type="text" id="clienteOS" placeholder="Nome do cliente">
+        </div>
+
+        <div class="form-group">
+            <div class="header-field">
+                <label for="atendenteOS">Atendente</label>
+            </div>
+            <input type="text" id="atendenteOS" placeholder="Seu nome">
+        </div>
+
+        <div class="form-group">
+            <label for="whatsappOS">WhatsApp / Contato</label>
+            <div class="bloco-input-copiar">
+                <input type="text" id="whatsappOS" placeholder="(82) 99999-0000">
+                <button type="button" class="btn-copiar-discreto" onclick="copiarWhatsAppTelaAtual()">Copiar</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="header-field">
+                <label>Serviços / Produtos Solicitados</label>
+                <button class="btn-limpar-campo" onclick="limparTodosItens('entrada')" title="Limpar Todos">🗑️</button>
+            </div>
+            <div class="itens-lista" id="conteudoItensOS"></div>
+            <button type="button" class="btn-add-item" onclick="adicionarLinhaGenerico('entrada')">➕ Adicionar Item</button>
+        </div>
+
+        <div class="grid-financeiro">
+            <div class="form-group">
+                <label for="valorEntradaOS">Valor Pago (Entrada)</label>
+                <input type="number" id="valorEntradaOS" placeholder="Deixe vazio p/ pagamento integral" min="0" step="any" oninput="calcularGenerico('entrada')">
+                <div id="labelRestanteOS" style="margin-top: 5px; font-size: 14px; font-weight: bold; color: #cc0000; display: none;">Restante: R$ 0,00</div>
+            </div>
+            <div class="form-group">
+                <label for="formaPagamentoOS">Forma de Pagamento</label>
+                <select id="formaPagamentoOS" onchange="verificarFormaPagamentoOS()">
+                    <option value="PIX">PIX</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                    <option value="Débito">Cartão de Débito</option>
+                    <option value="Crédito">Cartão de Crédito</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid-financeiro">
+            <div class="form-group">
+                <label forgets="descontoOS">Desconto (R$)</label>
+                <input type="number" id="descontoOS" value="0" min="0" step="any" oninput="calcularGenerico('entrada')">
+            </div>
+            <div class="form-group" id="blocoParcelasOS" style="display: none;">
+                <label for="parcelasOS">Vezes (Parcelamento)</label>
+                <select id="parcelasOS">
+                    <option value="1x">1x (À vista)</option>
+                    <option value="2x">2x</option><option value="3x">3x</option><option value="4x">4x</option><option value="5x">5x</option><option value="6x">6x</option><option value="7x">7x</option><option value="8x">8x</option><option value="9x">9x</option><option value="10x">10x</option><option value="11x">11x</option><option value="12x">12x</option><option value="13x">13x</option><option value="14x">14x</option><option value="15x">15x</option><option value="16x">16x</option><option value="17x">17x</option><option value="18x">18x</option><option value="19x">19x</option><option value="20x">20x</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="statusDoPedidoForm">Status do Pedido (Opcional)</label>
+            <select id="statusDoPedidoForm" class="status-padrao" onchange="atualizarCorDoSelectStatus(this)">
+                <option value="Definir Status" class="status-padrao">⚪ Definir Status</option>
+                <option value="Produção" class="status-producao">🟡 Em Produção</option>
+                <option value="Concluído" class="status-concluido">🟢 Concluído</option>
+                <option value="Cancelado" class="status-cancelado">🔴 Cancelado</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="dataEntregaOS">Previsão de Entrega</label>
+            <input type="date" id="dataEntregaOS">
+        </div>
+
+        <div class="form-group">
+            <label for="obsOS">Observações do Serviço</label>
+            <textarea id="obsOS" rows="3" placeholder="Detalhes da estampa, tamanhos, acabamentos, etc..."></textarea>
+        </div>
+
+        <div class="totais-container" id="painelTotaisOS"></div>
+        
+        <div class="grupo-botoes-acao">
+            <button type="button" class="btn-salvar" onclick="acaoSalvarManual('entrada')">SALVAR</button>
+            <button type="button" class="btn-visualizar-form" onclick="salvarEVisualizarImediatamenteForm('entrada')">VISUALIZAR</button>
+            <button type="button" onclick="processarEBaixarNota('entrada')">ENVIAR / BAIXAR</button>
+        </div>
+    </div>
+
+    <div class="container" id="tela-orcamento">
         <div id="alertaOrcamentoUso" class="box-alerta-concorrencia"></div>
         <h1>ARTSCREEN CORURIPE</h1>
         
         <div class="bloco-codigo-linha">
             <div class="codigo-os-destaque" id="exibicaoCodigoOrcamento">Nº ORÇAMENTO: #ART00100</div>
-            <button type="button" class="btn-novo-registro-preto" onclick="limparPainelOrcamentoManual()">Novo Orçamento</button>
+            <button type="button" class="btn-novo-registro-preto" onclick="limparPainelOrcamentoManual()">Novo - Limpar Tudo</button>
         </div>
 
         <div class="form-group form-group-cliente">
@@ -568,6 +674,13 @@
                 <label for="cliente">Cliente</label>
             </div>
             <input type="text" id="cliente" placeholder="Nome do cliente">
+        </div>
+
+        <div class="form-group">
+            <div class="header-field">
+                <label for="atendenteOrcamento">Atendente</label>
+            </div>
+            <input type="text" id="atendenteOrcamento" placeholder="Seu nome">
         </div>
 
         <div class="form-group">
@@ -624,100 +737,10 @@
         <div class="totais-container" id="painelTotaisOrcamento"></div>
         
         <div class="grupo-botoes-acao">
+            <button type="button" class="btn-salvar" onclick="acaoSalvarManual('orcamento')">SALVAR</button>
             <button type="button" class="btn-visualizar-form" onclick="salvarEVisualizarImediatamenteForm('orcamento')">VISUALIZAR</button>
             <button type="button" onclick="processarEBaixarNota('orcamento')">ENVIAR / BAIXAR</button>
             <button type="button" class="btn-converter" onclick="converterOrcamentoEmPedido()">CONVERTER EM PEDIDO</button>
-        </div>
-    </div>
-
-    <div class="container" id="tela-entrada">
-        <div id="alertaPedidoUso" class="box-alerta-concorrencia"></div>
-        <h1>ARTSCREEN CORURIPE</h1>
-        
-        <div class="bloco-codigo-linha">
-            <div class="codigo-os-destaque" id="exibicaoCodigoOS">Nº PEDIDO: #ART00100</div>
-            <button type="button" class="btn-novo-registro-preto" onclick="limparPainelPedidoManual()">Novo Pedido</button>
-        </div>
-
-        <div class="form-group form-group-cliente">
-            <div class="header-field">
-                <label for="clienteOS">Cliente</label>
-            </div>
-            <input type="text" id="clienteOS" placeholder="Nome do cliente">
-        </div>
-
-        <div class="form-group">
-            <label for="whatsappOS">WhatsApp / Contato</label>
-            <div class="bloco-input-copiar">
-                <input type="text" id="whatsappOS" placeholder="(82) 99999-0000">
-                <button type="button" class="btn-copiar-discreto" onclick="copiarWhatsAppTelaAtual()">Copiar</button>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="header-field">
-                <label>Serviços / Produtos Solicitados</label>
-                <button class="btn-limpar-campo" onclick="limparTodosItens('entrada')" title="Limpar Todos">🗑️</button>
-            </div>
-            <div class="itens-lista" id="conteudoItensOS"></div>
-            <button type="button" class="btn-add-item" onclick="adicionarLinhaGenerico('entrada')">➕ Adicionar Item</button>
-        </div>
-
-        <div class="grid-financeiro">
-            <div class="form-group">
-                <label for="valorEntradaOS">Valor Pago (Entrada)</label>
-                <input type="number" id="valorEntradaOS" value="0" min="0" step="any" oninput="calcularGenerico('entrada')">
-            </div>
-            <div class="form-group">
-                <label for="formaPagamentoOS">Forma de Pagamento</label>
-                <select id="formaPagamentoOS" onchange="verificarFormaPagamentoOS()">
-                    <option value="PIX">PIX</option>
-                    <option value="Dinheiro">Dinheiro</option>
-                    <option value="Débito">Cartão de Débito</option>
-                    <option value="Crédito">Cartão de Crédito</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="grid-financeiro">
-            <div class="form-group">
-                <label forgets="descontoOS">Desconto (R$)</label>
-                <input type="number" id="descontoOS" value="0" min="0" step="any" oninput="calcularGenerico('entrada')">
-            </div>
-            <div class="form-group" id="blocoParcelasOS" style="display: none;">
-                <label for="parcelasOS">Vezes (Parcelamento)</label>
-                <select id="parcelasOS">
-                    <option value="1x">1x (À vista)</option>
-                    <option value="2x">2x</option><option value="3x">3x</option><option value="4x">4x</option><option value="5x">5x</option><option value="6x">6x</option><option value="7x">7x</option><option value="8x">8x</option><option value="9x">9x</option><option value="10x">10x</option><option value="11x">11x</option><option value="12x">12x</option><option value="13x">13x</option><option value="14x">14x</option><option value="15x">15x</option><option value="16x">16x</option><option value="17x">17x</option><option value="18x">18x</option><option value="19x">19x</option><option value="20x">20x</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="statusDoPedidoForm">Status do Pedido (Opcional)</label>
-            <select id="statusDoPedidoForm" class="status-padrao" onchange="atualizarCorDoSelectStatus(this)">
-                <option value="Definir Status" class="status-padrao">⚪ Definir Status</option>
-                <option value="Produção" class="status-producao">🟡 Em Produção</option>
-                <option value="Concluído" class="status-concluido">🟢 Concluído</option>
-                <option value="Cancelado" class="status-cancelado">🔴 Cancelado</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="dataEntregaOS">Previsão de Entrega</label>
-            <input type="date" id="dataEntregaOS">
-        </div>
-
-        <div class="form-group">
-            <label for="obsOS">Observações do Serviço</label>
-            <textarea id="obsOS" rows="3" placeholder="Detalhes da estampa, tamanhos, acabamentos, etc..."></textarea>
-        </div>
-
-        <div class="totais-container" id="painelTotaisOS"></div>
-        
-        <div class="grupo-botoes-acao">
-            <button type="button" class="btn-visualizar-form" onclick="salvarEVisualizarImediatamenteForm('entrada')">VISUALIZAR</button>
-            <button type="button" onclick="processarEBaixarNota('entrada')">ENVIAR / BAIXAR</button>
         </div>
     </div>
 
@@ -736,6 +759,106 @@
         <button type="button" class="btn-add-item" onclick="puxarDadosDaNuvem()">🔄 Atualizar Lista</button>
         
         <div id="gradeHistoricoCards" class="grade-historico-cards"></div>
+    </div>
+
+    <div class="container" id="tela-edicao-avancada">
+        <h1 style="color:#0056b3;">EDIÇÃO AVANÇADA</h1>
+        
+        <div class="bloco-codigo-linha">
+            <div class="codigo-os-destaque" id="exibicaoCodigoEdicao" style="background-color:#0056b3;">#ART00000</div>
+            <span style="font-weight:bold; font-size:14px; margin-left:10px;" id="tipoRegistroEdicaoTxt">TIPO</span>
+        </div>
+
+        <div class="form-group form-group-cliente">
+            <label for="clienteEdicao">Cliente</label>
+            <input type="text" id="clienteEdicao">
+        </div>
+
+        <div class="form-group">
+            <label for="atendenteEdicao">Atendente</label>
+            <input type="text" id="atendenteEdicao">
+        </div>
+
+        <div class="form-group" id="blocoWhatsappEdicao">
+            <label for="whatsappEdicao">WhatsApp / Contato</label>
+            <input type="text" id="whatsappEdicao">
+        </div>
+
+        <div class="form-group">
+            <div class="header-field">
+                <label>Serviços / Produtos</label>
+                <button class="btn-limpar-campo" onclick="limparTodosItens('edicao')" title="Limpar Todos">🗑️</button>
+            </div>
+            <div class="itens-lista" id="conteudoItensEdicao"></div>
+            <button type="button" class="btn-add-item" onclick="adicionarLinhaGenerico('edicao')">➕ Adicionar Item</button>
+        </div>
+
+        <div class="grid-financeiro" id="blocoEntradaEdicao">
+            <div class="form-group">
+                <label for="valorEntradaEdicao">Valor Pago (Entrada)</label>
+                <input type="number" id="valorEntradaEdicao" placeholder="Vazio = Pagamento Integral" min="0" step="any" oninput="calcularGenerico('edicao')">
+                <div id="labelRestanteEdicao" style="margin-top: 5px; font-size: 14px; font-weight: bold; color: #cc0000; display: none;">Restante: R$ 0,00</div>
+            </div>
+            <div class="form-group">
+                <label for="formaPagamentoEdicao">Forma de Pagamento</label>
+                <select id="formaPagamentoEdicao" onchange="verificarFormaPagamentoEdicao()">
+                    <option value="PIX">PIX</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                    <option value="Débito">Cartão de Débito</option>
+                    <option value="Crédito">Cartão de Crédito</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid-financeiro">
+            <div class="form-group">
+                <label for="descontoEdicao">Desconto (R$)</label>
+                <input type="number" id="descontoEdicao" value="0" min="0" step="any" oninput="calcularGenerico('edicao')">
+            </div>
+            <div class="form-group" id="blocoParcelasEdicao" style="display: none;">
+                <label for="parcelasEdicao">Vezes (Parcelamento)</label>
+                <select id="parcelasEdicao">
+                    <option value="1x">1x</option><option value="2x">2x</option><option value="3x">3x</option><option value="4x">4x</option><option value="5x">5x</option><option value="6x">6x</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group" id="blocoPagamentoOrcamentoEdicao" style="display:none;">
+             <label for="formaPagamentoOrcamentoEdicao">Forma de Pagamento</label>
+             <select id="formaPagamentoOrcamentoEdicao">
+                 <option value="PIX">PIX</option>
+                 <option value="Dinheiro">Dinheiro</option>
+                 <option value="Débito">Cartão de Débito</option>
+                 <option value="Crédito">Cartão de Crédito</option>
+             </select>
+        </div>
+
+        <div class="form-group" id="blocoStatusEdicao">
+            <label for="statusEdicao">Status</label>
+            <select id="statusEdicao" class="status-padrao" onchange="atualizarCorDoSelectStatus(this)">
+                <option value="Definir Status" class="status-padrao">⚪ Definir Status</option>
+                <option value="Produção" class="status-producao">🟡 Em Produção</option>
+                <option value="Concluído" class="status-concluido">🟢 Concluído</option>
+                <option value="Cancelado" class="status-cancelado">🔴 Cancelado</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="dataEntregaEdicao">Previsão de Entrega</label>
+            <input type="date" id="dataEntregaEdicao">
+        </div>
+
+        <div class="form-group">
+            <label for="obsEdicao">Observações</label>
+            <textarea id="obsEdicao" rows="3"></textarea>
+        </div>
+
+        <div class="totais-container" id="painelTotaisEdicao"></div>
+
+        <div class="grupo-botoes-acao">
+            <button type="button" class="btn-salvar" onclick="salvarAcaoEdicaoAvancada()">SALVAR ALTERAÇÕES</button>
+            <button type="button" class="btn-visualizar-form" style="background-color:#6c757d; border-color:#6c757d;" onclick="alternarPainel('historico')">CANCELAR / VOLTAR</button>
+        </div>
     </div>
 
     <div id="modalEscolhaEdicao" class="modal-edicao" style="display: none;">
@@ -806,15 +929,59 @@
 
         let codigoEmConversaoFixado = null;
         let cacheNuvemGlobal = [];
-        let registroEmEdicaoManualDataHora = null;
+        let registroEmEdicaoManualDataHora = null; 
         let codigoEdicaoFixoBloqueado = null; 
         let filtroStatusSelecionado = 'todos'; 
         let itemSelecionadoParaEdicaoModal = null; 
+        let tipoEdicaoAtiva = null; 
+
+        // ==========================================
+        // NOVAS FUNÇÕES PARA BLINDAR DATAS (FORMATO ISO DO GOOGLE SHEETS)
+        // ==========================================
+        function formatarDataVisivel(dataBruta) {
+            if (!dataBruta || dataBruta === "Não informada" || dataBruta === "Não definido") return "Não definido";
+            
+            // Se for formato ISO ex: 2026-07-02T03:00:00.000Z
+            if (dataBruta.includes('T')) {
+                let apenasData = dataBruta.split('T')[0]; // "2026-07-02"
+                return apenasData.split('-').reverse().join('/'); // "02/07/2026"
+            }
+            // Se vier no formato YYYY-MM-DD
+            if (dataBruta.includes('-') && dataBruta.split('-')[0].length === 4) {
+                return dataBruta.split('-').reverse().join('/');
+            }
+            // Se vier no antigo formato com espaço "02/07/2026 15:30"
+            if (dataBruta.includes(' ')) {
+                return dataBruta.split(' ')[0];
+            }
+            
+            // Caso já venha normal (02/07/2026)
+            return dataBruta;
+        }
+
+        function formatarDataParaInput(dataBruta) {
+            if (!dataBruta || dataBruta === "Não informada") return "";
+            
+            // Se for ISO ex: 2026-07-02T03:00:00.000Z
+            if (dataBruta.includes('T')) {
+                return dataBruta.split('T')[0]; // "2026-07-02"
+            }
+            // Se vier no formato DD/MM/YYYY
+            if (dataBruta.includes('/')) {
+                let limpa = dataBruta.split(' ')[0];
+                let partes = limpa.split('/');
+                if (partes.length === 3) return `${partes[2]}-${partes[1]}-${partes[0]}`;
+            }
+            
+            return dataBruta;
+        }
+        // ==========================================
 
         window.addEventListener('DOMContentLoaded', () => {
             limparTodosItens('orcamento');
             limparTodosItens('entrada');
             sincronizarProximoCodigoComANuvem();
+            alternarPainel('entrada'); 
         });
 
         function sincronizarProximoCodigoComANuvem() {
@@ -837,11 +1004,9 @@
                 .catch(err => console.error("Falha ao puxar sequência inicial:", err));
         }
 
-        // FUNÇÃO NOVO ORÇAMENTO
         function limparPainelOrcamentoManual() {
-            registroEmEdicaoManualDataHora = null;
-            codigoEdicaoFixoBloqueado = null;
             document.getElementById('cliente').value = '';
+            document.getElementById('atendenteOrcamento').value = '';
             document.getElementById('desconto').value = '0';
             document.getElementById('formaPagamentoOrcamento').value = 'PIX';
             document.getElementById('dataEntregaOrcamento').value = '';
@@ -852,14 +1017,13 @@
             sincronizarProximoCodigoComANuvem();
         }
 
-        // FUNÇÃO NOVO PEDIDO
         function limparPainelPedidoManual() {
-            registroEmEdicaoManualDataHora = null;
-            codigoEdicaoFixoBloqueado = null;
             codigoEmConversaoFixado = null;
             document.getElementById('clienteOS').value = '';
+            document.getElementById('atendenteOS').value = '';
             document.getElementById('whatsappOS').value = '';
-            document.getElementById('valorEntradaOS').value = '0';
+            document.getElementById('valorEntradaOS').value = ''; 
+            document.getElementById('labelRestanteOS').style.display = 'none';
             document.getElementById('descontoOS').value = '0';
             document.getElementById('formaPagamentoOS').value = 'PIX';
             document.getElementById('statusDoPedidoForm').value = 'Definir Status';
@@ -875,16 +1039,18 @@
             document.querySelectorAll('.btn-sistema').forEach(b => b.classList.remove('ativo'));
             document.querySelectorAll('.container').forEach(c => c.classList.remove('ativo'));
 
-            if (painel === 'orcamento') {
+            if (painel === 'entrada') {
                 document.querySelectorAll('.btn-sistema')[0].classList.add('ativo');
-                document.getElementById('tela-orcamento').classList.add('ativo');
-            } else if (painel === 'entrada') {
-                document.querySelectorAll('.btn-sistema')[1].classList.add('ativo');
                 document.getElementById('tela-entrada').classList.add('ativo');
+            } else if (painel === 'orcamento') {
+                document.querySelectorAll('.btn-sistema')[1].classList.add('ativo');
+                document.getElementById('tela-orcamento').classList.add('ativo');
             } else if (painel === 'historico') {
                 document.querySelectorAll('.btn-sistema')[3].classList.add('ativo');
                 document.getElementById('tela-historico').classList.add('ativo');
                 puxarDadosDaNuvem();
+            } else if (painel === 'edicao') {
+                document.getElementById('tela-edicao-avancada').classList.add('ativo');
             }
             atualizarCodigosVisiveisDinamicos();
         }
@@ -934,12 +1100,6 @@
         }
 
         function atualizarCodigosVisiveisDinamicos() {
-            if (codigoEdicaoFixoBloqueado !== null) {
-                document.getElementById('exibicaoCodigoOrcamento').innerText = `Nº ORÇAMENTO: #${codigoEdicaoFixoBloqueado}`;
-                document.getElementById('exibicaoCodigoOS').innerText = `Nº PEDIDO: #${codigoEdicaoFixoBloqueado}`;
-                return;
-            }
-
             const numAtual = parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100;
             document.getElementById('exibicaoCodigoOrcamento').innerText = `Nº ORÇAMENTO: #${gerarTextoCodigo('ART', numAtual)}`;
             
@@ -951,13 +1111,17 @@
         }
 
         function adicionarLinhaGenerico(tipo) {
-            const container = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
+            let container;
+            if(tipo === 'orcamento') container = document.getElementById('conteudoItensOrcamento');
+            else if (tipo === 'entrada') container = document.getElementById('conteudoItensOS');
+            else container = document.getElementById('conteudoItensEdicao');
+
             const linha = document.createElement('div');
             linha.className = 'item-linha';
             linha.innerHTML = `
                 <div class="col-desc"><input type="text" class="ipt-desc" placeholder="Serviço / Produto"></div>
-                <div class="col-qtd"><input type="number" class="ipt-qtd" placeholder="Qtd" min="1" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
-                <div class="col-valor"><input type="number" class="ipt-valor" placeholder="Valor Unit." min="0" step="any" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
+                <div class="col-qtd"><input type="number" class="ipt-qtd" value="1" min="1" placeholder="1" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
+                <div class="col-valor"><input type="number" class="ipt-valor" placeholder="Valor Total" min="0" step="any" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
                 <div class="linha-mobile-total-remover">
                     <div class="col-total">Total: R$ 0,00</div>
                     <div class="col-acao"><button type="button" class="btn-remover-linha" onclick="removerLinhaGenerico(this, '${tipo}')">❌</button></div>
@@ -974,20 +1138,34 @@
 
         function atualizarSubtotalLinha(input, tipo) {
             const inline = input.closest('.item-linha');
-            const qtd = parseFloat(inline.querySelector('.ipt-qtd').value) || 0;
+            const qtdInput = inline.querySelector('.ipt-qtd').value;
+            const qtd = (qtdInput === '' || parseFloat(qtdInput) === 0) ? 1 : (parseFloat(qtdInput) || 1);
             const valor = parseFloat(inline.querySelector('.ipt-valor').value) || 0;
             inline.querySelector('.col-total').innerText = 'Total: ' + formatarMoeda(qtd * valor);
             calcularGenerico(tipo);
         }
 
         function calcularGenerico(tipo) {
-            const container = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
-            const painel = (tipo === 'orcamento') ? document.getElementById('painelTotaisOrcamento') : document.getElementById('painelTotaisOS');
-            const desInput = (tipo === 'orcamento') ? document.getElementById('desconto') : document.getElementById('descontoOS');
+            let container, painel, desInput;
+            
+            if(tipo === 'orcamento') {
+                container = document.getElementById('conteudoItensOrcamento');
+                painel = document.getElementById('painelTotaisOrcamento');
+                desInput = document.getElementById('desconto');
+            } else if (tipo === 'entrada') {
+                container = document.getElementById('conteudoItensOS');
+                painel = document.getElementById('painelTotaisOS');
+                desInput = document.getElementById('descontoOS');
+            } else {
+                container = document.getElementById('conteudoItensEdicao');
+                painel = document.getElementById('painelTotaisEdicao');
+                desInput = document.getElementById('descontoEdicao');
+            }
 
             let subtotal = 0;
             container.querySelectorAll('.item-linha').forEach(l => {
-                const q = parseFloat(l.querySelector('.ipt-qtd').value) || 0;
+                const qtdInput = l.querySelector('.ipt-qtd').value;
+                const q = (qtdInput === '' || parseFloat(qtdInput) === 0) ? 1 : (parseFloat(qtdInput) || 1);
                 const v = parseFloat(l.querySelector('.ipt-valor').value) || 0;
                 subtotal += (q * v);
             });
@@ -995,13 +1173,31 @@
             const desc = parseFloat(desInput.value) || 0;
             const totalGeral = Math.max(0, subtotal - desc);
 
-            if (tipo === 'orcamento') {
+            if (tipo === 'orcamento' || (tipo === 'edicao' && tipoEdicaoAtiva === 'Orçamento')) {
                 painel.innerHTML = desc > 0 
                     ? `<div>VALOR SEM DESCONTO: ${formatarMoeda(subtotal)}</div><div>DESCONTO: ${formatarMoeda(desc)}</div><div class="total-destaque">TOTAL COM DESCONTO: ${formatarMoeda(totalGeral)}</div>`
                     : `<div class="total-destaque">TOTAL: ${formatarMoeda(subtotal)}</div>`;
             } else {
-                const entrada = parseFloat(document.getElementById('valorEntradaOS').value) || 0;
-                const rest = Math.max(0, totalGeral - entrada);
+                const entradaInput = (tipo === 'entrada') ? document.getElementById('valorEntradaOS').value : document.getElementById('valorEntradaEdicao').value;
+                let entrada = 0;
+                let rest = 0;
+
+                if (entradaInput.trim() === '') {
+                    entrada = totalGeral;
+                    rest = 0;
+                } else {
+                    entrada = parseFloat(entradaInput) || 0;
+                    rest = Math.max(0, totalGeral - entrada);
+                }
+
+                const labelRestante = (tipo === 'entrada') ? document.getElementById('labelRestanteOS') : document.getElementById('labelRestanteEdicao');
+                if (entradaInput.trim() !== '' && rest > 0) {
+                    labelRestante.innerText = `Restante: ${formatarMoeda(rest)}`;
+                    labelRestante.style.display = 'block';
+                } else {
+                    labelRestante.style.display = 'none';
+                }
+
                 let html = `<div>VALOR TOTAL DOS SERVIÇOS: ${formatarMoeda(subtotal)}</div>`;
                 if (desc > 0) html += `<div>DESCONTO CONCEDIDO: ${formatarMoeda(desc)}</div>`;
                 html += `<div>VALOR COBRADO: ${formatarMoeda(totalGeral)}</div><div style="color: green; font-weight: bold;">VALOR PAGO (ENTRADA): ${formatarMoeda(entrada)}</div>`;
@@ -1016,9 +1212,11 @@
             const cliente = document.getElementById('cliente').value.trim();
             if (!cliente) { alert("Preencha o nome do cliente antes de converter."); return; }
 
-            codigoEmConversaoFixado = codigoEdicaoFixoBloqueado !== null ? parseInt(codigoEdicaoFixoBloqueado.replace('ART',''), 10) : (parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100);
+            codigoEmConversaoFixado = parseInt(document.getElementById('exibicaoCodigoOrcamento').innerText.split('#ART')[1], 10);
+            if(isNaN(codigoEmConversaoFixado)) codigoEmConversaoFixado = (parseInt(localStorage.getItem('numSequencialUnificado'), 10) || 100);
             
             document.getElementById('clienteOS').value = cliente;
+            document.getElementById('atendenteOS').value = document.getElementById('atendenteOrcamento').value;
             document.getElementById('descontoOS').value = document.getElementById('desconto').value;
             document.getElementById('dataEntregaOS').value = document.getElementById('dataEntregaOrcamento').value;
             document.getElementById('obsOS').value = document.getElementById('obsOrcamento').value;
@@ -1028,8 +1226,9 @@
             verificarFormaPagamentoOS();
             if (forma === 'Crédito') document.getElementById('parcelasOS').value = document.getElementById('parcelasOrcamento').value;
 
-            conteudoItensOS.innerHTML = '';
-            conteudoItensOrcamento.querySelectorAll('.item-linha').forEach(lo => {
+            const conteudoOS = document.getElementById('conteudoItensOS');
+            conteudoOS.innerHTML = '';
+            document.getElementById('conteudoItensOrcamento').querySelectorAll('.item-linha').forEach(lo => {
                 const d = lo.querySelector('.ipt-desc').value;
                 const q = lo.querySelector('.ipt-qtd').value;
                 const v = lo.querySelector('.ipt-valor').value;
@@ -1045,59 +1244,66 @@
                         <div class="col-acao"><button type="button" class="btn-remover-linha" onclick="removerLinhaGenerico(this, 'entrada')">❌</button></div>
                     </div>
                 `;
-                conteudoItensOS.appendChild(nl);
+                conteudoOS.appendChild(nl);
                 atualizarSubtotalLinha(nl.querySelector('.ipt-qtd'), 'entrada');
             });
 
             alternarPainel('entrada');
-            alert(`Convertido! Código #${gerarTextoCodigo('ART', codigoEmConversaoFixado)} fixado.`);
+            alert(`Convertido! Conclua os detalhes na tela de Pedido (Código #${gerarTextoCodigo('ART', codigoEmConversaoFixado)} fixado).`);
         }
 
         function extrairPacoteDadosDoFormulario(tipo) {
             const agora = new Date();
-            const dataHoraStr = registroEmEdicaoManualDataHora ? registroEmEdicaoManualDataHora : (agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}));
+            let dataStr = formatarDataVisivel(agora.toLocaleDateString('pt-BR')); // Garantia de mandar limpo
             
-            let numTextoFormatado = codigoEdicaoFixoBloqueado !== null ? codigoEdicaoFixoBloqueado : (tipo === 'entrada' && codigoEmConversaoFixado !== null ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10)));
+            let numTextoFormatado = (tipo === 'entrada' && codigoEmConversaoFixado !== null) ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10));
 
-            let containerItens = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
+            let containerItens = (tipo === 'orcamento') ? document.getElementById('conteudoItensOrcamento') : document.getElementById('conteudoItensOS');
             let listaItensTexto = [];
             let subtotal = 0;
 
             containerItens.querySelectorAll('.item-linha').forEach(l => {
-                const q = parseFloat(l.querySelector('.ipt-qtd').value) || 0;
+                const qtdInput = l.querySelector('.ipt-qtd').value;
+                const q = (qtdInput === '' || parseFloat(qtdInput) === 0) ? 1 : (parseFloat(qtdInput) || 1);
                 const d = l.querySelector('.ipt-desc').value.trim() || "Item";
                 const v = l.querySelector('.ipt-valor').value || 0;
-                if(q > 0) {
-                    subtotal += (q * v);
-                    listaItensTexto.push(`${q}x ${d} (${formatarMoeda(q*v)})`);
-                }
+                
+                subtotal += (q * v);
+                listaItensTexto.push(`${q}x ${d} (${formatarMoeda(q*v)})`);
             });
 
             if (tipo === 'orcamento') {
                 const desc = parseFloat(document.getElementById('desconto').value) || 0;
                 return {
                     acao: "salvar", tipo: "Orçamento", codigo: numTextoFormatado,
-                    dataHora: dataHoraStr, cliente: document.getElementById('cliente').value.trim() || "Não informado",
+                    dataHora: dataStr, 
+                    cliente: document.getElementById('cliente').value.trim() || "Não informado",
+                    atendente: document.getElementById('atendenteOrcamento').value.trim(),
                     contato: "Não aplicável", itens: listaItensTexto.join(' | '), desconto: desc, entrada: 0,
                     formaPagamento: document.getElementById('formaPagamentoOrcamento').value + (document.getElementById('formaPagamentoOrcamento').value === 'Crédito' ? ` (${document.getElementById('parcelasOrcamento').value})` : ''),
                     previsaoEntrega: document.getElementById('dataEntregaOrcamento').value || "Não informada",
                     observacoes: document.getElementById('obsOrcamento').value.trim() + (document.getElementById('validade30Dias').checked ? " [Validade 30 dias]" : ""),
                     status: "Aberto", totalGeral: Math.max(0, subtotal - desc),
-                    origemEdicao: (registroEmEdicaoManualDataHora || codigoEdicaoFixoBloqueado) ? true : false
+                    origemEdicao: false
                 };
             } else {
                 const desc = parseFloat(document.getElementById('descontoOS').value) || 0;
+                const entradaInputStr = document.getElementById('valorEntradaOS').value.trim();
+                const entradaValor = (entradaInputStr === '') ? Math.max(0, subtotal - desc) : (parseFloat(entradaInputStr) || 0);
+
                 return {
                     acao: "salvar", tipo: "Pedido", codigo: numTextoFormatado,
-                    dataHora: dataHoraStr, cliente: document.getElementById('clienteOS').value.trim() || "Não informado",
+                    dataHora: dataStr,
+                    cliente: document.getElementById('clienteOS').value.trim() || "Não informado",
+                    atendente: document.getElementById('atendenteOS').value.trim(),
                     contato: document.getElementById('whatsappOS').value.trim() || "Não informado", itens: listaItensTexto.join(' | '),
-                    desconto: desc, entrada: parseFloat(document.getElementById('valorEntradaOS').value) || 0,
+                    desconto: desc, entrada: entradaValor,
                     formaPagamento: document.getElementById('formaPagamentoOS').value + (document.getElementById('formaPagamentoOS').value === 'Crédito' ? ` (${document.getElementById('parcelasOS').value})` : ''),
                     previsaoEntrega: document.getElementById('dataEntregaOS').value || "Não informada",
                     observacoes: document.getElementById('obsOS').value.trim(), 
                     status: document.getElementById('statusDoPedidoForm').value, 
                     totalGeral: Math.max(0, subtotal - desc),
-                    origemEdicao: (registroEmEdicaoManualDataHora || codigoEdicaoFixoBloqueado) ? true : false
+                    origemEdicao: false
                 };
             }
         }
@@ -1114,6 +1320,14 @@
             }).catch(err => console.error("Falha ao sincronizar:", err));
         }
 
+        function acaoSalvarManual(tipo) {
+            const clienteVal = (tipo === 'orcamento') ? document.getElementById('cliente').value.trim() : document.getElementById('clienteOS').value.trim();
+            if (!clienteVal) { alert("Por favor, preencha o nome do cliente antes de salvar."); return; }
+            
+            salvarDadosNuvemAutomatico(tipo);
+            alert("Registro processado e salvo na nuvem com sucesso!");
+        }
+
         function salvarEVisualizarImediatamenteForm(tipo) {
             const clienteVal = (tipo === 'orcamento') ? document.getElementById('cliente').value.trim() : document.getElementById('clienteOS').value.trim();
             if (!clienteVal) { alert("Por favor, digite o nome do cliente."); return; }
@@ -1125,7 +1339,7 @@
             const imgModal = document.getElementById('imagemRenderizadaFichaA6');
             const btnBaixarModal = document.getElementById('btnDownloadPeloVisualizador');
 
-            let numTextoFormatado = codigoEdicaoFixoBloqueado !== null ? codigoEdicaoFixoBloqueado : (tipo === 'entrada' && codigoEmConversaoFixado !== null ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10)));
+            let numTextoFormatado = (tipo === 'entrada' && codigoEmConversaoFixado !== null) ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10));
             document.getElementById('tituloVisualizadorFichaA6').innerText = `Visualizar ${tipo === 'orcamento' ? 'Orçamento' : 'Pedido'}: #${numTextoFormatado}`;
             imgModal.src = ""; 
 
@@ -1153,7 +1367,7 @@
             montarEstruturaNotaA6HTML(tipo);
 
             const alvo = document.getElementById('bloco-nota-a6');
-            let numTextoFormatado = codigoEdicaoFixoBloqueado !== null ? codigoEdicaoFixoBloqueado : (tipo === 'entrada' && codigoEmConversaoFixado !== null ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10)));
+            let numTextoFormatado = (tipo === 'entrada' && codigoEmConversaoFixado !== null) ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10));
 
             const agora = new Date();
             const nomeDoArquivoFinal = `${tipo === 'orcamento' ? 'ORCAMENTO' : 'PEDIDO'}_${numTextoFormatado}_${String(agora.getDate()).padStart(2,'0')}_${String(agora.getMonth()+1).padStart(2,'0')}_${agora.getFullYear()}`;
@@ -1180,6 +1394,11 @@
             document.getElementById('blocoParcelasOS').style.display = (forma === 'Crédito') ? 'block' : 'none';
         }
 
+        function verificarFormaPagamentoEdicao() {
+            const forma = document.getElementById('formaPagamentoEdicao').value;
+            document.getElementById('blocoParcelasEdicao').style.display = (forma === 'Crédito') ? 'block' : 'none';
+        }
+
         function puxarDadosDaNuvem() {
             const grade = document.getElementById('gradeHistoricoCards');
             grade.innerHTML = `<div style="grid-column: span 3; text-align:center; padding:20px;">⏳ Consultando banco de dados na nuvem, aguarde...</div>`;
@@ -1198,6 +1417,8 @@
             const termoBusca = document.getElementById('campoBuscaNuvem').value.toLowerCase().trim();
             
             let dadosFiltradosStatus = cacheNuvemGlobal.filter(p => {
+                if(p.status === "Excluído") return false; 
+
                 if (filtroStatusSelecionado === 'todos') return p.status !== "Cancelado"; 
                 if (filtroStatusSelecionado === 'andamento') return p.status === "Aberto" || p.status === "Produção" || p.status === "Definir Status" || !p.status;
                 if (filtroStatusSelecionado === 'concluido') return p.status === "Concluído";
@@ -1225,7 +1446,10 @@
                 let corFundoCard = p.status === "Concluído" ? "#d4edda" : (p.status === "Cancelado" ? "#f8d7da" : "#fff3cd"); 
                 let corTextoCard = p.status === "Concluído" ? "#155724" : (p.status === "Cancelado" ? "#721c24" : "#856404");
 
-                const card = document.createElement('div');
+                // USANDO A NOVA FUNÇÃO DE LIMPEZA DE DATA
+                let dataDisplay = formatarDataVisivel(p.dataHora);
+
+                card = document.createElement('div');
                 card.className = "card-registro";
                 card.style.backgroundColor = corFundoCard;
                 card.style.color = corTextoCard;
@@ -1240,7 +1464,7 @@
                         </div>
                         <div class="card-body-info">
                             <b>Cliente:</b> ${p.cliente}<br>
-                            <b>Data:</b> ${p.dataHora}<br>
+                            <b>Data:</b> ${dataDisplay}<br>
                             <b>Total:</b> ${formatarMoeda(p.totalGeral)}
                         </div>
                     </div>
@@ -1248,16 +1472,29 @@
                         <button class="btn-tabela btn-tab-editar" onclick="verificarAntesDeEditar('${p.codigo}', '${p.dataHora}')">✏️</button>
                         <button class="btn-tabela btn-tab-ver" onclick="gerarEVisualizarFichaA6Flutuante('${p.codigo}', '${p.dataHora}')">👁️</button>
                         <button class="btn-tabela btn-tab-baixar" onclick="baixarComprovanteDiretoDoHistorial('${p.codigo}', '${p.dataHora}')">📥</button>
-                        ${p.status !== 'Cancelado' ? `<button class="btn-tabela btn-tab-excluir" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')">🗑️</button>` : ''}
+                        ${p.status !== 'Cancelado' ? `<button class="btn-tabela btn-tab-excluir" title="Apagar/Ocultar Registro" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')">🗑️</button>` : ''}
                     </div>
                 `;
                 grade.appendChild(card);
             });
         }
 
+        function cancelarRegistroNaNuvem(codigo, dataHora) {
+            if(!confirm(`Deseja realmente apagar o registro #${codigo}?\n\nEle será ocultado da lista imediatamente.`)) return;
+            
+            cacheNuvemGlobal = cacheNuvemGlobal.filter(p => !(p.codigo === codigo && p.dataHora === dataHora));
+            filtrarTabelaHistoricoLocal();
+
+            const payload = { acao: "excluir", codigo: codigo, dataHora: dataHora, status: "Excluído", origemEdicao: true };
+            fetch(GOOGLE_API_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            }).catch(e => console.error("Falha ao apagar na nuvem", e));
+        }
+
         function verificarAntesDeEditar(codigo, dataHora) {
-            document.getElementById('alertaOrcamentoUso').style.display = "none";
-            document.getElementById('alertaPedidoUso').style.display = "none";
             abrirModalEscolhaEdicao(codigo, dataHora);
         }
 
@@ -1294,9 +1531,9 @@
                 acao: "salvar", tipo: itemSelecionadoParaEdicaoModal.tipo, codigo: itemSelecionadoParaEdicaoModal.codigo, dataHora: itemSelecionadoParaEdicaoModal.dataHora,
                 cliente: itemSelecionadoParaEdicaoModal.cliente, contato: itemSelecionadoParaEdicaoModal.contato, itens: itemSelecionadoParaEdicaoModal.itens, desconto: itemSelecionadoParaEdicaoModal.desconto,
                 entrada: itemSelecionadoParaEdicaoModal.entrada, formaPagamento: itemSelecionadoParaEdicaoModal.formaPagamento, previsaoEntrega: itemSelecionadoParaEdicaoModal.previsaoEntrega,
-                observacoes: itemSelecionadoParaEdicaoModal.observacoes, status: statusMapeado, totalGeral: itemSelecionadoParaEdicaoModal.totalGeral, origemEdicao: true 
+                observacoes: itemSelecionadoParaEdicaoModal.observacoes, status: statusMapeado, totalGeral: itemSelecionadoParaEdicaoModal.totalGeral, origemEdicao: true, atendente: itemSelecionadoParaEdicaoModal.atendente 
             };
-            fetch(GOOGLE_API_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(pacoteStatus) }).then(() => { puxarDadosDaNuvem(); });
+            fetch(GOOGLE_API_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(pacoteStatus) }).then(() => { alert("Status Atualizado."); puxarDadosDaNuvem(); });
         }
 
         function gerarEVisualizarFichaA6Flutuante(codigoAlvo, dataHoraChave) {
@@ -1308,12 +1545,18 @@
             if(!p) return;
 
             document.getElementById('tipoNotaA6').innerText = p.tipo.toUpperCase();
-            let dataA6 = p.dataHora;
-            let prazoA6 = p.previsaoEntrega && p.previsaoEntrega !== "Não informada" ? p.previsaoEntrega.split('-').reverse().join('/') : "Não definido";
+            
+            // USANDO A NOVA FUNÇÃO DE LIMPEZA DE DATA
+            let dataA6 = formatarDataVisivel(p.dataHora);
+            let prazoA6 = formatarDataVisivel(p.previsaoEntrega);
 
             let htmlGerais = p.tipo === "Orçamento" 
                 ? `<b>Nº ORÇAMENTO:</b> ${p.codigo}<br><b>Data:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}`
-                : `<b>Nº PEDIDO:</b> ${p.codigo}<br><b>Entrada:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}<br><b>Contato:</b> ${p.contato}`;
+                : `<b>Nº PEDIDO:</b> ${p.codigo}<br><b>Data:</b> ${dataA6}<br><b>Entrega:</b> ${prazoA6}<br><b>Cliente:</b> ${p.cliente}<br><b>Contato:</b> ${p.contato}`;
+
+            if(p.atendente && p.atendente.trim() !== "") {
+                htmlGerais += `<br><b>Atendente:</b> ${p.atendente}`;
+            }
 
             let subtotalCalculado = p.totalGeral + (parseFloat(p.desconto) || 0);
             let rest = Math.max(0, p.totalGeral - (parseFloat(p.entrada) || 0));
@@ -1381,36 +1624,110 @@
         }
 
         function carregarFormularioCompletoEdicao(item) {
-            registroEmEdicaoManualDataHora = item.dataHora;
+            registroEmEdicaoManualDataHora = item.dataHora; 
             codigoEdicaoFixoBloqueado = item.codigo; 
+            tipoEdicaoAtiva = item.tipo;
+
+            alternarPainel('edicao'); 
+            
+            document.getElementById('exibicaoCodigoEdicao').innerText = `#${item.codigo}`;
+            document.getElementById('tipoRegistroEdicaoTxt').innerText = `EDITANDO ${item.tipo.toUpperCase()}`;
+
+            document.getElementById('clienteEdicao').value = item.cliente;
+            document.getElementById('atendenteEdicao').value = item.atendente || "";
+            document.getElementById('descontoEdicao').value = item.desconto;
+            
+            // USANDO A NOVA FUNÇÃO DE LIMPEZA PARA INPUT DATE
+            document.getElementById('dataEntregaEdicao').value = formatarDataParaInput(item.previsaoEntrega);
+            
+            document.getElementById('obsEdicao').value = item.observacoes.replace(" [Validade 30 dias]", "");
 
             if (item.tipo === "Orçamento") {
-                alternarPainel('orcamento');
-                document.getElementById('cliente').value = item.cliente;
-                document.getElementById('desconto').value = item.desconto;
-                document.getElementById('obsOrcamento').value = item.observacoes.replace(" [Validade 30 dias]", "");
-                document.getElementById('validade30Dias').checked = item.observacoes.includes("[Validade 30 dias]");
-                if(item.previsaoEntrega && item.previsaoEntrega !== "Não informada") document.getElementById('dataEntregaOrcamento').value = item.previsaoEntrega;
-                conteudoItensOrcamento.innerHTML = ""; reconstruirGradeItensDoBanco(item.itens, 'orcamento');
+                document.getElementById('blocoWhatsappEdicao').style.display = 'none';
+                document.getElementById('blocoEntradaEdicao').style.display = 'none';
+                document.getElementById('blocoStatusEdicao').style.display = 'none';
+                document.getElementById('blocoPagamentoOrcamentoEdicao').style.display = 'block';
+                
+                let forma = item.formaPagamento.includes('Crédito') ? 'Crédito' : item.formaPagamento;
+                document.getElementById('formaPagamentoOrcamentoEdicao').value = forma;
+                
             } else {
-                alternarPainel('entrada');
-                document.getElementById('clienteOS').value = item.cliente;
-                document.getElementById('whatsappOS').value = item.contato === "Não informado" ? "" : item.contato;
-                document.getElementById('descontoOS').value = item.desconto;
-                document.getElementById('valorEntradaOS').value = item.entrada;
-                document.getElementById('obsOS').value = item.observacoes;
-                if(item.previsaoEntrega && item.previsaoEntrega !== "Não informada") document.getElementById('dataEntregaOS').value = item.previsaoEntrega;
-                document.getElementById('statusDoPedidoForm').value = item.status || "Definir Status";
-                atualizarCorDoSelectStatus(document.getElementById('statusDoPedidoForm'));
-                document.getElementById('formaPagamentoOS').value = item.formaPagamento.includes('Crédito') ? 'Crédito' : item.formaPagamento;
-                verificarFormaPagamentoOS();
-                conteudoItensOS.innerHTML = ""; reconstruirGradeItensDoBanco(item.itens, 'entrada');
+                document.getElementById('blocoWhatsappEdicao').style.display = 'block';
+                document.getElementById('blocoEntradaEdicao').style.display = 'grid';
+                document.getElementById('blocoStatusEdicao').style.display = 'block';
+                document.getElementById('blocoPagamentoOrcamentoEdicao').style.display = 'none';
+
+                document.getElementById('whatsappEdicao').value = item.contato === "Não informado" ? "" : item.contato;
+                if(item.entrada >= item.totalGeral) document.getElementById('valorEntradaEdicao').value = '';
+                else document.getElementById('valorEntradaEdicao').value = item.entrada;
+
+                document.getElementById('statusEdicao').value = item.status || "Definir Status";
+                atualizarCorDoSelectStatus(document.getElementById('statusEdicao'));
+                
+                document.getElementById('formaPagamentoEdicao').value = item.formaPagamento.includes('Crédito') ? 'Crédito' : item.formaPagamento;
+                verificarFormaPagamentoEdicao();
             }
-            atualizarCodigosVisiveisDinamicos();
+
+            document.getElementById('conteudoItensEdicao').innerHTML = ""; 
+            reconstruirGradeItensDoBanco(item.itens, 'edicao');
+            window.scrollTo(0, 0);
+        }
+
+        function salvarAcaoEdicaoAvancada() {
+            if(!document.getElementById('clienteEdicao').value.trim()){ alert("Cliente não pode estar vazio."); return; }
+            
+            let containerItens = document.getElementById('conteudoItensEdicao');
+            let listaItensTexto = [];
+            let subtotal = 0;
+
+            containerItens.querySelectorAll('.item-linha').forEach(l => {
+                const qtdInput = l.querySelector('.ipt-qtd').value;
+                const q = (qtdInput === '' || parseFloat(qtdInput) === 0) ? 1 : (parseFloat(qtdInput) || 1);
+                const d = l.querySelector('.ipt-desc').value.trim() || "Item";
+                const v = l.querySelector('.ipt-valor').value || 0;
+                subtotal += (q * v);
+                listaItensTexto.push(`${q}x ${d} (${formatarMoeda(q*v)})`);
+            });
+
+            const desc = parseFloat(document.getElementById('descontoEdicao').value) || 0;
+            const total = Math.max(0, subtotal - desc);
+            let payload = {};
+
+            if(tipoEdicaoAtiva === 'Orçamento') {
+                payload = {
+                    acao: "salvar", tipo: "Orçamento", codigo: codigoEdicaoFixoBloqueado, dataHora: registroEmEdicaoManualDataHora,
+                    cliente: document.getElementById('clienteEdicao').value.trim(), atendente: document.getElementById('atendenteEdicao').value.trim(),
+                    contato: "Não aplicável", itens: listaItensTexto.join(' | '), desconto: desc, entrada: 0,
+                    formaPagamento: document.getElementById('formaPagamentoOrcamentoEdicao').value, 
+                    previsaoEntrega: document.getElementById('dataEntregaEdicao').value || "Não informada",
+                    observacoes: document.getElementById('obsEdicao').value.trim(), status: "Aberto", totalGeral: total, origemEdicao: true
+                };
+            } else {
+                const entradaInputStr = document.getElementById('valorEntradaEdicao').value.trim();
+                const entradaValor = (entradaInputStr === '') ? total : (parseFloat(entradaInputStr) || 0);
+
+                payload = {
+                    acao: "salvar", tipo: "Pedido", codigo: codigoEdicaoFixoBloqueado, dataHora: registroEmEdicaoManualDataHora,
+                    cliente: document.getElementById('clienteEdicao').value.trim(), atendente: document.getElementById('atendenteEdicao').value.trim(),
+                    contato: document.getElementById('whatsappEdicao').value.trim() || "Não informado", itens: listaItensTexto.join(' | '),
+                    desconto: desc, entrada: entradaValor,
+                    formaPagamento: document.getElementById('formaPagamentoEdicao').value + (document.getElementById('formaPagamentoEdicao').value === 'Crédito' ? ` (${document.getElementById('parcelasEdicao').value})` : ''),
+                    previsaoEntrega: document.getElementById('dataEntregaEdicao').value || "Não informada",
+                    observacoes: document.getElementById('obsEdicao').value.trim(), 
+                    status: document.getElementById('statusEdicao').value, totalGeral: total, origemEdicao: true
+                };
+            }
+
+            fetch(GOOGLE_API_URL, {
+                method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
+            }).then(() => {
+                alert("Alterações salvas com sucesso!");
+                alternarPainel('historico');
+            });
         }
 
         function reconstruirGradeItensDoBanco(textoItens, tipo) {
-            const container = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
+            let container = document.getElementById(tipo === 'orcamento' ? 'conteudoItensOrcamento' : (tipo === 'entrada' ? 'conteudoItensOS' : 'conteudoItensEdicao'));
             if(!textoItens) { adicionarLinhaGenerico(tipo); return; }
             textoItens.split(' | ').forEach(pTexto => {
                 const idxX = pTexto.indexOf('x ');
@@ -1430,22 +1747,34 @@
 
         function montarEstruturaNotaA6HTML(tipo) {
             const agora = new Date();
-            const dataStr = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            let dataStr = formatarDataVisivel(agora.toLocaleDateString('pt-BR')); 
             let htmlGerais = ''; let htmlItens = ''; let htmlFinanceiro = '';
-            let numTextoFormatado = codigoEdicaoFixoBloqueado !== null ? codigoEdicaoFixoBloqueado : (tipo === 'entrada' && codigoEmConversaoFixado !== null ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10)));
+            
+            let codigoUsado;
+            if (tipo === 'entrada' && codigoEmConversaoFixado !== null) {
+                codigoUsado = gerarTextoCodigo('ART', codigoEmConversaoFixado);
+            } else {
+                codigoUsado = gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10));
+            }
+
+            const atendenteHTML = (tipo === 'orcamento') ? document.getElementById('atendenteOrcamento').value.trim() : document.getElementById('atendenteOS').value.trim();
             
             if (tipo === 'orcamento') {
                 document.getElementById('tipoNotaA6').innerText = "ORÇAMENTO";
                 const cliente = document.getElementById('cliente').value.trim() || "Não informado";
                 const desconto = parseFloat(document.getElementById('desconto').value) || 0;
                 let obsOrc = document.getElementById('obsOrcamento').value.trim();
-                let prazo = document.getElementById('dataEntregaOrcamento').value ? document.getElementById('dataEntregaOrcamento').value.split('-').reverse().join('/') : "Não definido";
+                
+                // USANDO A NOVA FUNÇÃO DE LIMPEZA PARA INPUT DATE
+                let prazo = document.getElementById('dataEntregaOrcamento').value ? formatarDataVisivel(document.getElementById('dataEntregaOrcamento').value) : "Não definido";
 
-                htmlGerais = `<b>Nº ORÇAMENTO:</b> #${numTextoFormatado.replace('#','')}<br><b>Data:</b> ${dataStr}<br><b>Entrega:</b> ${prazo}<br><b>Cliente:</b> ${cliente}`;
+                htmlGerais = `<b>Nº ORÇAMENTO:</b> #${codigoUsado.replace('#','')}<br><b>Data:</b> ${dataStr}<br><b>Entrega:</b> ${prazo}<br><b>Cliente:</b> ${cliente}`;
+                if(atendenteHTML) htmlGerais += `<br><b>Atendente:</b> ${atendenteHTML}`;
 
                 let subtotal = 0;
-                conteudoItensOrcamento.querySelectorAll('.item-linha').forEach(linha => {
-                    const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
+                document.getElementById('conteudoItensOrcamento').querySelectorAll('.item-linha').forEach(linha => {
+                    const qtdInput = linha.querySelector('.ipt-qtd').value;
+                    const qtd = (qtdInput === '' || parseFloat(qtdInput) === 0) ? 1 : (parseFloat(qtdInput) || 1);
                     const desc = linha.querySelector('.ipt-desc').value.trim() || "Item";
                     const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
                     if (qtd > 0) { subtotal += (qtd * valor); htmlItens += `<tr><td>${qtd}x</td><td>${desc}</td><td style="text-align: right;">${formatarMoeda(qtd * valor)}</td></tr>`; }
@@ -1466,22 +1795,30 @@
                 const cliente = document.getElementById('clienteOS').value.trim() || "Não informado";
                 const whatsapp = document.getElementById('whatsappOS').value.trim() || "Não informado";
                 const desconto = parseFloat(document.getElementById('descontoOS').value) || 0;
-                const entrada = parseFloat(document.getElementById('valorEntradaOS').value) || 0;
-                const obs = document.getElementById('obsOS').value.trim();
-                let prazo = document.getElementById('dataEntregaOS').value ? document.getElementById('dataEntregaOS').value.split('-').reverse().join('/') : "Não definido";
-
-                htmlGerais = `<b>Nº PEDIDO:</b> #${numTextoFormatado.replace('#','')}<br><b>Entrada:</b> ${dataStr}<br><b>Entrega:</b> ${prazo}<br><b>Cliente:</b> ${cliente}<br><b>Contato:</b> ${whatsapp}`;
-
+                
                 let subtotal = 0;
-                conteudoItensOS.querySelectorAll('.item-linha').forEach(linha => {
-                    const qtd = parseFloat(linha.querySelector('.ipt-qtd').value) || 0;
+                document.getElementById('conteudoItensOS').querySelectorAll('.item-linha').forEach(linha => {
+                    const qtdInput = linha.querySelector('.ipt-qtd').value;
+                    const qtd = (qtdInput === '' || parseFloat(qtdInput) === 0) ? 1 : (parseFloat(qtdInput) || 1);
                     const desc = linha.querySelector('.ipt-desc').value.trim() || "Item";
                     const valor = parseFloat(linha.querySelector('.ipt-valor').value) || 0;
                     if (qtd > 0) { subtotal += (qtd * valor); htmlItens += `<tr><td>${qtd}x</td><td>${desc}</td><td style="text-align: right;">${formatarMoeda(qtd * valor)}</td></tr>`; }
                 });
 
                 let totalGeral = subtotal - desconto;
-                let restante = totalGeral - entrada;
+
+                const entradaInput = document.getElementById('valorEntradaOS').value.trim();
+                let entrada = (entradaInput === '') ? totalGeral : (parseFloat(entradaInput) || 0);
+
+                const obs = document.getElementById('obsOS').value.trim();
+                
+                // USANDO A NOVA FUNÇÃO DE LIMPEZA PARA INPUT DATE
+                let prazo = document.getElementById('dataEntregaOS').value ? formatarDataVisivel(document.getElementById('dataEntregaOS').value) : "Não definido";
+
+                htmlGerais = `<b>Nº PEDIDO:</b> #${codigoUsado.replace('#','')}<br><b>Data:</b> ${dataStr}<br><b>Entrega:</b> ${prazo}<br><b>Cliente:</b> ${cliente}<br><b>Contato:</b> ${whatsapp}`;
+                if(atendenteHTML) htmlGerais += `<br><b>Atendente:</b> ${atendenteHTML}`;
+
+                let restante = Math.max(0, totalGeral - entrada);
 
                 if (restante === 0) {
                     if (desconto > 0) htmlFinanceiro += `Desconto Concedido: -${formatarMoeda(desconto)}<br>`;
@@ -1502,13 +1839,13 @@
         }
 
         function limparTodosItens(tipo) {
-            const container = (tipo === 'orcamento') ? conteudoItensOrcamento : conteudoItensOS;
+            let container = document.getElementById(tipo === 'orcamento' ? 'conteudoItensOrcamento' : (tipo === 'entrada' ? 'conteudoItensOS' : 'conteudoItensEdicao'));
             container.innerHTML = '';
             adicionarLinhaGenerico(tipo);
         }
 
         function limparDesconto(tipo) {
-            const input = (tipo === 'orcamento') ? document.getElementById('desconto') : document.getElementById('descontoOS');
+            const input = document.getElementById(tipo === 'orcamento' ? 'desconto' : 'descontoOS');
             input.value = '0';
             calcularGenerico(tipo);
         }
