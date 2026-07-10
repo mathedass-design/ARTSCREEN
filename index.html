@@ -619,7 +619,7 @@
 
         <div class="grid-financeiro">
             <div class="form-group">
-                <label forgets="descontoOS">Desconto (R$)</label>
+                <label for="descontoOS">Desconto (R$)</label>
                 <input type="number" id="descontoOS" value="0" min="0" step="any" oninput="calcularGenerico('entrada')">
             </div>
             <div class="form-group" id="blocoParcelasOS" style="display: none;">
@@ -887,6 +887,15 @@
         </div>
     </div>
 
+    <div id="modalEscolhaImpressao" class="modal-edicao" style="display: none;">
+        <div class="modal-conteudo">
+            <h3 style="margin-top:0; margin-bottom: 20px; font-size: 18px; text-transform: uppercase;">Quantidade de Vias</h3>
+            <button class="btn-modal-opcao b-pedido" onclick="processarImpressaoFinal(1)">1 VIA (Metade da folha)</button>
+            <button class="btn-modal-opcao b-status" onclick="processarImpressaoFinal(2)">2 VIAS (Folha inteira)</button>
+            <button class="btn-modal-opcao b-fechar" style="margin-top:15px;" onclick="fecharModalImpressao()">Cancelar</button>
+        </div>
+    </div>
+
     <div id="bloco-nota-a6-container" style="position: absolute; left: -9999px; top: 0; width: 395px;">
         <div id="bloco-nota-a6" style="position: static; left: 0; top: 0; display: block;">
             <div class="nota-header" style="border-bottom: none; padding-bottom: 0;">
@@ -942,41 +951,32 @@
         function formatarDataVisivel(dataBruta) {
             if (!dataBruta || dataBruta === "Não informada" || dataBruta === "Não definido") return "Não definido";
             
-            // Se for formato ISO ex: 2026-07-02T03:00:00.000Z
             if (dataBruta.includes('T')) {
-                let apenasData = dataBruta.split('T')[0]; // "2026-07-02"
-                return apenasData.split('-').reverse().join('/'); // "02/07/2026"
+                let apenasData = dataBruta.split('T')[0]; 
+                return apenasData.split('-').reverse().join('/'); 
             }
-            // Se vier no formato YYYY-MM-DD
             if (dataBruta.includes('-') && dataBruta.split('-')[0].length === 4) {
                 return dataBruta.split('-').reverse().join('/');
             }
-            // Se vier no antigo formato com espaço "02/07/2026 15:30"
             if (dataBruta.includes(' ')) {
                 return dataBruta.split(' ')[0];
             }
-            
-            // Caso já venha normal (02/07/2026)
             return dataBruta;
         }
 
         function formatarDataParaInput(dataBruta) {
             if (!dataBruta || dataBruta === "Não informada") return "";
             
-            // Se for ISO ex: 2026-07-02T03:00:00.000Z
             if (dataBruta.includes('T')) {
-                return dataBruta.split('T')[0]; // "2026-07-02"
+                return dataBruta.split('T')[0]; 
             }
-            // Se vier no formato DD/MM/YYYY
             if (dataBruta.includes('/')) {
                 let limpa = dataBruta.split(' ')[0];
                 let partes = limpa.split('/');
                 if (partes.length === 3) return `${partes[2]}-${partes[1]}-${partes[0]}`;
             }
-            
             return dataBruta;
         }
-        // ==========================================
 
         window.addEventListener('DOMContentLoaded', () => {
             limparTodosItens('orcamento');
@@ -1255,7 +1255,7 @@
 
         function extrairPacoteDadosDoFormulario(tipo) {
             const agora = new Date();
-            let dataStr = formatarDataVisivel(agora.toLocaleDateString('pt-BR')); // Garantia de mandar limpo
+            let dataStr = formatarDataVisivel(agora.toLocaleDateString('pt-BR')); 
             
             let numTextoFormatado = (tipo === 'entrada' && codigoEmConversaoFixado !== null) ? gerarTextoCodigo('ART', codigoEmConversaoFixado) : gerarTextoCodigo('ART', parseInt(localStorage.getItem('numSequencialUnificado'), 10));
 
@@ -1447,7 +1447,6 @@
                 let corFundoCard = p.status === "Concluído" ? "#d4edda" : (p.status === "Cancelado" ? "#f8d7da" : "#fff3cd"); 
                 let corTextoCard = p.status === "Concluído" ? "#155724" : (p.status === "Cancelado" ? "#721c24" : "#856404");
 
-                // USANDO A NOVA FUNÇÃO DE LIMPEZA DE DATA
                 let dataDisplay = formatarDataVisivel(p.dataHora);
 
                 let card = document.createElement('div');
@@ -1474,7 +1473,6 @@
                         <button class="btn-tabela btn-tab-ver" onclick="gerarEVisualizarFichaA6Flutuante('${p.codigo}', '${p.dataHora}')">👁️</button>
                         <button class="btn-tabela btn-tab-baixar" onclick="baixarComprovanteDiretoDoHistorial('${p.codigo}', '${p.dataHora}')">📥</button>
                         
-                        <!-- NOVO BOTÃO DE IMPRIMIR A5 -->
                         <button class="btn-tabela" style="background-color: #6f42c1;" title="Imprimir em A5" onclick="imprimirComprovanteA5('${p.codigo}', '${p.dataHora}')">🖨️</button>
                         
                         ${p.status !== 'Cancelado' ? `<button class="btn-tabela btn-tab-excluir" title="Apagar/Ocultar Registro" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')">🗑️</button>` : ''}
@@ -1551,7 +1549,6 @@
 
             document.getElementById('tipoNotaA6').innerText = p.tipo.toUpperCase();
             
-            // USANDO A NOVA FUNÇÃO DE LIMPEZA DE DATA
             let dataA6 = formatarDataVisivel(p.dataHora);
             let prazoA6 = formatarDataVisivel(p.previsaoEntrega);
 
@@ -1603,7 +1600,6 @@
                         const qtdTexto = row.substring(0, idxX + 1);
                         const resto = row.substring(idxX + 2);
                         
-                        // Separa a descrição do preço na hora de renderizar a tabela
                         const ultimoAbre = resto.lastIndexOf('(');
                         const ultimoFecha = resto.lastIndexOf(')');
                         
@@ -1659,7 +1655,6 @@
             document.getElementById('atendenteEdicao').value = item.atendente || "";
             document.getElementById('descontoEdicao').value = item.desconto;
             
-            // USANDO A NOVA FUNÇÃO DE LIMPEZA PARA INPUT DATE
             document.getElementById('dataEntregaEdicao').value = formatarDataParaInput(item.previsaoEntrega);
             
             document.getElementById('obsEdicao').value = item.observacoes.replace(" [Validade 30 dias]", "");
@@ -1759,7 +1754,6 @@
                     const q = parseFloat(qStr) || 1;
                     const resto = pTexto.substring(idxX + 2);
                     
-                    // Isola a descrição do valor lendo os últimos parênteses
                     const ultimoAbre = resto.lastIndexOf('(');
                     const ultimoFecha = resto.lastIndexOf(')');
                     
@@ -1771,7 +1765,6 @@
                         totalStr = resto.substring(ultimoAbre + 1, ultimoFecha);
                     }
                     
-                    // Transforma "R$ 20,00" de volta em número para o campo de edição
                     let totalNum = 0;
                     if(totalStr !== "0") {
                         let numStr = totalStr.replace('R$', '').trim().replace(/\./g, '').replace(',', '.');
@@ -1813,7 +1806,6 @@
                 const desconto = parseFloat(document.getElementById('desconto').value) || 0;
                 let obsOrc = document.getElementById('obsOrcamento').value.trim();
                 
-                // USANDO A NOVA FUNÇÃO DE LIMPEZA PARA INPUT DATE
                 let prazo = document.getElementById('dataEntregaOrcamento').value ? formatarDataVisivel(document.getElementById('dataEntregaOrcamento').value) : "Não definido";
 
                 htmlGerais = `<b>Nº ORÇAMENTO:</b> #${codigoUsado.replace('#','')}<br><b>Data:</b> ${dataStr}<br><b>Entrega:</b> ${prazo}<br><b>Cliente:</b> ${cliente}`;
@@ -1860,7 +1852,6 @@
 
                 const obs = document.getElementById('obsOS').value.trim();
                 
-                // USANDO A NOVA FUNÇÃO DE LIMPEZA PARA INPUT DATE
                 let prazo = document.getElementById('dataEntregaOS').value ? formatarDataVisivel(document.getElementById('dataEntregaOS').value) : "Não definido";
 
                 htmlGerais = `<b>Nº PEDIDO:</b> #${codigoUsado.replace('#','')}<br><b>Data:</b> ${dataStr}<br><b>Entrega:</b> ${prazo}<br><b>Cliente:</b> ${cliente}<br><b>Contato:</b> ${whatsapp}`;
@@ -1899,13 +1890,33 @@
         }
 
         // ==========================================
-        // NOVA FUNÇÃO: IMPRIMIR COMPROVANTE A5 (METADE DA FOLHA)
+        // NOVA FUNÇÃO: IMPRIMIR COMPROVANTE A5 (1 OU 2 VIAS)
         // ==========================================
+        let dadosImpressaoPendente = null;
+
+        // 1. Função que o botão da tabela chama (Abre o modal)
         function imprimirComprovanteA5(codigoAlvo, dataHoraChave) {
+            dadosImpressaoPendente = { codigo: codigoAlvo, dataHora: dataHoraChave };
+            document.getElementById('modalEscolhaImpressao').style.display = 'flex';
+        }
+
+        // 2. Função para fechar o modal
+        function fecharModalImpressao() {
+            document.getElementById('modalEscolhaImpressao').style.display = 'none';
+            dadosImpressaoPendente = null;
+        }
+
+        // 3. Função que executa a montagem baseada na escolha do usuário
+        function processarImpressaoFinal(qtdVias) {
+            if (!dadosImpressaoPendente) return;
+            
+            const codigoAlvo = dadosImpressaoPendente.codigo;
+            const dataHoraChave = dadosImpressaoPendente.dataHora;
+            fecharModalImpressao(); 
+
             const p = cacheNuvemGlobal.find(item => item.codigo === codigoAlvo && item.dataHora === dataHoraChave);
             if(!p) return;
 
-            // 1. Preenche os dados usando a mesma lógica que você já tem no sistema
             document.getElementById('tipoNotaA6').innerText = p.tipo.toUpperCase();
             
             let dataA6 = formatarDataVisivel(p.dataHora);
@@ -1957,7 +1968,6 @@
                         const qtdTexto = row.substring(0, idxX + 1);
                         const resto = row.substring(idxX + 2);
                         
-                        // Separa a descrição do preço na hora de renderizar a tabela
                         const ultimoAbre = resto.lastIndexOf('(');
                         const ultimoFecha = resto.lastIndexOf(')');
                         
@@ -1978,58 +1988,62 @@
             document.getElementById('itensNotaA6').innerHTML = htmlItens || '<tr><td colspan="3">Sem descrição</td></tr>';
             document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
 
-            // 2. Clona o layout pronto e abre a janela de impressão customizada
             const htmlDaNota = document.getElementById('bloco-nota-a6').outerHTML;
-            const janelaImpressao = window.open('', '_blank');
             
+            let estruturaLayout = "";
+            if (qtdVias === 1) {
+                estruturaLayout = `
+                    <div class="metade-vazia"></div>
+                    <div class="metade-a5">
+                        ${htmlDaNota}
+                    </div>
+                `;
+            } else {
+                estruturaLayout = `
+                    <div class="metade-a5" style="border-left: none; border-right: 1px dashed #999;">
+                        ${htmlDaNota}
+                    </div>
+                    <div class="metade-a5" style="border-left: 1px dashed #999;">
+                        ${htmlDaNota}
+                    </div>
+                `;
+            }
+
+            const janelaImpressao = window.open('', '_blank');
             janelaImpressao.document.write(`
                 <html>
                 <head>
                     <title>Imprimir Comprovante - ${p.codigo}</title>
-                   <style>
-                        /* Configura a página para A4 Deitado (Landscape) */
+                    <style>
                         @page { size: A4 landscape; margin: 0; }
-                        
                         body, html { 
                             margin: 0; padding: 0; 
                             width: 100%; height: 100%; 
                             display: flex; background: #fff;
-                            overflow: hidden; /* Evita a segunda página em branco */
+                            overflow: hidden;
                             -webkit-print-color-adjust: exact;
                         }
-                        
                         .metade-vazia { width: 50%; height: 100%; }
-
                         .metade-a5 {
                             width: 50%; height: 100%; display: flex; 
                             justify-content: center; align-items: center; 
                             border-left: 2px dashed #999; box-sizing: border-box;
-                            padding: 10mm; /* Dá uma margem para o recibo não grudar na borda do papel */
+                            padding: 10mm;
                         }
-
-                        /* AQUI É A MÁGICA: Forçamos o recibo a ocupar 100% do espaço da metade A5 */
                         #bloco-nota-a6 {
                             position: relative !important; left: auto !important; top: auto !important;
-                            width: 100% !important; 
-                            height: 100% !important; 
-                            min-height: auto !important; 
+                            width: 100% !important; height: 100% !important; min-height: auto !important; 
                             background-color: #ffffff; padding: 25px !important; box-sizing: border-box;
                             font-family: 'Courier New', Courier, monospace; color: #000000;
                             border: 3px double #000000;
                         }
-                        
-                        /* Aumentamos um pouco as fontes para ficarem proporcionais à folha maior */
                         .nota-header { text-align: center; border-bottom: 1px dashed #000; padding-bottom: 12px; margin-bottom: 15px; }
                         .nota-secao { font-size: 16px !important; margin-bottom: 15px; line-height: 1.5; }
                         .nota-linha-divisoria { border-top: 1px dashed #000; margin: 10px 0; }
-                        
                         .nota-tabela { width: 100%; font-size: 15px !important; border-collapse: collapse; }
                         .nota-tabela th { border-bottom: 1px dashed #000; text-align: left; padding-bottom: 6px; }
                         .nota-tabela td { padding: 6px 0; }
-                        
                         .nota-financeiro-direita { text-align: right; font-size: 16px !important; font-weight: bold; margin-top: 10px; line-height: 1.5; margin-bottom: 20px; }
-                        
-                        /* Ajustamos a largura do rodapé para acompanhar os 100% com o padding de 25px de cada lado (100% - 50px) */
                         .nota-rodape {
                             position: absolute; bottom: 25px !important; left: 25px !important; 
                             width: calc(100% - 50px) !important; 
@@ -2037,25 +2051,13 @@
                             display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;
                         }
                         .nota-rodape-texto { font-size: 12px !important; line-height: 1.4; color: #333333; text-align: left; width: 80%; }
-                        
-                        /* Deixamos o QR Code um pouco maior e a Logo proporcional */
                         .nota-rodape-qrcode { width: 55px; height: 55px; border: 1px solid #000; padding: 2px; background-color: #fff; }
-                        .nota-header img {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 0;
-}
-                    </style>                </head>
+                        .nota-header img { width: 100%; max-width: 100%; height: auto; display: block; margin: 0; }
+                    </style>
+                </head>
                 <body>
-                    <div class="metade-vazia"></div>
-                    <div class="metade-a5">
-                        ${htmlDaNota}
-                    </div>
-                    
+                    ${estruturaLayout}
                     <script>
-                        // Aciona a impressão logo que o visualizador carrega a estrutura
                         window.onload = function() {
                             setTimeout(function() {
                                 window.print();
