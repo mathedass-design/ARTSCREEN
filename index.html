@@ -1599,7 +1599,24 @@
             if(p.itens) {
                 p.itens.split(' | ').forEach(row => {
                     const idxX = row.indexOf('x ');
-                    if(idxX !== -1) htmlItens += `<tr><td>${row.substring(0, idxX + 1)}</td><td>${row.substring(idxX + 2)}</td><td style="text-align: right;">-</td></tr>`;
+                    if(idxX !== -1) {
+                        const qtdTexto = row.substring(0, idxX + 1);
+                        const resto = row.substring(idxX + 2);
+                        
+                        // Separa a descrição do preço na hora de renderizar a tabela
+                        const ultimoAbre = resto.lastIndexOf('(');
+                        const ultimoFecha = resto.lastIndexOf(')');
+                        
+                        let desc = resto;
+                        let valor = "-";
+                        
+                        if (ultimoAbre !== -1 && ultimoFecha !== -1 && ultimoFecha > ultimoAbre) {
+                            desc = resto.substring(0, ultimoAbre).trim();
+                            valor = resto.substring(ultimoAbre + 1, ultimoFecha);
+                        }
+                        
+                        htmlItens += `<tr><td>${qtdTexto}</td><td>${desc}</td><td style="text-align: right;">${valor}</td></tr>`;
+                    }
                 });
             }
             document.getElementById('dadosGeraisNotaA6').innerHTML = htmlGerais;
@@ -1734,15 +1751,41 @@
         function reconstruirGradeItensDoBanco(textoItens, tipo) {
             let container = document.getElementById(tipo === 'orcamento' ? 'conteudoItensOrcamento' : (tipo === 'entrada' ? 'conteudoItensOS' : 'conteudoItensEdicao'));
             if(!textoItens) { adicionarLinhaGenerico(tipo); return; }
+            
             textoItens.split(' | ').forEach(pTexto => {
                 const idxX = pTexto.indexOf('x ');
                 if(idxX !== -1) {
+                    const qStr = pTexto.substring(0, idxX);
+                    const q = parseFloat(qStr) || 1;
+                    const resto = pTexto.substring(idxX + 2);
+                    
+                    // Isola a descrição do valor lendo os últimos parênteses
+                    const ultimoAbre = resto.lastIndexOf('(');
+                    const ultimoFecha = resto.lastIndexOf(')');
+                    
+                    let desc = resto;
+                    let totalStr = "0";
+                    
+                    if (ultimoAbre !== -1 && ultimoFecha !== -1 && ultimoFecha > ultimoAbre) {
+                        desc = resto.substring(0, ultimoAbre).trim();
+                        totalStr = resto.substring(ultimoAbre + 1, ultimoFecha);
+                    }
+                    
+                    // Transforma "R$ 20,00" de volta em número para o campo de edição
+                    let totalNum = 0;
+                    if(totalStr !== "0") {
+                        let numStr = totalStr.replace('R$', '').trim().replace(/\./g, '').replace(',', '.');
+                        totalNum = parseFloat(numStr) || 0;
+                    }
+                    
+                    let unitPrice = totalNum / q;
+
                     const linha = document.createElement('div');
                     linha.className = 'item-linha';
                     linha.innerHTML = `
-                        <div class="col-desc"><input type="text" class="ipt-desc" value="${pTexto.substring(idxX + 2)}"></div>
-                        <div class="col-qtd"><input type="number" class="ipt-qtd" value="${pTexto.substring(0, idxX)}" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
-                        <div class="col-valor"><input type="number" class="ipt-valor" value="0" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
+                        <div class="col-desc"><input type="text" class="ipt-desc" value="${desc}"></div>
+                        <div class="col-qtd"><input type="number" class="ipt-qtd" value="${q}" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
+                        <div class="col-valor"><input type="number" class="ipt-valor" value="${unitPrice > 0 ? unitPrice.toFixed(2) : ''}" oninput="atualizarSubtotalLinha(this, '${tipo}')"></div>
                         <div class="linha-mobile-total-remover"><div class="col-total">Total: R$ 0,00</div><div class="col-acao"><button type="button" class="btn-remover-linha" onclick="removerLinhaGenerico(this, '${tipo}')">❌</button></div></div>`;
                     container.appendChild(linha);
                     atualizarSubtotalLinha(linha.querySelector('.ipt-qtd'), tipo);
@@ -1910,7 +1953,24 @@
             if(p.itens) {
                 p.itens.split(' | ').forEach(row => {
                     const idxX = row.indexOf('x ');
-                    if(idxX !== -1) htmlItens += `<tr><td>${row.substring(0, idxX + 1)}</td><td>${row.substring(idxX + 2)}</td><td style="text-align: right;">-</td></tr>`;
+                    if(idxX !== -1) {
+                        const qtdTexto = row.substring(0, idxX + 1);
+                        const resto = row.substring(idxX + 2);
+                        
+                        // Separa a descrição do preço na hora de renderizar a tabela
+                        const ultimoAbre = resto.lastIndexOf('(');
+                        const ultimoFecha = resto.lastIndexOf(')');
+                        
+                        let desc = resto;
+                        let valor = "-";
+                        
+                        if (ultimoAbre !== -1 && ultimoFecha !== -1 && ultimoFecha > ultimoAbre) {
+                            desc = resto.substring(0, ultimoAbre).trim();
+                            valor = resto.substring(ultimoAbre + 1, ultimoFecha);
+                        }
+                        
+                        htmlItens += `<tr><td>${qtdTexto}</td><td>${desc}</td><td style="text-align: right;">${valor}</td></tr>`;
+                    }
                 });
             }
             
@@ -1926,7 +1986,7 @@
                 <html>
                 <head>
                     <title>Imprimir Comprovante - ${p.codigo}</title>
-                    <style>
+                   <style>
                         /* Configura a página para A4 Deitado (Landscape) */
                         @page { size: A4 landscape; margin: 0; }
                         
@@ -1938,48 +1998,50 @@
                             -webkit-print-color-adjust: exact;
                         }
                         
-                        .metade-vazia {
-                            width: 50%; 
-                            height: 100%;
-                        }
+                        .metade-vazia { width: 50%; height: 100%; }
 
                         .metade-a5 {
-                            width: 50%; 
-                            height: 100%; 
-                            display: flex; 
-                            justify-content: center; 
-                            align-items: center; 
-                            border-left: 2px dashed #999; /* Linha tracejada agora na esquerda */
-                            box-sizing: border-box;
+                            width: 50%; height: 100%; display: flex; 
+                            justify-content: center; align-items: center; 
+                            border-left: 2px dashed #999; box-sizing: border-box;
+                            padding: 10mm; /* Dá uma margem para o recibo não grudar na borda do papel */
                         }
 
-                        /* Importação exata do seu CSS atual para o comprovante não quebrar */
+                        /* AQUI É A MÁGICA: Forçamos o recibo a ocupar 100% do espaço da metade A5 */
                         #bloco-nota-a6 {
-                            position: relative !important;
-                            left: auto !important; top: auto !important;
-                            width: 395px; min-height: 560px; 
-                            background-color: #ffffff; padding: 18px; box-sizing: border-box;
+                            position: relative !important; left: auto !important; top: auto !important;
+                            width: 100% !important; 
+                            height: 100% !important; 
+                            min-height: auto !important; 
+                            background-color: #ffffff; padding: 25px !important; box-sizing: border-box;
                             font-family: 'Courier New', Courier, monospace; color: #000000;
                             border: 3px double #000000;
                         }
-                        .nota-header { text-align: center; font-weight: bold; border-bottom: 1px dashed #000; padding-bottom: 8px; margin-bottom: 10px; }
-                        .nota-titulo { font-size: 18px; letter-spacing: 1px; }
-                        .nota-sub { font-size: 14px; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
-                        .nota-secao { font-size: 13px; margin-bottom: 10px; line-height: 1.4; }
-                        .nota-linha-divisoria { border-top: 1px dashed #000; margin: 6px 0; }
-                        .nota-tabela { width: 100%; font-size: 12px; border-collapse: collapse; }
-                        .nota-tabela th { border-bottom: 1px dashed #000; text-align: left; padding-bottom: 4px; }
-                        .nota-tabela td { padding: 4px 0; }
-                        .nota-financeiro-direita { text-align: right; font-size: 13px; font-weight: bold; margin-top: 6px; line-height: 1.4; margin-bottom: 15px; }
+                        
+                        /* Aumentamos um pouco as fontes para ficarem proporcionais à folha maior */
+                        .nota-header { text-align: center; border-bottom: 1px dashed #000; padding-bottom: 12px; margin-bottom: 15px; }
+                        .nota-secao { font-size: 16px !important; margin-bottom: 15px; line-height: 1.5; }
+                        .nota-linha-divisoria { border-top: 1px dashed #000; margin: 10px 0; }
+                        
+                        .nota-tabela { width: 100%; font-size: 15px !important; border-collapse: collapse; }
+                        .nota-tabela th { border-bottom: 1px dashed #000; text-align: left; padding-bottom: 6px; }
+                        .nota-tabela td { padding: 6px 0; }
+                        
+                        .nota-financeiro-direita { text-align: right; font-size: 16px !important; font-weight: bold; margin-top: 10px; line-height: 1.5; margin-bottom: 20px; }
+                        
+                        /* Ajustamos a largura do rodapé para acompanhar os 100% com o padding de 25px de cada lado (100% - 50px) */
                         .nota-rodape {
-                            position: absolute; bottom: 18px; left: 18px; width: 353px; 
-                            padding-top: 10px; border-top: 1px dashed #000;
+                            position: absolute; bottom: 25px !important; left: 25px !important; 
+                            width: calc(100% - 50px) !important; 
+                            padding-top: 15px; border-top: 1px dashed #000;
                             display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;
                         }
-                        .nota-rodape-texto { font-size: 10px; line-height: 1.4; color: #333333; text-align: left; width: 80%; }
-                        .nota-rodape-qrcode { width: 45px; height: 45px; border: 1px solid #000; padding: 2px; background-color: #fff; }
-                    </style>
-                </head>
+                        .nota-rodape-texto { font-size: 12px !important; line-height: 1.4; color: #333333; text-align: left; width: 80%; }
+                        
+                        /* Deixamos o QR Code um pouco maior e a Logo proporcional */
+                        .nota-rodape-qrcode { width: 55px; height: 55px; border: 1px solid #000; padding: 2px; background-color: #fff; }
+                        .nota-header img { max-width: 80%; height: auto; display: block; margin: 0 auto; }
+                    </style>                </head>
                 <body>
                     <div class="metade-vazia"></div>
                     <div class="metade-a5">
