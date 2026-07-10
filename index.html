@@ -468,27 +468,19 @@
         .btn-tab-baixar { background-color: #17a2b8; }
         .btn-tab-ver { background-color: #6c757d; }
 
-        #bloco-nota-a6 #bloco-nota-a6 {
-    position: absolute;
-    left: -9999px;
-    top: 0;
-    width: 395px; 
-    min-height: 560px; 
-    background-color: #ffffff; /* Cor de fundo caso a imagem demore a carregar */
-    
-    /* ADICIONE ESTAS LINHAS ABAIXO */
-    background-image: url('fundocomprovante.png');
-    background-size: cover;      /* Faz a imagem cobrir todo o recibo */
-    background-position: center; /* Centraliza a imagem */
-    background-repeat: no-repeat;
-    /* FIM DAS LINHAS */
-    
-    padding: 18px;
-    box-sizing: border-box;
-    font-family: 'Courier New', Courier, monospace;
-    color: #000000;
-    border: 3px double #000000;
-}
+        #bloco-nota-a6 {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            width: 395px; 
+            min-height: 560px; 
+            background-color: #ffffff;
+            padding: 18px;
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+            color: #000000;
+            border: 3px double #000000;
+        }
 
         .nota-header {
             text-align: center;
@@ -1493,23 +1485,20 @@
         }
 
         function cancelarRegistroNaNuvem(codigo, dataHora) {
-            if(!confirm(`Deseja realmente apagar o registro #${codigo}?`)) return;
+            if(!confirm(`Deseja realmente apagar o registro #${codigo}?\n\nEle será ocultado da lista imediatamente.`)) return;
             
-            // Remove do cache local imediatamente para a interface atualizar
             cacheNuvemGlobal = cacheNuvemGlobal.filter(p => !(p.codigo === codigo && p.dataHora === dataHora));
-            
-            // Atualiza a visualização sem precisar baixar tudo de novo
             filtrarTabelaHistoricoLocal();
 
-            // Envia o comando para o Google Sheets
             const payload = { acao: "excluir", codigo: codigo, dataHora: dataHora, status: "Excluído", origemEdicao: true };
             fetch(GOOGLE_API_URL, {
                 method: "POST",
                 mode: "no-cors",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
-            }).catch(e => console.error("Erro ao excluir:", e));
+            }).catch(e => console.error("Falha ao apagar na nuvem", e));
         }
+
         function verificarAntesDeEditar(codigo, dataHora) {
             abrirModalEscolhaEdicao(codigo, dataHora);
         }
@@ -1611,22 +1600,22 @@
                 p.itens.split(' | ').forEach(row => {
                     const idxX = row.indexOf('x ');
                     if(idxX !== -1) {
-                        const qtd = row.substring(0, idxX + 1);
+                        const qtdTexto = row.substring(0, idxX + 1);
                         const resto = row.substring(idxX + 2);
                         
-                        // Busca o valor que está entre os últimos parênteses
+                        // Separa a descrição do preço na hora de renderizar a tabela
                         const ultimoAbre = resto.lastIndexOf('(');
                         const ultimoFecha = resto.lastIndexOf(')');
                         
                         let desc = resto;
                         let valor = "-";
                         
-                        if (ultimoAbre !== -1 && ultimoFecha !== -1) {
+                        if (ultimoAbre !== -1 && ultimoFecha !== -1 && ultimoFecha > ultimoAbre) {
                             desc = resto.substring(0, ultimoAbre).trim();
                             valor = resto.substring(ultimoAbre + 1, ultimoFecha);
                         }
                         
-                        htmlItens += `<tr><td>${qtd}</td><td>${desc}</td><td style="text-align: right;">${valor}</td></tr>`;
+                        htmlItens += `<tr><td>${qtdTexto}</td><td>${desc}</td><td style="text-align: right;">${valor}</td></tr>`;
                     }
                 });
             }
@@ -1965,22 +1954,22 @@
                 p.itens.split(' | ').forEach(row => {
                     const idxX = row.indexOf('x ');
                     if(idxX !== -1) {
-                        const qtd = row.substring(0, idxX + 1);
+                        const qtdTexto = row.substring(0, idxX + 1);
                         const resto = row.substring(idxX + 2);
                         
-                        // Busca o valor que está entre os últimos parênteses
+                        // Separa a descrição do preço na hora de renderizar a tabela
                         const ultimoAbre = resto.lastIndexOf('(');
                         const ultimoFecha = resto.lastIndexOf(')');
                         
                         let desc = resto;
                         let valor = "-";
                         
-                        if (ultimoAbre !== -1 && ultimoFecha !== -1) {
+                        if (ultimoAbre !== -1 && ultimoFecha !== -1 && ultimoFecha > ultimoAbre) {
                             desc = resto.substring(0, ultimoAbre).trim();
                             valor = resto.substring(ultimoAbre + 1, ultimoFecha);
                         }
                         
-                        htmlItens += `<tr><td>${qtd}</td><td>${desc}</td><td style="text-align: right;">${valor}</td></tr>`;
+                        htmlItens += `<tr><td>${qtdTexto}</td><td>${desc}</td><td style="text-align: right;">${valor}</td></tr>`;
                     }
                 });
             }
