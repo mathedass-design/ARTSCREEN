@@ -8,6 +8,10 @@
     <title>ARTSCREEN CORURIPE - Sistema</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- BIBLIOTECAS ADICIONADAS: Gerador de QR Code e Leitor de Câmera -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
     <style>
         body {
@@ -36,10 +40,12 @@
             width: 100%;
             max-width: 750px;
             margin-bottom: 20px;
+            flex-wrap: wrap; /* Ajuste para o novo botão caber */
         }
 
         .btn-sistema {
             flex: 1;
+            min-width: 100px;
             padding: 14px;
             font-size: 15px;
             font-weight: bold;
@@ -266,7 +272,7 @@
         .btn-status-filtro.f-todos { background-color: #e9ecef; color: #495057; border-color: #ced4da; }
         .btn-status-filtro.f-todos.ativo { background-color: #6c757d !important; color: #fff !important; border-color: #5a6268; }
         .btn-status-filtro.f-andamento { background-color: #fff3cd; color: #856404; border-color: #ffeeba; }
-        .btn-status-filtro.f-andamento.ativo { background-color: #ffcc00 !important; color: #000 !important; border-color: #b38f00; }
+        .btn-status-filtro.f-andamento.ativo { background-color: #ffcc00 !important; color: #00 !important; border-color: #b38f00; }
         .btn-status-filtro.f-concluido { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
         .btn-status-filtro.f-concluido.ativo { background-color: #28a745 !important; color: #fff !important; border-color: #1e7e34; }
         .btn-status-filtro.f-cancelado { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
@@ -558,6 +564,8 @@
         <button class="btn-sistema" onclick="alternarPainel('orcamento')">Orçamento</button>
         <button class="btn-sistema" onclick="executarAcaoPortfolio()">Portfólio</button>
         <button class="btn-sistema" onclick="alternarPainel('historico')">Histórico</button>
+        <!-- NOVO BOTÃO DA CÂMERA -->
+        <button class="btn-sistema" onclick="alternarPainel('leitor')" style="background-color: #28a745 !important; border-color: #28a745 !important; color: #fff !important;">📷 Câmera</button>
     </div>
 
     <div class="container ativo" id="tela-entrada">
@@ -861,6 +869,21 @@
         </div>
     </div>
 
+    <!-- NOVA ABA DA CÂMERA -->
+    <div class="container" id="tela-leitor">
+        <h1 style="color: #28a745;">ESCANEAR COMPROVANTE</h1>
+        <p style="text-align: center; margin-bottom: 20px;">Aponte a câmera para o QR Code impresso no papel.</p>
+        
+        <div id="area-leitor-camera" style="width: 100%; max-width: 400px; margin: 0 auto; border: 2px dashed #28a745; padding: 10px; background-color: #f9f9f9;"></div>
+        
+        <div id="resultado-leitura" style="display: none; padding: 15px; margin-top: 15px; background: #d4edda; color: #155724; text-align: center; font-weight: bold; border-radius: 4px;"></div>
+        
+        <div class="grupo-botoes-acao" style="margin-top: 20px;">
+            <button type="button" class="btn-converter" style="background-color: #28a745; border-color: #28a745;" onclick="iniciarCamera()">LIGAR CÂMERA</button>
+            <button type="button" class="btn-visualizar-form" style="background-color: #dc3545; border-color: #dc3545;" onclick="pararCamera()">DESLIGAR CÂMERA</button>
+        </div>
+    </div>
+
     <div id="modalEscolhaEdicao" class="modal-edicao" style="display: none;">
         <div class="modal-conteudo">
             <h3 style="margin-top:0; margin-bottom: 20px; font-size: 18px; text-transform: uppercase;">Como deseja prosseguir?</h3>
@@ -929,7 +952,8 @@
                     (82) 99628-4867 | @ARTSCREENCORURIPE<br>
                     Av. Floriano Peixoto, 138, Centro, Coruripe/AL
                 </div>
-                <img class="nota-rodape-qrcode" src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://instagram.com/ARTSCREENCORURIPE" alt="QR Code">
+                <!-- O QR Code dinâmico do pedido ocupará este lugar -->
+                <img class="nota-rodape-qrcode" id="img-qrcode-dinamico" src="" alt="QR Code Dinamico">
             </div>
         </div>
     </div>
@@ -945,9 +969,10 @@
         let itemSelecionadoParaEdicaoModal = null; 
         let tipoEdicaoAtiva = null; 
 
-        // ==========================================
-        // NOVAS FUNÇÕES PARA BLINDAR DATAS (FORMATO ISO DO GOOGLE SHEETS)
-        // ==========================================
+        // Variáveis da Câmera
+        let leitorCamera = null;
+        let isCameraOn = false;
+
         function formatarDataVisivel(dataBruta) {
             if (!dataBruta || dataBruta === "Não informada" || dataBruta === "Não definido") return "Não definido";
             
@@ -1050,9 +1075,19 @@
                 document.querySelectorAll('.btn-sistema')[3].classList.add('ativo');
                 document.getElementById('tela-historico').classList.add('ativo');
                 puxarDadosDaNuvem();
+            } else if (painel === 'leitor') {
+                document.querySelectorAll('.btn-sistema')[4].classList.add('ativo');
+                document.getElementById('tela-leitor').classList.add('ativo');
+                if(cacheNuvemGlobal.length === 0) puxarDadosDaNuvem(); // Baixa os dados pra busca local
             } else if (painel === 'edicao') {
                 document.getElementById('tela-edicao-avancada').classList.add('ativo');
             }
+            
+            // Segurança: Se sair da tela do leitor, desliga a câmera imediatamente
+            if (painel !== 'leitor') {
+                pararCamera();
+            }
+            
             atualizarCodigosVisiveisDinamicos();
         }
 
@@ -1619,6 +1654,16 @@
             document.getElementById('itensNotaA6').innerHTML = htmlItens || '<tr><td colspan="3">Sem descrição</td></tr>';
             document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
 
+            // NOVA INTEGRAÇÃO: GERAR O QR CODE DINÂMICO AQUI ANTES DE PRINTAR
+            let textoQrCode = p.codigo.replace('#', ''); // Ex: ART00120
+            let qr = new QRious({
+                value: textoQrCode,
+                size: 150,
+                level: 'H'
+            });
+            document.getElementById('img-qrcode-dinamico').src = qr.toDataURL();
+            // FIM DA INTEGRAÇÃO
+
             const alvo = document.getElementById('bloco-nota-a6');
             if(apenasVisualizar) {
                 const imgModal = document.getElementById('imagemRenderizadaFichaA6');
@@ -1875,6 +1920,16 @@
             document.getElementById('dadosGeraisNotaA6').innerHTML = htmlGerais;
             document.getElementById('itensNotaA6').innerHTML = htmlItens || '<tr><td colspan="3">Nenhum item</td></tr>';
             document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
+
+            // NOVA INTEGRAÇÃO: GERAR O QR CODE DINÂMICO AQUI
+            let textoQrCode = codigoUsado.replace('#', ''); // Ex: ART00100
+            let qr = new QRious({
+                value: textoQrCode,
+                size: 150,
+                level: 'H'
+            });
+            document.getElementById('img-qrcode-dinamico').src = qr.toDataURL();
+            // FIM DA INTEGRAÇÃO
         }
 
         function limparTodosItens(tipo) {
@@ -1889,24 +1944,18 @@
             calcularGenerico(tipo);
         }
 
-        // ==========================================
-        // NOVA FUNÇÃO: IMPRIMIR COMPROVANTE A5 (1 OU 2 VIAS)
-        // ==========================================
         let dadosImpressaoPendente = null;
 
-        // 1. Função que o botão da tabela chama (Abre o modal)
         function imprimirComprovanteA5(codigoAlvo, dataHoraChave) {
             dadosImpressaoPendente = { codigo: codigoAlvo, dataHora: dataHoraChave };
             document.getElementById('modalEscolhaImpressao').style.display = 'flex';
         }
 
-        // 2. Função para fechar o modal
         function fecharModalImpressao() {
             document.getElementById('modalEscolhaImpressao').style.display = 'none';
             dadosImpressaoPendente = null;
         }
 
-        // 3. Função que executa a montagem baseada na escolha do usuário
         function processarImpressaoFinal(qtdVias) {
             if (!dadosImpressaoPendente) return;
             
@@ -1987,6 +2036,12 @@
             document.getElementById('dadosGeraisNotaA6').innerHTML = htmlGerais;
             document.getElementById('itensNotaA6').innerHTML = htmlItens || '<tr><td colspan="3">Sem descrição</td></tr>';
             document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
+
+            // NOVA INTEGRAÇÃO: GERAR O QR CODE DINÂMICO AQUI TAMBÉM (Na re-impressão do Histórico)
+            let textoQrCode = p.codigo.replace('#', ''); 
+            let qr = new QRious({ value: textoQrCode, size: 150, level: 'H' });
+            document.getElementById('img-qrcode-dinamico').src = qr.toDataURL();
+            // FIM DA INTEGRAÇÃO
 
             const htmlDaNota = document.getElementById('bloco-nota-a6').outerHTML;
             
@@ -2069,6 +2124,69 @@
                 </html>
             `);
             janelaImpressao.document.close();
+        }
+
+        // ==========================================
+        // NOVA FUNÇÃO: LÓGICA DO LEITOR DE CÂMERA
+        // ==========================================
+        function iniciarCamera() {
+            document.getElementById('resultado-leitura').style.display = 'none';
+            
+            if (!leitorCamera) {
+                leitorCamera = new Html5Qrcode("area-leitor-camera");
+            }
+            
+            if (!isCameraOn) {
+                leitorCamera.start(
+                    { facingMode: "environment" }, // Usa a câmera de trás
+                    { fps: 10, qrbox: { width: 250, height: 250 } },
+                    (textoDecodificado) => {
+                        // O que acontece quando lê o QR Code com sucesso
+                        document.getElementById('resultado-leitura').innerText = "✅ Código Lido: " + textoDecodificado;
+                        document.getElementById('resultado-leitura').style.display = 'block';
+                        pararCamera();
+                        
+                        // Envia para buscar no banco de dados local da nuvem
+                        buscarEAbrirPeloQRCode(textoDecodificado);
+                    },
+                    (erro) => { /* Ignora os erros enquanto foca na imagem */ }
+                ).then(() => {
+                    isCameraOn = true;
+                }).catch(err => {
+                    alert("Erro ao acessar a câmera. Verifique se deu permissão ao navegador.");
+                });
+            }
+        }
+
+        function pararCamera() {
+            if (leitorCamera && isCameraOn) {
+                leitorCamera.stop().then(() => {
+                    isCameraOn = false;
+                    leitorCamera.clear();
+                }).catch(err => console.log("Erro ao desligar a câmera:", err));
+            }
+        }
+
+        function buscarEAbrirPeloQRCode(codigoLido) {
+            let codigoBusca = codigoLido.trim().toUpperCase();
+            
+            // Garante que tenha o formato ART00000
+            if(!codigoBusca.startsWith('ART')) {
+                codigoBusca = 'ART' + codigoBusca;
+            }
+
+            // Procura o código mais recente que não esteja apagado
+            let registrosFiltrados = cacheNuvemGlobal.filter(p => p.codigo === codigoBusca && p.status !== "Excluído");
+            
+            if(registrosFiltrados.length > 0) {
+                // Pega o registro exato
+                let registroEncontrado = registrosFiltrados[registrosFiltrados.length - 1];
+                
+                // Abre magicamente a ficha visualizadora!
+                gerarEVisualizarFichaA6Flutuante(registroEncontrado.codigo, registroEncontrado.dataHora);
+            } else {
+                alert("Pedido " + codigoBusca + " não encontrado no banco de dados. Tente atualizar a aba Histórico primeiro.");
+            }
         }
     </script>
 </body>
