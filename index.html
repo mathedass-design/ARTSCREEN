@@ -80,16 +80,18 @@
             box-sizing: border-box;
         }
         .btn-camera-lupa {
-    background-color: #000000; /* Fundo preto */
-    color: #ffcc00; /* Ícone amarelo */
-    border: 2px solid #ffcc00; /* Bordinha amarela */
-    /* ... não apague o resto das configurações (padding, font-size, etc) ... */
-}
-.btn-camera-lupa:hover { 
-    background-color: #ffcc00; /* Fica amarelo quando passa o mouse */
-    color: #000000; /* Ícone fica preto */
-}
-        .btn-camera-lupa:hover { background-color: #218838; }
+            background-color: #000000; /* Fundo preto */
+            color: #ffcc00; /* Ícone amarelo */
+            border: 2px solid #ffcc00; /* Bordinha amarela */
+            padding: 0 15px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-camera-lupa:hover { 
+            background-color: #ffcc00; /* Fica amarelo quando passa o mouse */
+            color: #000000; /* Ícone fica preto */
+        }
 
         .container {
             background-color: #ffffff;
@@ -628,6 +630,7 @@
             <div class="form-group">
                 <label for="formaPagamentoOS">Forma de Pagamento</label>
                 <select id="formaPagamentoOS" onchange="verificarFormaPagamentoOS()">
+                    <option value="">Não informar</option>
                     <option value="PIX">PIX</option>
                     <option value="Dinheiro">Dinheiro</option>
                     <option value="Débito">Cartão de Débito</option>
@@ -723,6 +726,7 @@
             <div class="form-group">
                 <label for="formaPagamentoOrcamento">Forma de Pagamento</label>
                 <select id="formaPagamentoOrcamento" onchange="verificarFormaPagamentoOrcamento()">
+                    <option value="">Não informar</option>
                     <option value="PIX">PIX</option>
                     <option value="Dinheiro">Dinheiro</option>
                     <option value="Débito">Cartão de Débito</option>
@@ -764,7 +768,6 @@
     </div>
 
     <div class="container" id="tela-historico">
-        <!-- A barra de pesquisa original foi removida daqui e posta no topo como universal -->
         <div class="menu-status-historico">
             <button class="btn-status-filtro f-todos ativo" onclick="mudarFiltroStatusHistorico('todos')">⚪ Todos</button>
             <button class="btn-status-filtro f-andamento" onclick="mudarFiltroStatusHistorico('andamento')">🟡 Em Andamento</button>
@@ -818,6 +821,7 @@
             <div class="form-group">
                 <label for="formaPagamentoEdicao">Forma de Pagamento</label>
                 <select id="formaPagamentoEdicao" onchange="verificarFormaPagamentoEdicao()">
+                    <option value="">Não informar</option>
                     <option value="PIX">PIX</option>
                     <option value="Dinheiro">Dinheiro</option>
                     <option value="Débito">Cartão de Débito</option>
@@ -842,6 +846,7 @@
         <div class="form-group" id="blocoPagamentoOrcamentoEdicao" style="display:none;">
              <label for="formaPagamentoOrcamentoEdicao">Forma de Pagamento</label>
              <select id="formaPagamentoOrcamentoEdicao">
+                 <option value="">Não informar</option>
                  <option value="PIX">PIX</option>
                  <option value="Dinheiro">Dinheiro</option>
                  <option value="Débito">Cartão de Débito</option>
@@ -1042,7 +1047,7 @@
             document.getElementById('cliente').value = '';
             document.getElementById('atendenteOrcamento').value = '';
             document.getElementById('desconto').value = '0';
-            document.getElementById('formaPagamentoOrcamento').value = 'PIX';
+            document.getElementById('formaPagamentoOrcamento').value = '';
             document.getElementById('dataEntregaOrcamento').value = '';
             document.getElementById('obsOrcamento').value = '';
             document.getElementById('validade30Dias').checked = false;
@@ -1059,7 +1064,7 @@
             document.getElementById('valorEntradaOS').value = ''; 
             document.getElementById('labelRestanteOS').style.display = 'none';
             document.getElementById('descontoOS').value = '0';
-            document.getElementById('formaPagamentoOS').value = 'PIX';
+            document.getElementById('formaPagamentoOS').value = '';
             document.getElementById('statusDoPedidoForm').value = 'Definir Status';
             document.getElementById('dataEntregaOS').value = '';
             document.getElementById('obsOS').value = '';
@@ -1085,13 +1090,11 @@
                 puxarDadosDaNuvem();
             } else if (painel === 'leitor') {
                 document.getElementById('tela-leitor').classList.add('ativo');
-                // Se a base estiver vazia, baixa os dados para o QR Code encontrar
                 if(cacheNuvemGlobal.length === 0) puxarDadosDaNuvem(); 
             } else if (painel === 'edicao') {
                 document.getElementById('tela-edicao-avancada').classList.add('ativo');
             }
             
-            // Segurança: Se sair da tela do leitor, desliga a câmera imediatamente
             if (painel !== 'leitor') {
                 pararCamera();
             }
@@ -1103,15 +1106,10 @@
             window.open(window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/portfolio.pdf', '_blank');
         }
 
-        // --- NOVA LÓGICA DA BARRA DE BUSCA UNIVERSAL ---
         function lidarComBuscaGlobal() {
             const termo = document.getElementById('campoBuscaNuvem').value.trim();
-            
             if (termo !== "") {
-                // Se o usuário digitou algo mas a base não carregou, ele força a carga
                 if(cacheNuvemGlobal.length === 0) puxarDadosDaNuvem();
-                
-                // Se ele estiver preenchendo um pedido e digitar ali em cima, o sistema joga ele pro Histórico na hora
                 if (!document.getElementById('tela-historico').classList.contains('ativo')) {
                     alternarPainel('historico');
                 }
@@ -1120,10 +1118,8 @@
         }
 
         function abrirLeitorCameraGlobal() {
-            // Clica na câmera, o sistema joga para o leitor e liga
             alternarPainel('leitor');
         }
-        // ------------------------------------------------
 
         function atualizarCorDoSelectStatus(selectElement) {
             const val = selectElement.value;
@@ -1629,19 +1625,21 @@
             let rest = Math.max(0, p.totalGeral - (parseFloat(p.entrada) || 0));
             
             let htmlFinanceiro = "";
+            let textoFormaPgHist = (p.formaPagamento && p.formaPagamento.trim() !== "") ? `<br>Forma Pagto: ${p.formaPagamento}` : "";
+
             if (p.tipo === "Orçamento") {
                 if (parseFloat(p.desconto) > 0) {
                     htmlFinanceiro += `Subtotal: ${formatarMoeda(subtotalCalculado)}<br>Desconto: -${formatarMoeda(p.desconto)}<br>`;
                 }
-                htmlFinanceiro += `Total Geral: ${formatarMoeda(p.totalGeral)}<br>Forma Pagto: ${p.formaPagamento}`;
+                htmlFinanceiro += `Total Geral: ${formatarMoeda(p.totalGeral)}${textoFormaPgHist}`;
             } else {
                 if (rest === 0) {
                     if (parseFloat(p.desconto) > 0) htmlFinanceiro += `Desconto Concedido: -${formatarMoeda(p.desconto)}<br>`;
-                    htmlFinanceiro += `VALOR TOTAL: ${formatarMoeda(p.totalGeral)}<br><span style="color:blue; font-weight:bold;">SITUAÇÃO: PAGO INTEGRALMENTE</span><br>Forma Pagto: ${p.formaPagamento}`;
+                    htmlFinanceiro += `VALOR TOTAL: ${formatarMoeda(p.totalGeral)}<br><span style="color:blue; font-weight:bold;">SITUAÇÃO: PAGO INTEGRALMENTE</span>${textoFormaPgHist}`;
                 } else {
                     htmlFinanceiro += `Subtotal: ${formatarMoeda(subtotalCalculado)}<br>`;
                     if (parseFloat(p.desconto) > 0) htmlFinanceiro += `Desconto: -${formatarMoeda(p.desconto)}<br>`;
-                    htmlFinanceiro += `Total Líquido: ${formatarMoeda(p.totalGeral)}<br>Pago Entrada: ${formatarMoeda(p.entrada)}<br>Forma Pagto: ${p.formaPagamento}<br><span style="color:#cc0000">Restante: ${formatarMoeda(rest)}</span>`;
+                    htmlFinanceiro += `Total Líquido: ${formatarMoeda(p.totalGeral)}<br>Pago Entrada: ${formatarMoeda(p.entrada)}${textoFormaPgHist}<br><span style="color:#cc0000">Restante: ${formatarMoeda(rest)}</span>`;
                 }
             }
 
@@ -1684,15 +1682,13 @@
             document.getElementById('itensNotaA6').innerHTML = htmlItens || '<tr><td colspan="3">Sem descrição</td></tr>';
             document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
 
-            // NOVA INTEGRAÇÃO: GERAR O QR CODE DINÂMICO AQUI ANTES DE PRINTAR
-            let textoQrCode = p.codigo.replace('#', ''); // Ex: ART00120
+            let textoQrCode = p.codigo.replace('#', ''); 
             let qr = new QRious({
                 value: textoQrCode,
                 size: 150,
                 level: 'H'
             });
             document.getElementById('img-qrcode-dinamico').src = qr.toDataURL();
-            // FIM DA INTEGRAÇÃO
 
             const alvo = document.getElementById('bloco-nota-a6');
             if(apenasVisualizar) {
@@ -1895,8 +1891,10 @@
                     if (qtd > 0) { subtotal += (qtd * valor); htmlItens += `<tr><td>${qtd}x</td><td>${desc}</td><td style="text-align: right;">${formatarMoeda(qtd * valor)}</td></tr>`; }
                 });
 
+                let formaPgOrc = document.getElementById('formaPagamentoOrcamento').value;
                 if (desconto > 0) htmlFinanceiro += `Subtotal: ${formatarMoeda(subtotal)}<br>Desconto: -${formatarMoeda(desconto)}<br>`;
-                htmlFinanceiro += `Total Geral: ${formatarMoeda(subtotal - desconto)}<br>Forma Pagto: ${document.getElementById('formaPagamentoOrcamento').value}`;
+                htmlFinanceiro += `Total Geral: ${formatarMoeda(subtotal - desconto)}`;
+                if (formaPgOrc !== "") htmlFinanceiro += `<br>Forma Pagto: ${formaPgOrc}`;
 
                 if (document.getElementById('validade30Dias').checked) {
                     obsOrc += (obsOrc !== "" ? "<br>" : "") + "<span style='color:red; font-weight:bold;'>Orçamento válido por 30 dias</span>";
@@ -1933,14 +1931,17 @@
                 if(atendenteHTML) htmlGerais += `<br><b>Atendente:</b> ${atendenteHTML}`;
 
                 let restante = Math.max(0, totalGeral - entrada);
+                
+                let formaPgOS = document.getElementById('formaPagamentoOS').value;
+                let textoFormaPgOS = formaPgOS !== "" ? `<br>Forma Pagto: ${formaPgOS}` : "";
 
                 if (restante === 0) {
                     if (desconto > 0) htmlFinanceiro += `Desconto Concedido: -${formatarMoeda(desconto)}<br>`;
-                    htmlFinanceiro += `VALOR TOTAL: ${formatarMoeda(totalGeral)}<br><span style="color:blue; font-weight:bold;">SITUAÇÃO: PAGO INTEGRALMENTE</span><br>Forma Pagto: ${document.getElementById('formaPagamentoOS').value}`;
+                    htmlFinanceiro += `VALOR TOTAL: ${formatarMoeda(totalGeral)}<br><span style="color:blue; font-weight:bold;">SITUAÇÃO: PAGO INTEGRALMENTE</span>${textoFormaPgOS}`;
                 } else {
                     htmlFinanceiro += `Subtotal: ${formatarMoeda(subtotal)}<br>`;
                     if (desconto > 0) htmlFinanceiro += `Desconto: -${formatarMoeda(desconto)}<br>`;
-                    htmlFinanceiro += `Total Líquido: ${formatarMoeda(totalGeral)}<br>Pago Entrada: ${formatarMoeda(entrada)}<br>Forma Pagto: ${document.getElementById('formaPagamentoOS').value}<br><span style="color:#cc0000">Restante: ${formatarMoeda(restante)}</span>`;
+                    htmlFinanceiro += `Total Líquido: ${formatarMoeda(totalGeral)}<br>Pago Entrada: ${formatarMoeda(entrada)}${textoFormaPgOS}<br><span style="color:#cc0000">Restante: ${formatarMoeda(restante)}</span>`;
                 }
 
                 if(obs !== "") { document.getElementById('blocoObsNotaA6').style.display = 'block'; document.getElementById('obsNotaA6').innerHTML = `<b>OBSERVAÇÕES:</b><br>${obs}`; }
@@ -1951,15 +1952,13 @@
             document.getElementById('itensNotaA6').innerHTML = htmlItens || '<tr><td colspan="3">Nenhum item</td></tr>';
             document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
 
-            // NOVA INTEGRAÇÃO: GERAR O QR CODE DINÂMICO AQUI
-            let textoQrCode = codigoUsado.replace('#', ''); // Ex: ART00100
+            let textoQrCode = codigoUsado.replace('#', ''); 
             let qr = new QRious({
                 value: textoQrCode,
                 size: 150,
                 level: 'H'
             });
             document.getElementById('img-qrcode-dinamico').src = qr.toDataURL();
-            // FIM DA INTEGRAÇÃO
         }
 
         function limparTodosItens(tipo) {
@@ -2013,17 +2012,19 @@
             let rest = Math.max(0, p.totalGeral - (parseFloat(p.entrada) || 0));
             
             let htmlFinanceiro = "";
+            let textoFormaPgHist = (p.formaPagamento && p.formaPagamento.trim() !== "") ? `<br>Forma Pagto: ${p.formaPagamento}` : "";
+
             if (p.tipo === "Orçamento") {
                 if (parseFloat(p.desconto) > 0) htmlFinanceiro += `Subtotal: ${formatarMoeda(subtotalCalculado)}<br>Desconto: -${formatarMoeda(p.desconto)}<br>`;
-                htmlFinanceiro += `Total Geral: ${formatarMoeda(p.totalGeral)}<br>Forma Pagto: ${p.formaPagamento}`;
+                htmlFinanceiro += `Total Geral: ${formatarMoeda(p.totalGeral)}${textoFormaPgHist}`;
             } else {
                 if (rest === 0) {
                     if (parseFloat(p.desconto) > 0) htmlFinanceiro += `Desconto Concedido: -${formatarMoeda(p.desconto)}<br>`;
-                    htmlFinanceiro += `VALOR TOTAL: ${formatarMoeda(p.totalGeral)}<br><span style="color:blue; font-weight:bold;">SITUAÇÃO: PAGO INTEGRALMENTE</span><br>Forma Pagto: ${p.formaPagamento}`;
+                    htmlFinanceiro += `VALOR TOTAL: ${formatarMoeda(p.totalGeral)}<br><span style="color:blue; font-weight:bold;">SITUAÇÃO: PAGO INTEGRALMENTE</span>${textoFormaPgHist}`;
                 } else {
                     htmlFinanceiro += `Subtotal: ${formatarMoeda(subtotalCalculado)}<br>`;
                     if (parseFloat(p.desconto) > 0) htmlFinanceiro += `Desconto: -${formatarMoeda(p.desconto)}<br>`;
-                    htmlFinanceiro += `Total Líquido: ${formatarMoeda(p.totalGeral)}<br>Pago Entrada: ${formatarMoeda(p.entrada)}<br>Forma Pagto: ${p.formaPagamento}<br><span style="color:#cc0000">Restante: ${formatarMoeda(rest)}</span>`;
+                    htmlFinanceiro += `Total Líquido: ${formatarMoeda(p.totalGeral)}<br>Pago Entrada: ${formatarMoeda(p.entrada)}${textoFormaPgHist}<br><span style="color:#cc0000">Restante: ${formatarMoeda(rest)}</span>`;
                 }
             }
 
@@ -2067,11 +2068,9 @@
             document.getElementById('itensNotaA6').innerHTML = htmlItens || '<tr><td colspan="3">Sem descrição</td></tr>';
             document.getElementById('financeiroNotaA6').innerHTML = htmlFinanceiro;
 
-            // NOVA INTEGRAÇÃO: GERAR O QR CODE DINÂMICO AQUI TAMBÉM (Na re-impressão do Histórico)
             let textoQrCode = p.codigo.replace('#', ''); 
             let qr = new QRious({ value: textoQrCode, size: 150, level: 'H' });
             document.getElementById('img-qrcode-dinamico').src = qr.toDataURL();
-            // FIM DA INTEGRAÇÃO
 
             const htmlDaNota = document.getElementById('bloco-nota-a6').outerHTML;
             
@@ -2200,19 +2199,15 @@
         function buscarEAbrirPeloQRCode(codigoLido) {
             let codigoBusca = codigoLido.trim().toUpperCase();
             
-            // Garante que tenha o formato ART00000
             if(!codigoBusca.startsWith('ART')) {
                 codigoBusca = 'ART' + codigoBusca;
             }
 
-            // Procura o código mais recente que não esteja apagado
             let registrosFiltrados = cacheNuvemGlobal.filter(p => p.codigo === codigoBusca && p.status !== "Excluído");
             
             if(registrosFiltrados.length > 0) {
-                // Pega o registro exato
                 let registroEncontrado = registrosFiltrados[registrosFiltrados.length - 1];
                 
-                // Abre magicamente a ficha visualizadora!
                 gerarEVisualizarFichaA6Flutuante(registroEncontrado.codigo, registroEncontrado.dataHora);
             } else {
                 alert("Pedido " + codigoBusca + " não encontrado no banco de dados. Tente atualizar a aba Histórico primeiro.");
