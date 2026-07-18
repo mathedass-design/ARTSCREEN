@@ -1307,6 +1307,51 @@ body:not(.modo-pedido-fixo) {
 }
 
 </style>
+
+<style id="ajuste-final-orcamento-historico">
+/* Orçamento: remove o título e aproxima os dados do topo */
+#tela-orcamento .orcamento-conteudo > .form-group-cliente {
+    margin-top: 0 !important;
+}
+
+/* Histórico: indicadores no topo e Atualizar lista junto aos filtros */
+#tela-historico {
+    padding-top: 14px !important;
+}
+#tela-historico .historico-indicadores {
+    margin-top: 0 !important;
+}
+#tela-historico .menu-status-historico {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+#tela-historico .btn-atualizar-historico {
+    background: #e5e7eb !important;
+    color: #374151 !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 8px !important;
+    padding: 9px 13px !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    font-weight: 700 !important;
+    box-shadow: none !important;
+    width: auto !important;
+    min-height: 36px;
+}
+#tela-historico .btn-atualizar-historico:hover {
+    background: #d1d5db !important;
+}
+@media (max-width: 650px) {
+    #tela-historico .historico-filtros .menu-status-historico {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+    }
+    #tela-historico .btn-atualizar-historico {
+        width: auto !important;
+    }
+}
+</style>
 </head>
 <body>
 <div class="menu-sistema">
@@ -1436,8 +1481,6 @@ body:not(.modo-pedido-fixo) {
 <main class="orcamento-conteudo">
 
 <div class="box-alerta-concorrencia" id="alertaOrcamentoUso"></div>
-<h1>ARTSCREEN CORURIPE</h1>
-
 <div class="form-group form-group-cliente">
 <div class="header-field">
 <label for="cliente">Cliente</label>
@@ -1516,14 +1559,6 @@ body:not(.modo-pedido-fixo) {
 </div>
 </div>
 <div class="container historico-moderno" id="tela-historico">
-<div class="historico-cabecalho">
-<div>
-<span class="historico-eyebrow">GESTÃO E ACOMPANHAMENTO</span>
-<h1>Histórico de pedidos</h1>
-<p>Consulte, filtre e gerencie pedidos e orçamentos salvos.</p>
-</div>
-<button class="btn-atualizar-historico" onclick="puxarDadosDaNuvem()" type="button">↻ Atualizar lista</button>
-</div>
 <div class="historico-indicadores">
 <div class="indicador-historico"><span>Total</span><strong id="histTotal">0</strong></div>
 <div class="indicador-historico andamento"><span>Em andamento</span><strong id="histAndamento">0</strong></div>
@@ -1536,6 +1571,7 @@ body:not(.modo-pedido-fixo) {
 <button class="btn-status-filtro f-andamento" onclick="mudarFiltroStatusHistorico('andamento')">Em andamento</button>
 <button class="btn-status-filtro f-concluido" onclick="mudarFiltroStatusHistorico('concluido')">Concluídos</button>
 <button class="btn-status-filtro f-cancelado" onclick="mudarFiltroStatusHistorico('cancelado')">Cancelados</button>
+<button class="btn-atualizar-historico" onclick="puxarDadosDaNuvem()" type="button">↻ Atualizar lista</button>
 </div>
 <span class="resultado-historico" id="resultadoHistorico">0 registros exibidos</span>
 </div>
