@@ -3846,5 +3846,60 @@ select.status-cancelado {
 <script id="atualizacao-automatica-resumo-orcamento">
 (function(){function atualizar(){if(typeof calcularGenerico==='function'&&document.getElementById('painelTotaisOrcamento'))calcularGenerico('orcamento')}document.addEventListener('input',function(e){if(e.target.closest&&e.target.closest('#tela-orcamento'))atualizar()});document.addEventListener('change',function(e){if(e.target.closest&&e.target.closest('#tela-orcamento'))atualizar()});document.addEventListener('DOMContentLoaded',atualizar)})();
 </script>
+
+<style id="correcao-cabecalho-mobile-estavel">
+@media (max-width: 720px) {
+    :root { --altura-cabecalho-mobile: 190px; }
+    html {
+        width: 100%; min-height: 100%; overflow-x: hidden !important;
+        overscroll-behavior-x: none; background-attachment: scroll !important;
+    }
+    body {
+        width: 100%; min-height: 100%; margin: 0;
+        padding-top: var(--altura-cabecalho-mobile) !important;
+        overflow-x: hidden !important; overflow-y: auto !important;
+        overscroll-behavior-x: none; -webkit-overflow-scrolling: touch;
+        background-attachment: scroll !important;
+    }
+    .menu-sistema {
+        position: fixed !important; z-index: 99999 !important;
+        top: 0 !important; right: 0 !important; left: 0 !important; bottom: auto !important;
+        width: 100% !important; max-width: 100% !important; margin: 0 !important;
+        box-sizing: border-box !important; overflow: hidden !important;
+        transform: translate3d(0,0,0); -webkit-transform: translate3d(0,0,0);
+        backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    }
+    body > .container, body > #tela-orcamento, body > #tela-historico, body > [id^="tela-"] {
+        scroll-margin-top: calc(var(--altura-cabecalho-mobile) + 8px);
+    }
+}
+</style>
+<script id="ajuste-altura-cabecalho-mobile">
+(function () {
+    'use strict';
+    var limite = 720;
+    var raiz = document.documentElement;
+    var cabecalho = document.querySelector('.menu-sistema');
+    if (!cabecalho) return;
+    var quadro = 0;
+    function ajustar() {
+        cancelAnimationFrame(quadro);
+        quadro = requestAnimationFrame(function () {
+            if (window.innerWidth <= limite) {
+                var altura = Math.ceil(cabecalho.getBoundingClientRect().height);
+                if (altura > 0) raiz.style.setProperty('--altura-cabecalho-mobile', altura + 'px');
+            } else {
+                raiz.style.removeProperty('--altura-cabecalho-mobile');
+            }
+        });
+    }
+    ajustar();
+    window.addEventListener('resize', ajustar, { passive: true });
+    window.addEventListener('orientationchange', ajustar, { passive: true });
+    window.addEventListener('load', ajustar, { once: true });
+    if ('ResizeObserver' in window) new ResizeObserver(ajustar).observe(cabecalho);
+})();
+</script>
+
 </body>
 </html>
