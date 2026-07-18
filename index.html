@@ -1,19 +1,16 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <link class="favicon" rel="icon" type="image/png" href="logo.png">
-    <link rel="apple-touch-icon" href="logo.png">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARTSCREEN CORURIPE - Sistema</title>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
-    <!-- BIBLIOTECAS ADICIONADAS: Gerador de QR Code e Leitor de Câmera -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-
-    <style>
+<meta charset="utf-8"/>
+<link class="favicon" href="logo.png" rel="icon" type="image/png"/>
+<link href="logo.png" rel="apple-touch-icon"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ARTSCREEN CORURIPE - Sistema</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!-- BIBLIOTECAS ADICIONADAS: Gerador de QR Code e Leitor de Câmera -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+<style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -564,414 +561,1142 @@
             .menu-status-historico { flex-wrap: wrap; gap: 4px; }
             .btn-status-filtro { padding: 8px 4px; font-size: 11px; flex: unset; width: 48%; }
         }
-    </style>
+
+
+        /* =========================================================
+           INTERFACE MODERNA — preserva IDs e funções JavaScript
+           ========================================================= */
+        :root {
+            --amarelo: #ffc400;
+            --amarelo-escuro: #e2ad00;
+            --preto: #111315;
+            --preto-2: #1a1d20;
+            --texto: #1f2937;
+            --texto-suave: #6b7280;
+            --fundo: #f3f5f7;
+            --borda: #e5e7eb;
+            --branco: #ffffff;
+            --raio: 14px;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            padding: 0;
+            align-items: stretch;
+            background: var(--fundo);
+            color: var(--texto);
+        }
+        body::before { content: none; }
+        .menu-sistema {
+            position: sticky; top: 0; z-index: 1000;
+            width: 100%; max-width: none; min-height: 78px; margin: 0;
+            padding: 0 28px; align-items: center; justify-content: space-between;
+            background: linear-gradient(90deg, #0c0d0e, #17191b);
+            box-shadow: 0 10px 30px rgba(0,0,0,.16);
+        }
+        .marca-sistema { display:flex; align-items:center; gap:10px; min-width:225px; color:#fff; }
+        .marca-sistema img { width:46px; height:46px; object-fit:contain; }
+        .marca-texto { display:flex; flex-direction:column; line-height:1; }
+        .marca-texto strong { font-size:21px; letter-spacing:.5px; }
+        .marca-texto strong::after { content:""; }
+        .marca-texto span { margin-top:5px; font-size:9px; letter-spacing:3px; color:#c9c9c9; }
+        .menu-links { display:flex; align-items:center; gap:8px; }
+        .btn-sistema {
+            flex:none; display:flex; align-items:center; gap:8px; min-width:auto;
+            padding:12px 17px; border:1px solid transparent !important; border-radius:9px;
+            background:transparent !important; color:#ececec !important;
+            box-shadow:none; text-transform:none; font-size:14px;
+        }
+        .btn-sistema:hover { background:#24272a !important; color:#fff !important; transform:translateY(-1px); }
+        .btn-sistema.ativo { background:var(--amarelo) !important; color:#111 !important; border-color:var(--amarelo) !important; }
+        .nav-icone { font-size:18px; }
+        .usuario-topo { display:flex; align-items:center; gap:10px; color:#fff; min-width:160px; justify-content:flex-end; }
+        .usuario-topo div { display:flex; flex-direction:column; }
+        .usuario-topo small { color:#aeb4bc; margin-top:2px; }
+        .usuario-avatar { width:38px; height:38px; border:1px solid var(--amarelo); border-radius:50%; display:grid; place-items:center; color:var(--amarelo); font-weight:800; }
+        .barra-busca-universal {
+            max-width: 1220px; margin: 22px auto 0; padding:0 20px; gap:10px;
+        }
+        .barra-busca-universal .input-busca {
+            border:1px solid var(--borda); border-radius:10px; padding:14px 16px;
+            box-shadow:0 4px 16px rgba(15,23,42,.05); outline:none;
+        }
+        .barra-busca-universal .input-busca:focus { border-color:var(--amarelo); box-shadow:0 0 0 4px rgba(255,196,0,.15); }
+        .btn-camera-lupa { border:0; border-radius:10px; min-width:52px; background:var(--preto); color:var(--amarelo); }
+        .container { max-width:1220px; border-radius:16px; box-shadow:none; margin:20px auto 40px; }
+        .pedido-moderno { background:transparent; padding:0 20px; }
+        .pedido-cabecalho { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; margin:6px 0 18px; }
+        .pedido-cabecalho h1 { margin:2px 0 4px; font-size:30px; text-transform:none; letter-spacing:-.7px; }
+        .pedido-cabecalho p { margin:0; color:var(--texto-suave); }
+        .eyebrow { font-size:11px; letter-spacing:1.8px; font-weight:800; color:#a17b00; }
+        .pedido-codigo-acoes { display:flex; gap:10px; align-items:center; }
+        .codigo-os-destaque { border-radius:9px; background:#fff; color:#111; border:1px solid var(--borda); padding:11px 14px; box-shadow:0 3px 12px rgba(15,23,42,.05); }
+        .btn-novo-registro-preto { border:0; border-radius:9px; padding:12px 16px; background:var(--preto); }
+        .etapas-pedido { display:flex; gap:0; background:#fff; border:1px solid var(--borda); border-radius:13px; padding:14px 18px; margin-bottom:18px; overflow:auto; }
+        .etapa { flex:1; min-width:140px; display:flex; align-items:center; justify-content:center; gap:8px; color:#9ca3af; position:relative; }
+        .etapa:not(:last-child)::after { content:""; position:absolute; right:-15%; width:30%; height:1px; background:#e5e7eb; }
+        .etapa span { width:27px; height:27px; border-radius:50%; background:#eef0f3; display:grid; place-items:center; font-size:12px; }
+        .etapa.ativa { color:#111; }
+        .etapa.ativa span { background:var(--amarelo); color:#111; font-weight:800; }
+        .pedido-layout { display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:18px; align-items:start; }
+        .pedido-conteudo { display:flex; flex-direction:column; gap:16px; }
+        .card-formulario, .card-resumo { background:#fff; border:1px solid var(--borda); border-radius:var(--raio); padding:22px; box-shadow:0 8px 24px rgba(15,23,42,.045); }
+        .card-titulo { display:flex; align-items:flex-start; gap:12px; margin-bottom:20px; }
+        .card-titulo h2 { margin:0; font-size:17px; text-transform:none; }
+        .card-titulo p { margin:4px 0 0; color:var(--texto-suave); font-size:13px; }
+        .card-icone { width:34px; height:34px; flex:0 0 34px; border-radius:9px; display:grid; place-items:center; background:#fff7d6; color:#a87d00; font-weight:900; }
+        .card-titulo-com-acao { justify-content:space-between; align-items:center; }
+        .titulo-lado { display:flex; gap:12px; align-items:flex-start; }
+        .grid-dois { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+        .atendente-campo { max-width:50%; padding-right:7px; }
+        .form-group { margin-bottom:14px; }
+        label { display:block; margin-bottom:7px; font-size:13px; color:#374151; }
+        input[type="text"], input[type="number"], input[type="date"], select, textarea {
+            min-height:44px; padding:10px 12px; border:1px solid #d7dce2; border-radius:9px; background:#fff; color:#111827; outline:none; transition:.2s;
+        }
+        textarea { min-height:98px; }
+        input:focus, select:focus, textarea:focus { border-color:var(--amarelo-escuro); box-shadow:0 0 0 4px rgba(255,196,0,.14); }
+        .bloco-input-copiar { gap:8px; }
+        .btn-copiar-discreto { border-radius:9px; background:#eef0f3; color:#374151; }
+        .cabecalho-itens { display:grid; grid-template-columns:2.2fr .75fr .95fr .8fr 34px; gap:8px; padding:0 10px 8px; color:#7b8491; font-size:11px; font-weight:700; text-transform:uppercase; }
+        .item-linha { display:grid; grid-template-columns:2.2fr .75fr .95fr .8fr 34px; gap:8px; padding:10px; border:1px solid var(--borda); border-radius:10px; background:#fbfcfd; }
+        .col-desc,.col-qtd,.col-valor,.col-total,.col-acao { width:auto; }
+        .linha-mobile-total-remover { display:contents; }
+        .col-total { display:flex; align-items:center; justify-content:flex-end; font-size:13px; }
+        .col-acao { display:flex; align-items:center; justify-content:center; }
+        .btn-remover-linha { color:#dc3545; border-radius:7px; }
+        .btn-add-item { border:1px dashed #d8aa00; color:#9a7400; background:#fffaf0; border-radius:9px; padding:10px 14px; margin:4px 0 0; }
+        .btn-add-item:hover { background:#fff4c4; }
+        .btn-limpar-campo { font-size:12px; color:#6b7280; background:#f3f4f6; border-radius:8px; padding:8px 10px; }
+        .grid-financeiro { gap:14px; }
+        .valor-restante { margin-top:6px; font-size:13px; font-weight:700; color:#cc0000; }
+        .pedido-resumo { position:sticky; top:100px; }
+        .card-resumo .totais-container { background:#f8f9fb; border:1px solid var(--borda); border-radius:10px; padding:14px; font-size:13px; line-height:1.9; }
+        .card-resumo .total-destaque { padding-top:9px; margin-top:9px; border-top:1px solid #dfe3e8; font-size:19px; }
+        .grupo-botoes-acao { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+        .grupo-botoes-acao button { min-width:0; border-radius:9px; padding:13px 10px; letter-spacing:0; font-size:12px; box-shadow:none; }
+        .grupo-botoes-acao button.btn-salvar { grid-column:1/-1; margin:0; background:var(--amarelo); border-color:var(--amarelo); color:#111; font-size:14px; }
+        .grupo-botoes-acao button.btn-salvar:hover { background:#eab400; }
+        .grupo-botoes-acao button.btn-visualizar-form { background:#fff; color:#111; border-color:#cfd5dc; }
+        .resumo-aviso { margin-top:14px; border-radius:9px; padding:11px; background:#f7f8fa; color:#6b7280; font-size:11px; line-height:1.5; }
+        .status-producao, .status-concluido, .status-cancelado, .status-padrao { border-radius:9px !important; }
+
+        @media (max-width: 980px) {
+            .usuario-topo { display:none; }
+            .marca-sistema { min-width:auto; }
+            .marca-texto { display:none; }
+            .pedido-layout { grid-template-columns:1fr; }
+            .pedido-resumo { position:static; }
+        }
+        @media (max-width: 720px) {
+            .menu-sistema { padding:10px; min-height:auto; flex-wrap:wrap; }
+            .menu-links { order:2; width:100%; overflow:auto; }
+            .btn-sistema { flex:1; justify-content:center; padding:10px; font-size:12px; }
+            .marca-sistema img { width:38px; height:38px; }
+            .barra-busca-universal { margin-top:12px; padding:0 10px; }
+            .pedido-moderno { padding:0 10px; }
+            .pedido-cabecalho { align-items:flex-start; flex-direction:column; }
+            .pedido-codigo-acoes { width:100%; flex-wrap:wrap; }
+            .codigo-os-destaque, .btn-novo-registro-preto { flex:1; text-align:center; }
+            .grid-dois, .grid-financeiro { grid-template-columns:1fr; }
+            .atendente-campo { max-width:none; padding:0; }
+            .cabecalho-itens { display:none; }
+            .item-linha { display:grid; grid-template-columns:1fr 1fr; }
+            .col-desc { grid-column:1/-1; }
+            .linha-mobile-total-remover { grid-column:1/-1; display:flex; justify-content:space-between; border-top:1px dashed #ddd; padding-top:8px; }
+            .card-formulario, .card-resumo { padding:16px; }
+            .etapas-pedido { padding:12px 8px; }
+            .etapa { min-width:110px; }
+        }
+
+    
+
+        /* Ajustes solicitados: resumo fixo, etapas dinâmicas e histórico moderno */
+        .pedido-resumo { position:sticky !important; top:78px !important; align-self:start; z-index:5; }
+        .card-resumo { max-height:calc(100vh - 92px); overflow:auto; scrollbar-width:thin; }
+        .etapa { transition:color .25s ease; }
+        .etapa::after { transition:background .25s ease; }
+        .etapa.concluida { color:#111827; }
+        .etapa.concluida span { background:#16a34a; color:#fff; font-weight:800; }
+        .etapa.concluida span::before { content:"✓"; }
+        .etapa.concluida span { font-size:0; }
+        .etapa.concluida span::before { font-size:13px; }
+        .etapa.concluida:not(:last-child)::after { background:#16a34a; }
+        .etapa.atual { color:#111; }
+        .etapa.atual span { background:var(--amarelo); color:#111; font-weight:800; box-shadow:0 0 0 4px rgba(255,196,0,.16); }
+        .btn-finalizar-pedido[hidden] { display:none !important; }
+        .btn-finalizar-pedido { animation:aparecerFinalizar .3s ease; }
+        @keyframes aparecerFinalizar { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:none; } }
+
+        .historico-moderno { padding:22px; background:#f6f7f9; max-width:1220px; }
+        .historico-cabecalho { display:flex; justify-content:space-between; align-items:center; gap:20px; margin-bottom:18px; }
+        .historico-cabecalho h1 { margin:3px 0 4px; text-transform:none; font-size:27px; letter-spacing:-.4px; }
+        .historico-cabecalho p { margin:0; color:#6b7280; font-size:13px; }
+        .historico-eyebrow { font-size:10px; font-weight:800; letter-spacing:1.5px; color:#9a7400; }
+        .btn-atualizar-historico { border:0; border-radius:9px; background:#111; color:#fff; padding:11px 15px; font-weight:700; cursor:pointer; }
+        .historico-indicadores { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
+        .indicador-historico { background:#fff; border:1px solid #e2e5e9; border-radius:11px; padding:14px 16px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 14px rgba(15,23,42,.035); }
+        .indicador-historico span { color:#6b7280; font-size:12px; font-weight:700; }
+        .indicador-historico strong { font-size:22px; color:#111827; }
+        .indicador-historico.andamento { border-left:4px solid #eab308; }
+        .indicador-historico.concluido { border-left:4px solid #22c55e; }
+        .indicador-historico.cancelado { border-left:4px solid #ef4444; }
+        .historico-filtros { background:#fff; border:1px solid #e2e5e9; border-radius:11px; padding:10px; display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+        .historico-filtros .menu-status-historico { margin:0; gap:6px; }
+        .historico-filtros .btn-status-filtro { flex:none; border:0; border-radius:8px; padding:9px 13px; background:#f3f4f6; color:#4b5563; text-transform:none; }
+        .historico-filtros .btn-status-filtro.ativo { background:#111 !important; color:#fff !important; }
+        .resultado-historico { color:#6b7280; font-size:12px; padding-right:5px; }
+        .historico-moderno .grade-historico-cards { grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:0; }
+        .card-registro-moderno { background:#fff !important; color:#1f2937 !important; border:1px solid #e1e5ea !important; border-radius:12px; padding:15px; box-shadow:0 5px 16px rgba(15,23,42,.05); position:relative; overflow:hidden; transition:transform .2s, box-shadow .2s; }
+        .card-registro-moderno:hover { transform:translateY(-2px); box-shadow:0 10px 24px rgba(15,23,42,.09); }
+        .card-registro-moderno::before { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; }
+        .card-registro-moderno.status-card-andamento::before { background:#eab308; }
+        .card-registro-moderno.status-card-concluido::before { background:#22c55e; }
+        .card-registro-moderno.status-card-cancelado::before { background:#ef4444; }
+        .card-registro-moderno .card-header-tipo { color:#6b7280; border-bottom:1px solid #eef0f2; padding:0 0 9px; margin-bottom:9px; }
+        .badge-status-card { border-radius:999px; background:#f3f4f6; padding:4px 7px; font-size:9px; color:#4b5563; }
+        .card-registro-moderno .card-title-codigo { font-size:17px; color:#111827; }
+        .card-registro-moderno .card-body-info { color:#4b5563; line-height:1.6; }
+        .card-registro-moderno .card-footer-acoes { gap:6px; }
+        .card-registro-moderno .btn-tabela { border-radius:7px; min-height:32px; }
+        .card-registro-moderno .btn-copiar-linha { border:1px solid #d7dce2; border-radius:6px; background:#fff; color:#374151; cursor:pointer; }
+
+        @media (max-width:980px) {
+            .pedido-resumo { position:sticky !important; top:8px !important; }
+            .card-resumo { max-height:none; }
+            .historico-indicadores { grid-template-columns:1fr 1fr; }
+            .historico-moderno .grade-historico-cards { grid-template-columns:1fr 1fr; }
+        }
+        @media (max-width:650px) {
+            .historico-moderno { padding:12px; }
+            .historico-cabecalho { align-items:flex-start; flex-direction:column; }
+            .btn-atualizar-historico { width:100%; }
+            .historico-indicadores { grid-template-columns:1fr 1fr; }
+            .historico-filtros { align-items:stretch; flex-direction:column; }
+            .historico-filtros .menu-status-historico { display:grid; grid-template-columns:1fr 1fr; width:100%; }
+            .historico-filtros .btn-status-filtro { width:auto; }
+            .historico-moderno .grade-historico-cards { grid-template-columns:1fr; }
+            .pedido-resumo { position:sticky !important; top:6px !important; z-index:10; }
+        }
+
+/* Ajuste final: código compacto e botão Finalizar sempre visível */
+#tela-entrada .pedido-lateral-topo .codigo-os-destaque {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:16px;
+    font-weight:900;
+    letter-spacing:.35px;
+    white-space:nowrap;
+}
+#tela-entrada .card-resumo { padding-top:16px; }
+#tela-entrada .card-resumo > .totais-container { margin-top:0; }
+#btnFinalizarPedido {
+    display:block !important;
+    width:100%;
+    background:#d1d5db !important;
+    border-color:#d1d5db !important;
+    color:#6b7280 !important;
+    cursor:not-allowed !important;
+    box-shadow:none !important;
+    opacity:1 !important;
+    transform:none !important;
+}
+#btnFinalizarPedido.liberado:not(:disabled) {
+    background:#16a34a !important;
+    border-color:#16a34a !important;
+    color:#fff !important;
+    cursor:pointer !important;
+    box-shadow:0 8px 18px rgba(22,163,74,.22) !important;
+}
+#btnFinalizarPedido.liberado:not(:disabled):hover { background:#15803d !important; }
+
+</style>
+<style>
+/* CORREÇÃO DE LAYOUT FIXO — alterações visuais isoladas, sem mexer na lógica */
+:root { --altura-cabecalho-fixo: 76px; --altura-etapas-fixa: 74px; }
+
+body {
+    padding-top: var(--altura-cabecalho-fixo) !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* A rolagem da página é bloqueada somente na aba Pedido.
+   Orçamento, Histórico, edição e leitor continuam com rolagem normal. */
+body.modo-pedido-fixo {
+    overflow: hidden !important;
+}
+
+.menu-sistema {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    min-height: var(--altura-cabecalho-fixo);
+    box-sizing: border-box;
+}
+
+.barra-busca-universal {
+    position: relative;
+    align-items: center;
+}
+.barra-busca-universal .input-busca {
+    padding-right: 46px !important;
+    height: 48px;
+}
+.icone-busca {
+    position: absolute;
+    right: 17px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    font-size: 25px;
+    line-height: 1;
+    color: #111827;
+    pointer-events: none;
+}
+
+#tela-entrada.pedido-moderno {
+    height: calc(100vh - var(--altura-cabecalho-fixo));
+    max-height: calc(100vh - var(--altura-cabecalho-fixo));
+    overflow: hidden;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 0 !important;
+}
+
+#tela-entrada .etapas-pedido {
+    position: sticky !important;
+    top: 0;
+    z-index: 80;
+    height: var(--altura-etapas-fixa);
+    min-height: var(--altura-etapas-fixa);
+    margin: 0 0 14px !important;
+    box-sizing: border-box;
+    box-shadow: 0 10px 28px rgba(15,23,42,.10) !important;
+    background: rgba(255,255,255,.98) !important;
+    backdrop-filter: blur(10px);
+}
+
+#tela-entrada .pedido-layout {
+    height: calc(100% - var(--altura-etapas-fixa) - 14px);
+    min-height: 0;
+    align-items: stretch !important;
+    overflow: hidden;
+}
+
+#tela-entrada .pedido-conteudo {
+    min-height: 0;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+    scrollbar-width: thin;
+    overscroll-behavior: contain;
+}
+
+#tela-entrada .pedido-resumo {
+    position: static !important;
+    top: auto !important;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 20;
+}
+
+.pedido-lateral-topo {
+    flex: 0 0 auto;
+    width: 100%;
+    background: #fff;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    padding: 13px 15px;
+    box-sizing: border-box;
+    box-shadow: 0 8px 24px rgba(15,23,42,.06);
+}
+
+.pedido-lateral-topo .pedido-codigo-acoes {
+    display: grid !important;
+    grid-template-columns: minmax(0,1fr) auto;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.pedido-lateral-topo .codigo-os-destaque {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.pedido-lateral-topo .btn-novo-registro-preto {
+    white-space: nowrap;
+}
+
+#tela-entrada .card-resumo {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none !important;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+@media (max-width: 900px) {
+    :root { --altura-cabecalho-fixo: 70px; }
+    body { overflow: auto; }
+    #tela-entrada.pedido-moderno {
+        height: auto;
+        max-height: none;
+        overflow: visible;
+    }
+    #tela-entrada .etapas-pedido {
+        position: sticky !important;
+        top: 0;
+        z-index: 80;
+    }
+    #tela-entrada .pedido-layout {
+        height: auto;
+        overflow: visible;
+    }
+    #tela-entrada .pedido-conteudo {
+        height: auto;
+        overflow: visible;
+        padding-right: 0;
+    }
+    #tela-entrada .pedido-resumo {
+        height: auto;
+        overflow: visible;
+    }
+    #tela-entrada .card-resumo { overflow: visible; }
+}
+
+/* AJUSTE FINAL — resumo sem rolagem e busca perfeitamente alinhada */
+.menu-sistema {
+    display: flex !important;
+    align-items: center !important;
+}
+.barra-busca-universal {
+    align-self: center !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+.barra-busca-universal .input-busca {
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 0 48px 0 16px !important;
+    line-height: 44px !important;
+    margin: 0 !important;
+}
+.icone-busca {
+    top: 50% !important;
+    right: 15px !important;
+    width: 20px !important;
+    height: 20px !important;
+    transform: translateY(-50%) !important;
+    font-size: 0 !important;
+}
+.icone-busca::before {
+    content: "";
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    border: 2px solid #d1d5db;
+    border-radius: 50%;
+    left: 1px;
+    top: 1px;
+}
+.icone-busca::after {
+    content: "";
+    position: absolute;
+    width: 7px;
+    height: 2px;
+    background: #d1d5db;
+    border-radius: 2px;
+    transform: rotate(45deg);
+    right: 0;
+    bottom: 2px;
+    transform-origin: center;
+}
+#tela-entrada .card-resumo {
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+#tela-entrada .card-resumo > .totais-container {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden !important;
+    margin-bottom: 12px !important;
+}
+#tela-entrada .card-resumo > .grupo-botoes-acao {
+    flex: 0 0 auto;
+    margin-top: auto;
+}
+
+@media (max-width: 600px) {
+    body { padding-top: var(--altura-cabecalho-fixo) !important; }
+    .pedido-lateral-topo .pedido-codigo-acoes {
+        grid-template-columns: 1fr;
+    }
+    .pedido-lateral-topo .codigo-os-destaque,
+    .pedido-lateral-topo .btn-novo-registro-preto {
+        width: 100%;
+        text-align: center;
+    }
+    .icone-busca { right: 12px; }
+}
+
+<style>
+/* CORREÇÃO DAS ABAS ORÇAMENTO E HISTÓRICO */
+#tela-orcamento.ativo,
+#tela-historico.ativo,
+#tela-edicao-avancada.ativo,
+#tela-leitor.ativo {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    margin-bottom: 40px !important;
+}
+
+/* O cabeçalho permanece fixo, mas o conteúdo dessas abas rola pela página. */
+body:not(.modo-pedido-fixo) {
+    overflow-y: auto !important;
+    overscroll-behavior-y: auto;
+}
+
+#tela-orcamento, #tela-historico {
+    scroll-margin-top: calc(var(--altura-cabecalho-fixo) + 16px);
+}
+
+@media (max-width: 900px) {
+    body.modo-pedido-fixo { overflow-y: auto !important; }
+}
+</style>
+</style>
+<style>
+/* ORÇAMENTO NO MESMO ESQUEMA FIXO DO PEDIDO */
+#tela-orcamento.orcamento-moderno {
+    background: transparent !important;
+    padding: 0 20px !important;
+    max-width: 1220px !important;
+    margin: 14px auto 0 !important;
+    height: calc(100vh - var(--altura-cabecalho-fixo) - 14px) !important;
+    overflow: hidden !important;
+}
+#tela-orcamento .orcamento-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 18px;
+    height: 100%;
+    min-height: 0;
+    align-items: stretch;
+}
+#tela-orcamento .orcamento-conteudo {
+    min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    background: #fff;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    padding: 22px;
+    box-sizing: border-box;
+}
+#tela-orcamento .orcamento-resumo {
+    min-height: 0;
+    height: 100%;
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: hidden;
+}
+#tela-orcamento .orcamento-lateral-topo .bloco-codigo-linha {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin: 0;
+}
+#tela-orcamento .orcamento-lateral-topo .codigo-os-destaque,
+#tela-orcamento .orcamento-lateral-topo .btn-novo-registro-preto {
+    width: 100%;
+    min-height: 44px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+#tela-orcamento .orcamento-card-resumo {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden !important;
+    display: flex;
+    flex-direction: column;
+    padding: 16px !important;
+}
+#tela-orcamento .orcamento-card-resumo .totais-container {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden !important;
+    margin: 0 0 12px !important;
+}
+#tela-orcamento .orcamento-card-resumo .grupo-botoes-acao {
+    flex: 0 0 auto;
+    margin-top: auto;
+}
+/* Cabeçalho: busca e lupa na mesma linha e altura dos botões */
+.menu-sistema {
+    display: grid !important;
+    grid-template-columns: auto 1fr minmax(260px, 360px) !important;
+    align-items: center !important;
+    min-height: var(--altura-cabecalho-fixo) !important;
+}
+.menu-links { align-self: center !important; }
+.barra-busca-universal {
+    position: relative !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    align-self: center !important;
+}
+.barra-busca-universal .input-busca {
+    width: 100% !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    line-height: normal !important;
+    padding: 0 44px 0 14px !important;
+    margin: 0 !important;
+}
+.icone-busca {
+    position: absolute !important;
+    top: 50% !important;
+    right: 14px !important;
+    margin: 0 !important;
+    transform: translateY(-50%) !important;
+}
+@media (max-width: 900px) {
+    #tela-orcamento.orcamento-moderno {
+        height: auto !important;
+        overflow: visible !important;
+        padding: 0 12px !important;
+    }
+    #tela-orcamento .orcamento-layout { grid-template-columns: 1fr; height: auto; }
+    #tela-orcamento .orcamento-conteudo { overflow: visible; }
+    #tela-orcamento .orcamento-resumo { position: static; height: auto; overflow: visible; }
+    #tela-orcamento .orcamento-card-resumo { overflow: visible !important; }
+    .menu-sistema { grid-template-columns: 1fr !important; }
+}
+</style>
+
+<style id="ajuste-botao-nota-formulario">
+#tela-entrada .card-resumo > .grupo-botoes-acao,
+#tela-orcamento .orcamento-card-resumo > .grupo-botoes-acao {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+}
+#tela-entrada .card-resumo > .grupo-botoes-acao .btn-finalizar-pedido,
+#tela-orcamento .orcamento-card-resumo > .grupo-botoes-acao .btn-salvar,
+#tela-orcamento .orcamento-card-resumo > .grupo-botoes-acao .btn-nota-form,
+#tela-orcamento .orcamento-card-resumo > .grupo-botoes-acao .btn-converter {
+    grid-column: 1 / -1 !important;
+}
+.grupo-botoes-acao .btn-nota-form {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    background: #111 !important;
+    border-color: #111 !important;
+    color: #fff !important;
+}
+.grupo-botoes-acao .btn-nota-form:hover { background: #2b2b2b !important; }
+@media (max-width: 600px) {
+    #tela-entrada .card-resumo > .grupo-botoes-acao,
+    #tela-orcamento .orcamento-card-resumo > .grupo-botoes-acao { grid-template-columns: 1fr !important; }
+}
+/* Seletor moderno de quantidade de vias */
+#modalEscolhaImpressao .modal-conteudo.modal-vias-moderno {
+    width: min(520px, calc(100vw - 32px));
+    max-width: 520px;
+    padding: 24px;
+    border-radius: 18px;
+    border: 1px solid #e7e7e7;
+    background: #fff;
+    box-shadow: 0 18px 60px rgba(0,0,0,.22);
+}
+#modalEscolhaImpressao .vias-titulo {
+    margin: 0 0 18px;
+    font-size: 17px;
+    font-weight: 800;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+#modalEscolhaImpressao .vias-opcoes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+#modalEscolhaImpressao .btn-via-grande {
+    min-height: 150px;
+    width: 100%;
+    margin: 0;
+    border: 2px solid #111;
+    border-radius: 16px;
+    background: #fff;
+    color: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    cursor: pointer;
+    transition: transform .16s ease, background .16s ease, color .16s ease, border-color .16s ease;
+}
+#modalEscolhaImpressao .btn-via-grande:hover {
+    transform: translateY(-2px);
+    background: #111;
+    color: #fff;
+}
+#modalEscolhaImpressao .btn-via-grande strong {
+    font-size: 28px;
+    line-height: 1;
+    text-transform: uppercase;
+}
+#modalEscolhaImpressao .btn-via-grande span {
+    font-size: 12px;
+    font-weight: 700;
+    opacity: .72;
+    text-transform: uppercase;
+}
+#modalEscolhaImpressao .btn-cancelar-vias {
+    width: 100%;
+    margin-top: 14px;
+    min-height: 44px;
+    border: 0;
+    border-radius: 12px;
+    background: #f1f1f1;
+    color: #333;
+    font-weight: 800;
+    cursor: pointer;
+}
+#modalEscolhaImpressao .btn-cancelar-vias:hover { background: #e7e7e7; }
+@media (max-width: 480px) {
+    #modalEscolhaImpressao .modal-conteudo.modal-vias-moderno { padding: 18px; }
+    #modalEscolhaImpressao .btn-via-grande { min-height: 125px; }
+    #modalEscolhaImpressao .btn-via-grande strong { font-size: 23px; }
+}
+
+</style>
 </head>
 <body>
+<div class="menu-sistema">
+<div class="marca-sistema">
+<img alt="Artscreen" src="logo.png"/>
+<div class="marca-texto"><strong>ARTSCREEN</strong><span>IMPRESSÃO DIGITAL</span></div>
+</div>
+<div class="menu-links">
+<button class="btn-sistema ativo" onclick="alternarPainel('entrada')"><span class="nav-icone">▣</span> Pedido</button>
+<button class="btn-sistema" onclick="alternarPainel('orcamento')"><span class="nav-icone">▤</span> Orçamento</button>
+<button class="btn-sistema" onclick="executarAcaoPortfolio()"><span class="nav-icone">▧</span> Portfólio</button>
+<button class="btn-sistema" onclick="alternarPainel('historico')"><span class="nav-icone">↶</span> Histórico</button>
+</div>
+<div class="barra-busca-universal">
+<input class="input-busca" id="campoBuscaNuvem" oninput="lidarComBuscaGlobal()" placeholder="Buscar por código ou cliente..." type="text"/>
+<span aria-hidden="true" class="icone-busca">⌕</span></div>
+</div>
+<div class="container ativo pedido-moderno" id="tela-entrada">
+<div class="box-alerta-concorrencia" id="alertaPedidoUso"></div>
 
-    <div class="menu-sistema">
-        <button class="btn-sistema ativo" onclick="alternarPainel('entrada')">Pedido</button>
-        <button class="btn-sistema" onclick="alternarPainel('orcamento')">Orçamento</button>
-        <button class="btn-sistema" onclick="executarAcaoPortfolio()">Portfólio</button>
-        <button class="btn-sistema" onclick="alternarPainel('historico')">Histórico</button>
-    </div>
+<div aria-label="Etapas do pedido" class="etapas-pedido">
+<div class="etapa" id="etapaPedido1"><span>1</span><b>Dados</b></div>
+<div class="etapa" id="etapaPedido2"><span>2</span><b>Produtos</b></div>
+<div class="etapa" id="etapaPedido3"><span>3</span><b>Pagamento</b></div>
+<div class="etapa" id="etapaPedido4"><span>4</span><b>Finalização</b></div>
+</div>
+<div class="pedido-layout">
+<main class="pedido-conteudo">
+<section class="card-formulario">
+<div class="card-titulo"><span class="card-icone">♙</span><div><h2>Dados do cliente</h2><p>Informações básicas para identificação e contato.</p></div></div>
+<div class="grid-dados-cliente">
+<div class="form-group form-group-cliente">
+<div class="header-field"><label for="clienteOS">Nome do cliente</label></div>
+<input id="clienteOS" placeholder="Digite o nome do cliente" type="text"/>
+</div>
+<div class="form-group">
+<label for="whatsappOS">WhatsApp / Contato</label>
+<div class="bloco-input-copiar">
+<input id="whatsappOS" placeholder="(82) 99999-0000" type="text"/>
+<button class="btn-copiar-discreto" onclick="copiarWhatsAppTelaAtual()" type="button">Copiar</button>
+</div>
+</div>
+<div class="form-group">
+<div class="header-field"><label for="atendenteOS">Atendente</label></div>
+<input id="atendenteOS" placeholder="Seu nome" type="text"/>
+</div>
+</div>
+</section>
+<section class="card-formulario">
+<div class="card-titulo card-titulo-com-acao">
+<div class="titulo-lado"><span class="card-icone">◇</span><div><h2>Produtos / Serviços</h2><p>Adicione os itens solicitados pelo cliente.</p></div></div>
+<button class="btn-limpar-campo" onclick="limparTodosItens('entrada')" title="Limpar Todos">Limpar itens</button>
+</div>
+<div class="cabecalho-itens"><span>Produto / Serviço</span><span>Quantidade</span><span>Valor unitário</span><span>Total</span><span></span></div>
+<div class="itens-lista" id="conteudoItensOS"></div>
+<button class="btn-add-item" onclick="adicionarLinhaGenerico('entrada')" type="button">＋ Adicionar item</button>
+</section>
+<div class="dupla-inferior">
+<section class="card-formulario card-compacto">
+<div class="card-titulo"><span class="card-icone">$</span><div><h2>Pagamento</h2><p>Valores e forma de pagamento.</p></div></div>
+<div class="grid-financeiro">
+<div class="form-group">
+<label for="valorEntradaOS">Valor pago (entrada)</label>
+<input id="valorEntradaOS" min="0" oninput="calcularGenerico('entrada')" placeholder="Vazio = pagamento integral" step="any" type="number"/>
+<div class="valor-restante" id="labelRestanteOS" style="display:none;">Restante: R$ 0,00</div>
+</div>
+<div class="form-group">
+<label for="formaPagamentoOS">Forma de pagamento</label>
+<select id="formaPagamentoOS" onchange="verificarFormaPagamentoOS()">
+<option value="">Não informar</option><option value="PIX">PIX</option><option value="Dinheiro">Dinheiro</option><option value="Débito">Cartão de Débito</option><option value="Crédito">Cartão de Crédito</option>
+</select>
+</div>
+</div>
+<div class="grid-financeiro">
+<div class="form-group">
+<label for="descontoOS">Desconto (R$)</label>
+<input id="descontoOS" min="0" oninput="calcularGenerico('entrada')" step="any" type="number" value="0"/>
+</div>
+<div class="form-group" id="blocoParcelasOS" style="display:none;">
+<label for="parcelasOS">Parcelamento</label>
+<select id="parcelasOS">
+<option value="1x">1x (À vista)</option><option value="2x">2x</option><option value="3x">3x</option><option value="4x">4x</option><option value="5x">5x</option><option value="6x">6x</option><option value="7x">7x</option><option value="8x">8x</option><option value="9x">9x</option><option value="10x">10x</option><option value="11x">11x</option><option value="12x">12x</option><option value="13x">13x</option><option value="14x">14x</option><option value="15x">15x</option><option value="16x">16x</option><option value="17x">17x</option><option value="18x">18x</option><option value="19x">19x</option><option value="20x">20x</option>
+</select>
+</div>
+</div>
+</section>
+<section class="card-formulario">
+<div class="card-titulo"><span class="card-icone">✓</span><div><h2>Finalização e entrega</h2><p>Status, prazo e observações do serviço.</p></div></div>
+<div class="grid-dois">
+<div class="form-group">
+<label for="statusDoPedidoForm">Status do pedido</label>
+<select class="status-padrao" id="statusDoPedidoForm" onchange="atualizarCorDoSelectStatus(this)">
+<option class="status-padrao" value="Definir Status">⚪ Definir Status</option><option class="status-producao" value="Produção">🟡 Em Produção</option><option class="status-concluido" value="Concluído">🟢 Concluído</option><option class="status-cancelado" value="Cancelado">🔴 Cancelado</option>
+</select>
+</div>
+<div class="form-group">
+<label for="dataEntregaOS">Previsão de entrega</label>
+<input id="dataEntregaOS" type="date"/>
+</div>
+</div>
+<div class="form-group">
+<label for="obsOS">Observações do serviço</label>
+<textarea id="obsOS" placeholder="Detalhes da estampa, tamanhos, acabamentos, etc..." rows="3"></textarea>
+</div>
+</section>
+</div>
+</main>
+<aside class="pedido-resumo"><div class="pedido-lateral-topo"><div class="pedido-codigo-acoes">
+<div class="codigo-os-destaque" id="exibicaoCodigoOS">#ART00100</div>
+<button class="btn-novo-registro-preto" onclick="limparPainelPedidoManual()" type="button">＋ Novo pedido</button>
+</div></div>
+<section class="card-resumo">
+<div class="totais-container" id="painelTotaisOS"></div>
+<div class="grupo-botoes-acao">
+<button class="btn-salvar btn-finalizar-pedido" disabled id="btnFinalizarPedido" onclick="acaoSalvarManual('entrada')" type="button">Finalizar pedido</button>
+<button class="btn-visualizar-form" onclick="salvarEVisualizarImediatamenteForm('entrada')" type="button">Visualizar</button>
+<button onclick="processarEBaixarNota('entrada')" type="button">Enviar / Baixar</button>
+<button class="btn-nota-form" onclick="abrirNotaFormulario('entrada')" type="button">Nota</button>
+</div>
 
-    <!-- NOVA BARRA DE BUSCA GLOBAL (FICA VISÍVEL EM TODAS AS ABAS) -->
-    <div class="barra-busca-universal">
-        <input type="text" id="campoBuscaNuvem" class="input-busca" placeholder="🔍 Buscar por código ou cliente..." oninput="lidarComBuscaGlobal()">
-        <button type="button" class="btn-camera-lupa" onclick="abrirLeitorCameraGlobal()" title="Escanear Comprovante">📷</button>
-    </div>
+</section>
+</aside>
+</div>
+</div>
+<div class="container orcamento-moderno" id="tela-orcamento">
+<div class="orcamento-layout">
+<main class="orcamento-conteudo">
 
-    <div class="container ativo" id="tela-entrada">
-        <div id="alertaPedidoUso" class="box-alerta-concorrencia"></div>
-        <h1>ARTSCREEN CORURIPE</h1>
-        
-        <div class="bloco-codigo-linha">
-            <div class="codigo-os-destaque" id="exibicaoCodigoOS">Nº PEDIDO: #ART00100</div>
-            <button type="button" class="btn-novo-registro-preto" onclick="limparPainelPedidoManual()">Novo - Limpar Tudo</button>
-        </div>
+<div class="box-alerta-concorrencia" id="alertaOrcamentoUso"></div>
+<h1>ARTSCREEN CORURIPE</h1>
 
-        <div class="form-group form-group-cliente">
-            <div class="header-field">
-                <label for="clienteOS">Cliente</label>
-            </div>
-            <input type="text" id="clienteOS" placeholder="Nome do cliente">
-        </div>
-
-        <div class="form-group">
-            <div class="header-field">
-                <label for="atendenteOS">Atendente</label>
-            </div>
-            <input type="text" id="atendenteOS" placeholder="Seu nome">
-        </div>
-
-        <div class="form-group">
-            <label for="whatsappOS">WhatsApp / Contato</label>
-            <div class="bloco-input-copiar">
-                <input type="text" id="whatsappOS" placeholder="(82) 99999-0000">
-                <button type="button" class="btn-copiar-discreto" onclick="copiarWhatsAppTelaAtual()">Copiar</button>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="header-field">
-                <label>Serviços / Produtos Solicitados</label>
-                <button class="btn-limpar-campo" onclick="limparTodosItens('entrada')" title="Limpar Todos">🗑️</button>
-            </div>
-            <div class="itens-lista" id="conteudoItensOS"></div>
-            <button type="button" class="btn-add-item" onclick="adicionarLinhaGenerico('entrada')">➕ Adicionar Item</button>
-        </div>
-
-        <div class="grid-financeiro">
-            <div class="form-group">
-                <label for="valorEntradaOS">Valor Pago (Entrada)</label>
-                <input type="number" id="valorEntradaOS" placeholder="Deixe vazio p/ pagamento integral" min="0" step="any" oninput="calcularGenerico('entrada')">
-                <div id="labelRestanteOS" style="margin-top: 5px; font-size: 14px; font-weight: bold; color: #cc0000; display: none;">Restante: R$ 0,00</div>
-            </div>
-            <div class="form-group">
-                <label for="formaPagamentoOS">Forma de Pagamento</label>
-                <select id="formaPagamentoOS" onchange="verificarFormaPagamentoOS()">
-                    <option value="">Não informar</option>
-                    <option value="PIX">PIX</option>
-                    <option value="Dinheiro">Dinheiro</option>
-                    <option value="Débito">Cartão de Débito</option>
-                    <option value="Crédito">Cartão de Crédito</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="grid-financeiro">
-            <div class="form-group">
-                <label for="descontoOS">Desconto (R$)</label>
-                <input type="number" id="descontoOS" value="0" min="0" step="any" oninput="calcularGenerico('entrada')">
-            </div>
-            <div class="form-group" id="blocoParcelasOS" style="display: none;">
-                <label for="parcelasOS">Vezes (Parcelamento)</label>
-                <select id="parcelasOS">
-                    <option value="1x">1x (À vista)</option>
-                    <option value="2x">2x</option><option value="3x">3x</option><option value="4x">4x</option><option value="5x">5x</option><option value="6x">6x</option><option value="7x">7x</option><option value="8x">8x</option><option value="9x">9x</option><option value="10x">10x</option><option value="11x">11x</option><option value="12x">12x</option><option value="13x">13x</option><option value="14x">14x</option><option value="15x">15x</option><option value="16x">16x</option><option value="17x">17x</option><option value="18x">18x</option><option value="19x">19x</option><option value="20x">20x</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="statusDoPedidoForm">Status do Pedido (Opcional)</label>
-            <select id="statusDoPedidoForm" class="status-padrao" onchange="atualizarCorDoSelectStatus(this)">
-                <option value="Definir Status" class="status-padrao">⚪ Definir Status</option>
-                <option value="Produção" class="status-producao">🟡 Em Produção</option>
-                <option value="Concluído" class="status-concluido">🟢 Concluído</option>
-                <option value="Cancelado" class="status-cancelado">🔴 Cancelado</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="dataEntregaOS">Previsão de Entrega</label>
-            <input type="date" id="dataEntregaOS">
-        </div>
-
-        <div class="form-group">
-            <label for="obsOS">Observações do Serviço</label>
-            <textarea id="obsOS" rows="3" placeholder="Detalhes da estampa, tamanhos, acabamentos, etc..."></textarea>
-        </div>
-
-        <div class="totais-container" id="painelTotaisOS"></div>
-        
-        <div class="grupo-botoes-acao">
-            <button type="button" class="btn-salvar" onclick="acaoSalvarManual('entrada')">SALVAR</button>
-            <button type="button" class="btn-visualizar-form" onclick="salvarEVisualizarImediatamenteForm('entrada')">VISUALIZAR</button>
-            <button type="button" onclick="processarEBaixarNota('entrada')">ENVIAR / BAIXAR</button>
-        </div>
-    </div>
-
-    <div class="container" id="tela-orcamento">
-        <div id="alertaOrcamentoUso" class="box-alerta-concorrencia"></div>
-        <h1>ARTSCREEN CORURIPE</h1>
-        
-        <div class="bloco-codigo-linha">
-            <div class="codigo-os-destaque" id="exibicaoCodigoOrcamento">Nº ORÇAMENTO: #ART00100</div>
-            <button type="button" class="btn-novo-registro-preto" onclick="limparPainelOrcamentoManual()">Novo - Limpar Tudo</button>
-        </div>
-
-        <div class="form-group form-group-cliente">
-            <div class="header-field">
-                <label for="cliente">Cliente</label>
-            </div>
-            <input type="text" id="cliente" placeholder="Nome do cliente">
-        </div>
-
-        <div class="form-group">
-            <div class="header-field">
-                <label for="atendenteOrcamento">Atendente</label>
-            </div>
-            <input type="text" id="atendenteOrcamento" placeholder="Seu nome">
-        </div>
-
-        <div class="form-group">
-            <div class="header-field">
-                <label>Serviços / Produtos</label>
-                <button class="btn-limpar-campo" onclick="limparTodosItens('orcamento')" title="Limpar Todos">🗑️</button>
-            </div>
-            <div class="itens-lista" id="conteudoItensOrcamento"></div>
-            <button type="button" class="btn-add-item" onclick="adicionarLinhaGenerico('orcamento')">➕ Adicionar Item</button>
-        </div>
-
-        <div class="form-group">
-            <div class="header-field">
-                <label for="desconto">Desconto (R$)</label>
-                <button class="btn-limpar-campo" onclick="limparDesconto('orcamento')" title="Limpar Desconto">🗑️</button>
-            </div>
-            <input type="number" id="desconto" value="0" min="0" step="any" oninput="calcularGenerico('orcamento')">
-        </div>
-
-        <div class="grid-financeiro">
-            <div class="form-group">
-                <label for="formaPagamentoOrcamento">Forma de Pagamento</label>
-                <select id="formaPagamentoOrcamento" onchange="verificarFormaPagamentoOrcamento()">
-                    <option value="">Não informar</option>
-                    <option value="PIX">PIX</option>
-                    <option value="Dinheiro">Dinheiro</option>
-                    <option value="Débito">Cartão de Débito</option>
-                    <option value="Crédito">Cartão de Crédito</option>
-                </select>
-            </div>
-            <div class="form-group" id="blocoParcelasOrcamento" style="display: none;">
-                <label for="parcelasOrcamento">Vezes (Parcelamento)</label>
-                <select id="parcelasOrcamento">
-                    <option value="1x">1x (À vista)</option>
-                    <option value="2x">2x</option><option value="3x">3x</option><option value="4x">4x</option><option value="5x">5x</option><option value="6x">6x</option><option value="7x">7x</option><option value="8x">8x</option><option value="9x">9x</option><option value="10x">10x</option><option value="11x">11x</option><option value="12x">12x</option><option value="13x">13x</option><option value="14x">14x</option><option value="15x">15x</option><option value="16x">16x</option><option value="17x">17x</option><option value="18x">18x</option><option value="19x">19x</option><option value="20x">20x</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="dataEntregaOrcamento">Previsão de Entrega</label>
-            <input type="date" id="dataEntregaOrcamento">
-        </div>
-
-        <div class="form-group">
-            <label for="obsOrcamento">Observações do Orçamento</label>
-            <textarea id="obsOrcamento" rows="3" placeholder="Observações adicionais para o cliente..."></textarea>
-        </div>
-
-        <label class="checkbox-group">
-            <input type="checkbox" id="validade30Dias">
+<div class="form-group form-group-cliente">
+<div class="header-field">
+<label for="cliente">Cliente</label>
+</div>
+<input id="cliente" placeholder="Nome do cliente" type="text"/>
+</div>
+<div class="form-group">
+<div class="header-field">
+<label for="atendenteOrcamento">Atendente</label>
+</div>
+<input id="atendenteOrcamento" placeholder="Seu nome" type="text"/>
+</div>
+<div class="form-group">
+<div class="header-field">
+<label>Serviços / Produtos</label>
+<button class="btn-limpar-campo" onclick="limparTodosItens('orcamento')" title="Limpar Todos">🗑️</button>
+</div>
+<div class="itens-lista" id="conteudoItensOrcamento"></div>
+<button class="btn-add-item" onclick="adicionarLinhaGenerico('orcamento')" type="button">➕ Adicionar Item</button>
+</div>
+<div class="form-group">
+<div class="header-field">
+<label for="desconto">Desconto (R$)</label>
+<button class="btn-limpar-campo" onclick="limparDesconto('orcamento')" title="Limpar Desconto">🗑️</button>
+</div>
+<input id="desconto" min="0" oninput="calcularGenerico('orcamento')" step="any" type="number" value="0"/>
+</div>
+<div class="grid-financeiro">
+<div class="form-group">
+<label for="formaPagamentoOrcamento">Forma de Pagamento</label>
+<select id="formaPagamentoOrcamento" onchange="verificarFormaPagamentoOrcamento()">
+<option value="">Não informar</option>
+<option value="PIX">PIX</option>
+<option value="Dinheiro">Dinheiro</option>
+<option value="Débito">Cartão de Débito</option>
+<option value="Crédito">Cartão de Crédito</option>
+</select>
+</div>
+<div class="form-group" id="blocoParcelasOrcamento" style="display: none;">
+<label for="parcelasOrcamento">Vezes (Parcelamento)</label>
+<select id="parcelasOrcamento">
+<option value="1x">1x (À vista)</option>
+<option value="2x">2x</option><option value="3x">3x</option><option value="4x">4x</option><option value="5x">5x</option><option value="6x">6x</option><option value="7x">7x</option><option value="8x">8x</option><option value="9x">9x</option><option value="10x">10x</option><option value="11x">11x</option><option value="12x">12x</option><option value="13x">13x</option><option value="14x">14x</option><option value="15x">15x</option><option value="16x">16x</option><option value="17x">17x</option><option value="18x">18x</option><option value="19x">19x</option><option value="20x">20x</option>
+</select>
+</div>
+</div>
+<div class="form-group">
+<label for="dataEntregaOrcamento">Previsão de Entrega</label>
+<input id="dataEntregaOrcamento" type="date"/>
+</div>
+<div class="form-group">
+<label for="obsOrcamento">Observações do Orçamento</label>
+<textarea id="obsOrcamento" placeholder="Observações adicionais para o cliente..." rows="3"></textarea>
+</div>
+<label class="checkbox-group">
+<input id="validade30Dias" type="checkbox"/>
             Orçamento válido por 30 dias
         </label>
-
-        <div class="totais-container" id="painelTotaisOrcamento"></div>
-        
-        <div class="grupo-botoes-acao">
-            <button type="button" class="btn-salvar" onclick="acaoSalvarManual('orcamento')">SALVAR</button>
-            <button type="button" class="btn-visualizar-form" onclick="salvarEVisualizarImediatamenteForm('orcamento')">VISUALIZAR</button>
-            <button type="button" onclick="processarEBaixarNota('orcamento')">ENVIAR / BAIXAR</button>
-            <button type="button" class="btn-converter" onclick="converterOrcamentoEmPedido()">CONVERTER EM PEDIDO</button>
-        </div>
-    </div>
-
-    <div class="container" id="tela-historico">
-        <div class="menu-status-historico">
-            <button class="btn-status-filtro f-todos ativo" onclick="mudarFiltroStatusHistorico('todos')">⚪ Todos</button>
-            <button class="btn-status-filtro f-andamento" onclick="mudarFiltroStatusHistorico('andamento')">🟡 Em Andamento</button>
-            <button class="btn-status-filtro f-concluido" onclick="mudarFiltroStatusHistorico('concluido')">🟢 Concluídos</button>
-            <button class="btn-status-filtro f-cancelado" onclick="mudarFiltroStatusHistorico('cancelado')">🔴 Cancelados</button>
-        </div>
-
-        <button type="button" class="btn-add-item" onclick="puxarDadosDaNuvem()">🔄 Atualizar Lista</button>
-        
-        <div id="gradeHistoricoCards" class="grade-historico-cards"></div>
-    </div>
-
-    <div class="container" id="tela-edicao-avancada">
-        <h1 style="color:#0056b3;">EDIÇÃO AVANÇADA</h1>
-        
-        <div class="bloco-codigo-linha">
-            <div class="codigo-os-destaque" id="exibicaoCodigoEdicao" style="background-color:#0056b3;">#ART00000</div>
-            <span style="font-weight:bold; font-size:14px; margin-left:10px;" id="tipoRegistroEdicaoTxt">TIPO</span>
-        </div>
-
-        <div class="form-group form-group-cliente">
-            <label for="clienteEdicao">Cliente</label>
-            <input type="text" id="clienteEdicao">
-        </div>
-
-        <div class="form-group">
-            <label for="atendenteEdicao">Atendente</label>
-            <input type="text" id="atendenteEdicao">
-        </div>
-
-        <div class="form-group" id="blocoWhatsappEdicao">
-            <label for="whatsappEdicao">WhatsApp / Contato</label>
-            <input type="text" id="whatsappEdicao">
-        </div>
-
-        <div class="form-group">
-            <div class="header-field">
-                <label>Serviços / Produtos</label>
-                <button class="btn-limpar-campo" onclick="limparTodosItens('edicao')" title="Limpar Todos">🗑️</button>
-            </div>
-            <div class="itens-lista" id="conteudoItensEdicao"></div>
-            <button type="button" class="btn-add-item" onclick="adicionarLinhaGenerico('edicao')">➕ Adicionar Item</button>
-        </div>
-
-        <div class="grid-financeiro" id="blocoEntradaEdicao">
-            <div class="form-group">
-                <label for="valorEntradaEdicao">Valor Pago (Entrada)</label>
-                <input type="number" id="valorEntradaEdicao" placeholder="Vazio = Pagamento Integral" min="0" step="any" oninput="calcularGenerico('edicao')">
-                <div id="labelRestanteEdicao" style="margin-top: 5px; font-size: 14px; font-weight: bold; color: #cc0000; display: none;">Restante: R$ 0,00</div>
-            </div>
-            <div class="form-group">
-                <label for="formaPagamentoEdicao">Forma de Pagamento</label>
-                <select id="formaPagamentoEdicao" onchange="verificarFormaPagamentoEdicao()">
-                    <option value="">Não informar</option>
-                    <option value="PIX">PIX</option>
-                    <option value="Dinheiro">Dinheiro</option>
-                    <option value="Débito">Cartão de Débito</option>
-                    <option value="Crédito">Cartão de Crédito</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="grid-financeiro">
-            <div class="form-group">
-                <label for="descontoEdicao">Desconto (R$)</label>
-                <input type="number" id="descontoEdicao" value="0" min="0" step="any" oninput="calcularGenerico('edicao')">
-            </div>
-            <div class="form-group" id="blocoParcelasEdicao" style="display: none;">
-                <label for="parcelasEdicao">Vezes (Parcelamento)</label>
-                <select id="parcelasEdicao">
-                    <option value="1x">1x</option><option value="2x">2x</option><option value="3x">3x</option><option value="4x">4x</option><option value="5x">5x</option><option value="6x">6x</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="form-group" id="blocoPagamentoOrcamentoEdicao" style="display:none;">
-             <label for="formaPagamentoOrcamentoEdicao">Forma de Pagamento</label>
-             <select id="formaPagamentoOrcamentoEdicao">
-                 <option value="">Não informar</option>
-                 <option value="PIX">PIX</option>
-                 <option value="Dinheiro">Dinheiro</option>
-                 <option value="Débito">Cartão de Débito</option>
-                 <option value="Crédito">Cartão de Crédito</option>
-             </select>
-        </div>
-
-        <div class="form-group" id="blocoStatusEdicao">
-            <label for="statusEdicao">Status</label>
-            <select id="statusEdicao" class="status-padrao" onchange="atualizarCorDoSelectStatus(this)">
-                <option value="Definir Status" class="status-padrao">⚪ Definir Status</option>
-                <option value="Produção" class="status-producao">🟡 Em Produção</option>
-                <option value="Concluído" class="status-concluido">🟢 Concluído</option>
-                <option value="Cancelado" class="status-cancelado">🔴 Cancelado</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="dataEntregaEdicao">Previsão de Entrega</label>
-            <input type="date" id="dataEntregaEdicao">
-        </div>
-
-        <div class="form-group">
-            <label for="obsEdicao">Observações</label>
-            <textarea id="obsEdicao" rows="3"></textarea>
-        </div>
-
-        <div class="totais-container" id="painelTotaisEdicao"></div>
-
-        <div class="grupo-botoes-acao">
-            <button type="button" class="btn-salvar" onclick="salvarAcaoEdicaoAvancada()">SALVAR ALTERAÇÕES</button>
-            <button type="button" class="btn-visualizar-form" style="background-color:#6c757d; border-color:#6c757d;" onclick="alternarPainel('historico')">CANCELAR / VOLTAR</button>
-        </div>
-    </div>
-
-    <!-- TELA DA CÂMERA -->
-    <div class="container" id="tela-leitor">
-        <h1 style="color: #28a745;">ESCANEAR COMPROVANTE</h1>
-        <p style="text-align: center; margin-bottom: 20px;">Aponte a câmera para o QR Code impresso no papel.</p>
-        
-        <div id="area-leitor-camera" style="width: 100%; max-width: 400px; margin: 0 auto; border: 2px dashed #28a745; padding: 10px; background-color: #f9f9f9;"></div>
-        
-        <div id="resultado-leitura" style="display: none; padding: 15px; margin-top: 15px; background: #d4edda; color: #155724; text-align: center; font-weight: bold; border-radius: 4px;"></div>
-        
-        <div class="grupo-botoes-acao" style="margin-top: 20px;">
-            <button type="button" class="btn-converter" style="background-color: #28a745; border-color: #28a745;" onclick="iniciarCamera()">LIGAR CÂMERA</button>
-            <button type="button" class="btn-visualizar-form" style="background-color: #dc3545; border-color: #dc3545;" onclick="pararCamera()">DESLIGAR CÂMERA</button>
-        </div>
-    </div>
-
-    <div id="modalEscolhaEdicao" class="modal-edicao" style="display: none;">
-        <div class="modal-conteudo">
-            <h3 style="margin-top:0; margin-bottom: 20px; font-size: 18px; text-transform: uppercase;">Como deseja prosseguir?</h3>
-            <button class="btn-modal-opcao b-pedido" id="btnModalEditarTudo">Editar Pedido Completo</button>
-            <button class="btn-modal-opcao b-status" id="btnModalEditarStatus">Editar Apenas Status</button>
-            
-            <div id="subPainelSelecaoStatusRapido" style="display: none; margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 15px;">
-                <h4 style="margin-top:0; margin-bottom:12px; font-size:14px; text-transform:uppercase;">Escolha o Novo Status:</h4>
-                <button class="btn-modal-opcao b-status b-status-item status-producao" onclick="executarMudancaStatusDiretaNuvem('Produção')">Em Produção</button>
-                <button class="btn-modal-opcao b-status b-status-item status-concluido" onclick="executarMudancaStatusDiretaNuvem('Concluído')">Concluído</button>
-                <button class="btn-modal-opcao b-status b-status-item status-cancelado" onclick="executarMudancaStatusDiretaNuvem('Cancelado')">Cancelado</button>
-            </div>
-
-            <button class="btn-modal-opcao b-fechar" style="margin-top:15px;" onclick="fecharModalEscolhaEdicao()">Cancelar</button>
-        </div>
-    </div>
-
-    <div id="modalVisualizadorFichaA6" class="modal-visualizador-imagem" onclick="fecharVisualizadorFichaA6(event)">
-        <div class="conteudo-visualizador-imagem">
-            <h3 id="tituloVisualizadorFichaA6" style="margin-top:0; font-size:16px; text-transform:uppercase; color:#000;">Visualizar Registro</h3>
-            <img id="imagemRenderizadaFichaA6" class="bloco-render-imagem-a6" alt="Carregando visualização gráfica...">
-            <button class="btn-modal-opcao b-pedido" style="margin-bottom:0;" id="btnDownloadPeloVisualizador">Baixar Arquivo</button>
-            <button class="btn-modal-opcao b-fechar" style="margin-top:10px;" onclick="fecharVisualizadorFichaA6(null)">Fechar</button>
-        </div>
-    </div>
-
-    <div id="modalEscolhaImpressao" class="modal-edicao" style="display: none;">
-        <div class="modal-conteudo">
-            <h3 style="margin-top:0; margin-bottom: 20px; font-size: 18px; text-transform: uppercase;">Quantidade de Vias</h3>
-            <button class="btn-modal-opcao b-pedido" onclick="processarImpressaoFinal(1)">1 VIA (Metade da folha)</button>
-            <button class="btn-modal-opcao b-status" onclick="processarImpressaoFinal(2)">2 VIAS (Folha inteira)</button>
-            <button class="btn-modal-opcao b-fechar" style="margin-top:15px;" onclick="fecharModalImpressao()">Cancelar</button>
-        </div>
-    </div>
-
-    <div id="bloco-nota-a6-container" style="position: absolute; left: -9999px; top: 0; width: 395px;">
-        <div id="bloco-nota-a6" style="position: static; left: 0; top: 0; display: block;">
-            <div class="nota-header" style="border-bottom: none; padding-bottom: 0;">
-            <img src="cabecalho.png" alt="Cabeçalho" style="width: 100%; display: block; margin: 0 auto;">
-            
-            <div id="tipoNotaA6" style="display: none;">FICHA</div>
-        </div>
-            <div class="nota-secao" id="dadosGeraisNotaA6"></div>
-            <div class="nota-linha-divisoria"></div>
-            <table class="nota-tabela">
-                <thead>
-                    <tr>
-                        <th style="width: 15%;">Qtd</th>
-                        <th style="width: 60%;">Descrição</th>
-                        <th style="width: 25%; text-align: right;">Total</th>
-                    </tr>
-                </thead>
-                <tbody id="itensNotaA6"></tbody>
-            </table>
-            <div class="nota-linha-divisoria"></div>
-            <div class="nota-financeiro-direita" id="financeiroNotaA6"></div>
-            
-            <div id="blocoObsNotaA6" style="display:none;">
-                <div class="nota-linha-divisoria"></div>
-                <div class="nota-secao" style="font-size: 11px;" id="obsNotaA6"></div>
-            </div>
-            
-            <div class="nota-rodape">
-                <div class="nota-rodape-texto">
-                    CNPJ: 25.974.730/0001-14<br>
-                    (82) 99628-4867 | @ARTSCREENCORURIPE<br>
+</main>
+<aside class="orcamento-resumo">
+<div class="orcamento-lateral-topo"><div class="bloco-codigo-linha">
+<div class="codigo-os-destaque" id="exibicaoCodigoOrcamento">Nº ORÇAMENTO: #ART00100</div>
+<button class="btn-novo-registro-preto" onclick="limparPainelOrcamentoManual()" type="button">Novo - Limpar Tudo</button>
+</div></div>
+<section class="card-resumo orcamento-card-resumo">
+<div class="totais-container" id="painelTotaisOrcamento"></div>
+<div class="grupo-botoes-acao">
+<button class="btn-salvar" onclick="acaoSalvarManual('orcamento')" type="button">SALVAR</button>
+<button class="btn-visualizar-form" onclick="salvarEVisualizarImediatamenteForm('orcamento')" type="button">VISUALIZAR</button>
+<button onclick="processarEBaixarNota('orcamento')" type="button">ENVIAR / BAIXAR</button>
+<button class="btn-nota-form" onclick="abrirNotaFormulario('orcamento')" type="button">NOTA</button>
+<button class="btn-converter" onclick="converterOrcamentoEmPedido()" type="button">CONVERTER EM PEDIDO</button>
+</div>
+</section>
+</aside>
+</div>
+</div>
+<div class="container historico-moderno" id="tela-historico">
+<div class="historico-cabecalho">
+<div>
+<span class="historico-eyebrow">GESTÃO E ACOMPANHAMENTO</span>
+<h1>Histórico de pedidos</h1>
+<p>Consulte, filtre e gerencie pedidos e orçamentos salvos.</p>
+</div>
+<button class="btn-atualizar-historico" onclick="puxarDadosDaNuvem()" type="button">↻ Atualizar lista</button>
+</div>
+<div class="historico-indicadores">
+<div class="indicador-historico"><span>Total</span><strong id="histTotal">0</strong></div>
+<div class="indicador-historico andamento"><span>Em andamento</span><strong id="histAndamento">0</strong></div>
+<div class="indicador-historico concluido"><span>Concluídos</span><strong id="histConcluidos">0</strong></div>
+<div class="indicador-historico cancelado"><span>Cancelados</span><strong id="histCancelados">0</strong></div>
+</div>
+<div class="historico-filtros">
+<div class="menu-status-historico">
+<button class="btn-status-filtro f-todos ativo" onclick="mudarFiltroStatusHistorico('todos')">Todos</button>
+<button class="btn-status-filtro f-andamento" onclick="mudarFiltroStatusHistorico('andamento')">Em andamento</button>
+<button class="btn-status-filtro f-concluido" onclick="mudarFiltroStatusHistorico('concluido')">Concluídos</button>
+<button class="btn-status-filtro f-cancelado" onclick="mudarFiltroStatusHistorico('cancelado')">Cancelados</button>
+</div>
+<span class="resultado-historico" id="resultadoHistorico">0 registros exibidos</span>
+</div>
+<div class="grade-historico-cards" id="gradeHistoricoCards"></div>
+</div>
+<div class="container" id="tela-edicao-avancada">
+<h1 style="color:#0056b3;">EDIÇÃO AVANÇADA</h1>
+<div class="bloco-codigo-linha">
+<div class="codigo-os-destaque" id="exibicaoCodigoEdicao" style="background-color:#0056b3;">#ART00000</div>
+<span id="tipoRegistroEdicaoTxt" style="font-weight:bold; font-size:14px; margin-left:10px;">TIPO</span>
+</div>
+<div class="form-group form-group-cliente">
+<label for="clienteEdicao">Cliente</label>
+<input id="clienteEdicao" type="text"/>
+</div>
+<div class="form-group">
+<label for="atendenteEdicao">Atendente</label>
+<input id="atendenteEdicao" type="text"/>
+</div>
+<div class="form-group" id="blocoWhatsappEdicao">
+<label for="whatsappEdicao">WhatsApp / Contato</label>
+<input id="whatsappEdicao" type="text"/>
+</div>
+<div class="form-group">
+<div class="header-field">
+<label>Serviços / Produtos</label>
+<button class="btn-limpar-campo" onclick="limparTodosItens('edicao')" title="Limpar Todos">🗑️</button>
+</div>
+<div class="itens-lista" id="conteudoItensEdicao"></div>
+<button class="btn-add-item" onclick="adicionarLinhaGenerico('edicao')" type="button">➕ Adicionar Item</button>
+</div>
+<div class="grid-financeiro" id="blocoEntradaEdicao">
+<div class="form-group">
+<label for="valorEntradaEdicao">Valor Pago (Entrada)</label>
+<input id="valorEntradaEdicao" min="0" oninput="calcularGenerico('edicao')" placeholder="Vazio = Pagamento Integral" step="any" type="number"/>
+<div id="labelRestanteEdicao" style="margin-top: 5px; font-size: 14px; font-weight: bold; color: #cc0000; display: none;">Restante: R$ 0,00</div>
+</div>
+<div class="form-group">
+<label for="formaPagamentoEdicao">Forma de Pagamento</label>
+<select id="formaPagamentoEdicao" onchange="verificarFormaPagamentoEdicao()">
+<option value="">Não informar</option>
+<option value="PIX">PIX</option>
+<option value="Dinheiro">Dinheiro</option>
+<option value="Débito">Cartão de Débito</option>
+<option value="Crédito">Cartão de Crédito</option>
+</select>
+</div>
+</div>
+<div class="grid-financeiro">
+<div class="form-group">
+<label for="descontoEdicao">Desconto (R$)</label>
+<input id="descontoEdicao" min="0" oninput="calcularGenerico('edicao')" step="any" type="number" value="0"/>
+</div>
+<div class="form-group" id="blocoParcelasEdicao" style="display: none;">
+<label for="parcelasEdicao">Vezes (Parcelamento)</label>
+<select id="parcelasEdicao">
+<option value="1x">1x</option><option value="2x">2x</option><option value="3x">3x</option><option value="4x">4x</option><option value="5x">5x</option><option value="6x">6x</option>
+</select>
+</div>
+</div>
+<div class="form-group" id="blocoPagamentoOrcamentoEdicao" style="display:none;">
+<label for="formaPagamentoOrcamentoEdicao">Forma de Pagamento</label>
+<select id="formaPagamentoOrcamentoEdicao">
+<option value="">Não informar</option>
+<option value="PIX">PIX</option>
+<option value="Dinheiro">Dinheiro</option>
+<option value="Débito">Cartão de Débito</option>
+<option value="Crédito">Cartão de Crédito</option>
+</select>
+</div>
+<div class="form-group" id="blocoStatusEdicao">
+<label for="statusEdicao">Status</label>
+<select class="status-padrao" id="statusEdicao" onchange="atualizarCorDoSelectStatus(this)">
+<option class="status-padrao" value="Definir Status">⚪ Definir Status</option>
+<option class="status-producao" value="Produção">🟡 Em Produção</option>
+<option class="status-concluido" value="Concluído">🟢 Concluído</option>
+<option class="status-cancelado" value="Cancelado">🔴 Cancelado</option>
+</select>
+</div>
+<div class="form-group">
+<label for="dataEntregaEdicao">Previsão de Entrega</label>
+<input id="dataEntregaEdicao" type="date"/>
+</div>
+<div class="form-group">
+<label for="obsEdicao">Observações</label>
+<textarea id="obsEdicao" rows="3"></textarea>
+</div>
+<div class="totais-container" id="painelTotaisEdicao"></div>
+<div class="grupo-botoes-acao">
+<button class="btn-salvar" onclick="salvarAcaoEdicaoAvancada()" type="button">SALVAR ALTERAÇÕES</button>
+<button class="btn-visualizar-form" onclick="alternarPainel('historico')" style="background-color:#6c757d; border-color:#6c757d;" type="button">CANCELAR / VOLTAR</button>
+</div>
+</div>
+<div class="modal-edicao" id="modalEscolhaEdicao" style="display: none;">
+<div class="modal-conteudo">
+<h3 style="margin-top:0; margin-bottom: 20px; font-size: 18px; text-transform: uppercase;">Como deseja prosseguir?</h3>
+<button class="btn-modal-opcao b-pedido" id="btnModalEditarTudo">Editar Pedido Completo</button>
+<button class="btn-modal-opcao b-status" id="btnModalEditarStatus">Editar Apenas Status</button>
+<div id="subPainelSelecaoStatusRapido" style="display: none; margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 15px;">
+<h4 style="margin-top:0; margin-bottom:12px; font-size:14px; text-transform:uppercase;">Escolha o Novo Status:</h4>
+<button class="btn-modal-opcao b-status b-status-item status-producao" onclick="executarMudancaStatusDiretaNuvem('Produção')">Em Produção</button>
+<button class="btn-modal-opcao b-status b-status-item status-concluido" onclick="executarMudancaStatusDiretaNuvem('Concluído')">Concluído</button>
+<button class="btn-modal-opcao b-status b-status-item status-cancelado" onclick="executarMudancaStatusDiretaNuvem('Cancelado')">Cancelado</button>
+</div>
+<button class="btn-modal-opcao b-fechar" onclick="fecharModalEscolhaEdicao()" style="margin-top:15px;">Cancelar</button>
+</div>
+</div>
+<div class="modal-visualizador-imagem" id="modalVisualizadorFichaA6" onclick="fecharVisualizadorFichaA6(event)">
+<div class="conteudo-visualizador-imagem">
+<h3 id="tituloVisualizadorFichaA6" style="margin-top:0; font-size:16px; text-transform:uppercase; color:#000;">Visualizar Registro</h3>
+<img alt="Carregando visualização gráfica..." class="bloco-render-imagem-a6" id="imagemRenderizadaFichaA6"/>
+<button class="btn-modal-opcao b-pedido" id="btnDownloadPeloVisualizador" style="margin-bottom:0;">Baixar Arquivo</button>
+<button class="btn-modal-opcao b-fechar" onclick="fecharVisualizadorFichaA6(null)" style="margin-top:10px;">Fechar</button>
+</div>
+</div>
+<div class="modal-edicao" id="modalEscolhaImpressao" style="display: none;">
+<div class="modal-conteudo modal-vias-moderno">
+<h3 class="vias-titulo">Quantidade de vias</h3>
+<div class="vias-opcoes">
+<button class="btn-via-grande" onclick="processarImpressaoFinal(1)" type="button"><strong>1 via</strong><span>Meia folha</span></button>
+<button class="btn-via-grande" onclick="processarImpressaoFinal(2)" type="button"><strong>2 vias</strong><span>Folha inteira</span></button>
+</div>
+<button class="btn-cancelar-vias" onclick="fecharModalImpressao()" type="button">Cancelar</button>
+</div>
+</div>
+<div id="bloco-nota-a6-container" style="position: absolute; left: -9999px; top: 0; width: 395px;">
+<div id="bloco-nota-a6" style="position: static; left: 0; top: 0; display: block;">
+<div class="nota-header" style="border-bottom: none; padding-bottom: 0;">
+<img alt="Cabeçalho" src="cabecalho.png" style="width: 100%; display: block; margin: 0 auto;"/>
+<div id="tipoNotaA6" style="display: none;">FICHA</div>
+</div>
+<div class="nota-secao" id="dadosGeraisNotaA6"></div>
+<div class="nota-linha-divisoria"></div>
+<table class="nota-tabela">
+<thead>
+<tr>
+<th style="width: 15%;">Qtd</th>
+<th style="width: 60%;">Descrição</th>
+<th style="width: 25%; text-align: right;">Total</th>
+</tr>
+</thead>
+<tbody id="itensNotaA6"></tbody>
+</table>
+<div class="nota-linha-divisoria"></div>
+<div class="nota-financeiro-direita" id="financeiroNotaA6"></div>
+<div id="blocoObsNotaA6" style="display:none;">
+<div class="nota-linha-divisoria"></div>
+<div class="nota-secao" id="obsNotaA6" style="font-size: 11px;"></div>
+</div>
+<div class="nota-rodape">
+<div class="nota-rodape-texto">
+                    CNPJ: 25.974.730/0001-14<br/>
+                    (82) 99628-4867 | @ARTSCREENCORURIPE<br/>
                     Av. Floriano Peixoto, 138, Centro, Coruripe/AL
                 </div>
-                <!-- O QR Code dinâmico do pedido ocupará este lugar -->
-                <img class="nota-rodape-qrcode" id="img-qrcode-dinamico" src="" alt="QR Code Dinamico">
-            </div>
-        </div>
-    </div>
-
-    <script>
+<!-- O QR Code dinâmico do pedido ocupará este lugar -->
+<img alt="QR Code Dinamico" class="nota-rodape-qrcode" id="img-qrcode-dinamico" src=""/>
+</div>
+</div>
+</div>
+<script>
         const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbyjE_DML-7o-Y_ZDReD7h5sUuBugTIq32fYsPwzD-ElwLT73JTp8Ji8_RY9txuMUa0u/exec";
 
         let codigoEmConversaoFixado = null;
@@ -982,9 +1707,6 @@
         let itemSelecionadoParaEdicaoModal = null; 
         let tipoEdicaoAtiva = null; 
 
-        // Variáveis da Câmera
-        let leitorCamera = null;
-        let isCameraOn = false;
 
         function formatarDataVisivel(dataBruta) {
             if (!dataBruta || dataBruta === "Não informada" || dataBruta === "Não definido") return "Não definido";
@@ -1071,10 +1793,15 @@
             atualizarCorDoSelectStatus(document.getElementById('statusDoPedidoForm'));
             verificarFormaPagamentoOS();
             limparTodosItens('entrada');
+            ['valorEntradaOS','formaPagamentoOS','descontoOS','parcelasOS'].forEach(id => {
+                const el = document.getElementById(id); if(el) delete el.dataset.interagido;
+            });
+            atualizarLinhaDoTempoPedido();
             sincronizarProximoCodigoComANuvem();
         }
 
         function alternarPainel(painel) {
+            document.body.classList.toggle('modo-pedido-fixo', (painel === 'entrada' || painel === 'orcamento') && window.innerWidth > 900);
             document.querySelectorAll('.btn-sistema').forEach(b => b.classList.remove('ativo'));
             document.querySelectorAll('.container').forEach(c => c.classList.remove('ativo'));
 
@@ -1088,19 +1815,16 @@
                 document.querySelectorAll('.btn-sistema')[3].classList.add('ativo');
                 document.getElementById('tela-historico').classList.add('ativo');
                 puxarDadosDaNuvem();
-            } else if (painel === 'leitor') {
-                document.getElementById('tela-leitor').classList.add('ativo');
-                if(cacheNuvemGlobal.length === 0) puxarDadosDaNuvem(); 
             } else if (painel === 'edicao') {
                 document.getElementById('tela-edicao-avancada').classList.add('ativo');
             }
-            
-            if (painel !== 'leitor') {
-                pararCamera();
-            }
-            
             atualizarCodigosVisiveisDinamicos();
         }
+
+        window.addEventListener('resize', () => {
+            const formularioFixoAtivo = document.getElementById('tela-entrada')?.classList.contains('ativo') || document.getElementById('tela-orcamento')?.classList.contains('ativo');
+            document.body.classList.toggle('modo-pedido-fixo', !!formularioFixoAtivo && window.innerWidth > 900);
+        });
 
         function executarAcaoPortfolio() {
             window.open(window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/portfolio.pdf', '_blank');
@@ -1115,10 +1839,6 @@
                 }
             }
             filtrarTabelaHistoricoLocal();
-        }
-
-        function abrirLeitorCameraGlobal() {
-            alternarPainel('leitor');
         }
 
         function atualizarCorDoSelectStatus(selectElement) {
@@ -1166,9 +1886,9 @@
             document.getElementById('exibicaoCodigoOrcamento').innerText = `Nº ORÇAMENTO: #${gerarTextoCodigo('ART', numAtual)}`;
             
             if (codigoEmConversaoFixado !== null) {
-                document.getElementById('exibicaoCodigoOS').innerText = `Nº PEDIDO: #${gerarTextoCodigo('ART', codigoEmConversaoFixado)}`;
+                document.getElementById('exibicaoCodigoOS').innerText = `#${gerarTextoCodigo('ART', codigoEmConversaoFixado)}`;
             } else {
-                document.getElementById('exibicaoCodigoOS').innerText = `Nº PEDIDO: #${gerarTextoCodigo('ART', numAtual)}`;
+                document.getElementById('exibicaoCodigoOS').innerText = `#${gerarTextoCodigo('ART', numAtual)}`;
             }
         }
 
@@ -1235,7 +1955,41 @@
             const desc = parseFloat(desInput.value) || 0;
             const totalGeral = Math.max(0, subtotal - desc);
 
-            if (tipo === 'orcamento' || (tipo === 'edicao' && tipoEdicaoAtiva === 'Orçamento')) {
+            if (tipo === 'orcamento') {
+                const escaparResumo = (valor) => String(valor || '')
+                    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+                const clienteResumo = escaparResumo(document.getElementById('cliente')?.value.trim());
+                const atendenteResumo = escaparResumo(document.getElementById('atendenteOrcamento')?.value.trim());
+                const pagamentoResumo = escaparResumo(document.getElementById('formaPagamentoOrcamento')?.value);
+                const parcelasResumo = escaparResumo(document.getElementById('parcelasOrcamento')?.value);
+                const entregaResumo = document.getElementById('dataEntregaOrcamento')?.value || '';
+                const obsResumo = escaparResumo(document.getElementById('obsOrcamento')?.value.trim());
+                const validadeResumo = document.getElementById('validade30Dias')?.checked;
+                const itensResumo = [];
+                container.querySelectorAll('.item-linha').forEach((linha) => {
+                    const descricao = escaparResumo(linha.querySelector('.ipt-desc')?.value.trim());
+                    const qtdDigitada = linha.querySelector('.ipt-qtd')?.value;
+                    const quantidade = (qtdDigitada === '' || parseFloat(qtdDigitada) === 0) ? 1 : (parseFloat(qtdDigitada) || 1);
+                    const valorUnitario = parseFloat(linha.querySelector('.ipt-valor')?.value) || 0;
+                    if (descricao || valorUnitario > 0) itensResumo.push(`<div class="orc-resumo-item"><span>${descricao || 'Item sem descrição'} <small>× ${quantidade}</small></span><strong>${formatarMoeda(quantidade * valorUnitario)}</strong></div>`);
+                });
+                let htmlResumo = '<div class="orc-resumo-dados">';
+                if (clienteResumo) htmlResumo += `<div class="orc-resumo-linha"><span>Cliente</span><strong>${clienteResumo}</strong></div>`;
+                if (atendenteResumo) htmlResumo += `<div class="orc-resumo-linha"><span>Atendente</span><strong>${atendenteResumo}</strong></div>`;
+                if (itensResumo.length) htmlResumo += `<div class="orc-resumo-secao"><b>Itens</b>${itensResumo.join('')}</div>`;
+                if (pagamentoResumo) htmlResumo += `<div class="orc-resumo-linha"><span>Pagamento</span><strong>${pagamentoResumo}${pagamentoResumo === 'Crédito' && parcelasResumo ? ` · ${parcelasResumo}` : ''}</strong></div>`;
+                if (entregaResumo) { const [ano, mes, dia] = entregaResumo.split('-'); htmlResumo += `<div class="orc-resumo-linha"><span>Previsão</span><strong>${dia}/${mes}/${ano}</strong></div>`; }
+                if (validadeResumo) htmlResumo += `<div class="orc-resumo-linha"><span>Validade</span><strong>30 dias</strong></div>`;
+                if (obsResumo) htmlResumo += `<div class="orc-resumo-observacao"><span>Observações</span><p>${obsResumo.replace(/\n/g, '<br>')}</p></div>`;
+                htmlResumo += '</div><div class="orc-resumo-financeiro">';
+                if (desc > 0) {
+                    htmlResumo += `<div><span>Subtotal</span><strong>${formatarMoeda(subtotal)}</strong></div><div><span>Desconto</span><strong>− ${formatarMoeda(desc)}</strong></div><div class="total-destaque"><span>Total</span><strong>${formatarMoeda(totalGeral)}</strong></div>`;
+                } else htmlResumo += `<div class="total-destaque"><span>Total</span><strong>${formatarMoeda(subtotal)}</strong></div>`;
+                htmlResumo += '</div>';
+                painel.innerHTML = htmlResumo;
+            } else if (tipo === 'edicao' && tipoEdicaoAtiva === 'Orçamento') {
                 painel.innerHTML = desc > 0 
                     ? `<div>VALOR SEM DESCONTO: ${formatarMoeda(subtotal)}</div><div>DESCONTO: ${formatarMoeda(desc)}</div><div class="total-destaque">TOTAL COM DESCONTO: ${formatarMoeda(totalGeral)}</div>`
                     : `<div class="total-destaque">TOTAL: ${formatarMoeda(subtotal)}</div>`;
@@ -1310,8 +2064,33 @@
                 atualizarSubtotalLinha(nl.querySelector('.ipt-qtd'), 'entrada');
             });
 
+            // Marca automaticamente os campos transferidos para que a linha do tempo
+            // reconheça os dados já preenchidos no orçamento, sem exigir novo clique/digitação.
+            const camposPagamentoTransferidos = ['valorEntradaOS', 'formaPagamentoOS', 'descontoOS', 'parcelasOS'];
+            camposPagamentoTransferidos.forEach(id => {
+                const campo = document.getElementById(id);
+                if (!campo) return;
+
+                const possuiValorRelevante =
+                    (id === 'formaPagamentoOS' && campo.value !== '') ||
+                    (id === 'valorEntradaOS' && campo.value.trim() !== '') ||
+                    (id === 'descontoOS' && (parseFloat(campo.value) || 0) > 0) ||
+                    (id === 'parcelasOS' && forma === 'Crédito' && campo.value !== '');
+
+                if (possuiValorRelevante) campo.dataset.interagido = 'true';
+                else delete campo.dataset.interagido;
+            });
+
             alternarPainel('entrada');
-            alert(`Convertido! Conclua os detalhes na tela de Pedido (Código #${gerarTextoCodigo('ART', codigoEmConversaoFixado)} fixado).`);
+
+            // Recalcula imediatamente os valores e as quatro etapas após a transferência.
+            calcularGenerico('entrada');
+            atualizarCorDoSelectStatus(document.getElementById('statusDoPedidoForm'));
+            atualizarLinhaDoTempoPedido();
+            requestAnimationFrame(atualizarLinhaDoTempoPedido);
+            setTimeout(atualizarLinhaDoTempoPedido, 80);
+
+            alert(`Convertido! Os dados foram analisados automaticamente na linha do tempo do Pedido (Código #${gerarTextoCodigo('ART', codigoEmConversaoFixado)} fixado).`);
         }
 
         function extrairPacoteDadosDoFormulario(tipo) {
@@ -1388,6 +2167,29 @@
             
             salvarDadosNuvemAutomatico(tipo);
             alert("Registro processado e salvo na nuvem com sucesso!");
+        }
+
+        function abrirNotaFormulario(tipo) {
+            const clienteVal = (tipo === 'orcamento')
+                ? document.getElementById('cliente').value.trim()
+                : document.getElementById('clienteOS').value.trim();
+
+            if (!clienteVal) {
+                alert("Por favor, preencha o nome do cliente antes de gerar a nota.");
+                return;
+            }
+
+            // Salva automaticamente no histórico/nuvem antes de abrir a impressão.
+            salvarDadosNuvemAutomatico(tipo);
+
+            const pacoteAtual = extrairPacoteDadosDoFormulario(tipo);
+            dadosImpressaoPendente = {
+                codigo: pacoteAtual.codigo,
+                dataHora: pacoteAtual.dataHora,
+                registro: pacoteAtual
+            };
+
+            document.getElementById('modalEscolhaImpressao').style.display = 'flex';
         }
 
         function salvarEVisualizarImediatamenteForm(tipo) {
@@ -1491,13 +2293,14 @@
             if (termoBusca) {
                 dadosFiltradosStatus = dadosFiltradosStatus.filter(p => p.codigo.toLowerCase().includes(termoBusca) || p.cliente.toLowerCase().includes(termoBusca));
             }
+            atualizarIndicadoresHistorico(dadosFiltradosStatus.length);
             renderizarGradeCardsFinal(dadosFiltradosStatus);
         }
 
         function renderizarGradeCardsFinal(listaFiltrada) {
             const grade = document.getElementById('gradeHistoricoCards');
             grade.innerHTML = "";
-            const itensOrdenados = listaFiltrada.reverse();
+            const itensOrdenados = [...listaFiltrada].reverse();
 
             if(itensOrdenados.length === 0) {
                 grade.innerHTML = `<div style="grid-column: span 3; text-align:center; padding:20px;">Nenhum registro encontrado nesta seção.</div>`;
@@ -1511,14 +2314,13 @@
                 let dataDisplay = formatarDataVisivel(p.dataHora);
 
                 let card = document.createElement('div');
-                card.className = "card-registro";
-                card.style.backgroundColor = corFundoCard;
-                card.style.color = corTextoCard;
-                card.style.borderColor = corTextoCard;
+                card.className = "card-registro card-registro-moderno";
+                const statusClasse = p.status === "Concluído" ? "status-card-concluido" : (p.status === "Cancelado" ? "status-card-cancelado" : "status-card-andamento");
+                card.classList.add(statusClasse);
 
                 card.innerHTML = `
                     <div>
-                        <div class="card-header-tipo">[${p.tipo.toUpperCase()}]</div>
+                        <div class="card-header-tipo"><span>${p.tipo.toUpperCase()}</span><span class="badge-status-card">${p.status || "Aberto"}</span></div>
                         <div class="card-title-codigo">
                             <span>#${p.codigo}</span>
                             ${(p.contato && p.contato !== 'Não aplicável' && p.contato !== 'Não informado') ? `<button class="btn-copiar-linha" style="padding:2px 6px; font-size:10px;" onclick="copiarWhatsAppDiretoDoCard('${p.contato}')">Copiar Zap</button>` : ''}
@@ -1987,13 +2789,20 @@
 
         function processarImpressaoFinal(qtdVias) {
             if (!dadosImpressaoPendente) return;
-            
-            const codigoAlvo = dadosImpressaoPendente.codigo;
-            const dataHoraChave = dadosImpressaoPendente.dataHora;
-            fecharModalImpressao(); 
 
-            const p = cacheNuvemGlobal.find(item => item.codigo === codigoAlvo && item.dataHora === dataHoraChave);
-            if(!p) return;
+            const impressaoPendenteAtual = dadosImpressaoPendente;
+            const codigoAlvo = impressaoPendenteAtual.codigo;
+            const dataHoraChave = impressaoPendenteAtual.dataHora;
+            fecharModalImpressao();
+
+            // Na tela de Pedido/Orçamento, usa os dados atuais imediatamente.
+            // No Histórico, mantém exatamente a busca já existente.
+            const p = impressaoPendenteAtual.registro ||
+                cacheNuvemGlobal.find(item => item.codigo === codigoAlvo && item.dataHora === dataHoraChave);
+            if(!p) {
+                alert("Não foi possível localizar os dados para impressão.");
+                return;
+            }
 
             document.getElementById('tipoNotaA6').innerText = p.tipo.toUpperCase();
             
@@ -2137,8 +2946,225 @@
                         .nota-rodape-texto { font-size: 12px !important; line-height: 1.4; color: #333333; text-align: left; width: 80%; }
                         .nota-rodape-qrcode { width: 55px; height: 55px; border: 1px solid #000; padding: 2px; background-color: #fff; }
                         .nota-header img { width: 100%; max-width: 100%; height: auto; display: block; margin: 0; }
-                    </style>
-                </head>
+                    
+        /* AJUSTE COMPACTO — máximo de conteúdo visível em uma única tela */
+        .menu-sistema { min-height:66px; padding:0 20px; gap:16px; }
+        .marca-sistema { min-width:205px; }
+        .marca-sistema img { width:40px; height:40px; }
+        .marca-texto strong { font-size:19px; }
+        .menu-links { gap:4px; }
+        .btn-sistema { padding:10px 13px; font-size:13px; }
+        .barra-busca-universal { margin:0 0 0 auto; padding:0; max-width:390px; min-width:260px; }
+        .barra-busca-universal .input-busca { min-height:40px; padding:9px 12px; background:#14171a; border-color:#33383e; color:#fff; box-shadow:none; }
+        .barra-busca-universal .input-busca::placeholder { color:#9ca3af; }
+        .btn-camera-lupa { min-width:44px; height:40px; border:1px solid var(--amarelo); }
+        .container { margin:12px auto 24px; }
+        .pedido-moderno { max-width:1500px; padding:0 14px; }
+        .pedido-cabecalho { align-items:center; margin:0 0 10px; }
+        .pedido-cabecalho h1 { font-size:25px; margin:0 0 2px; }
+        .pedido-cabecalho p { font-size:13px; }
+        .eyebrow { display:none; }
+        .codigo-os-destaque { padding:9px 12px; font-size:14px; }
+        .btn-novo-registro-preto { padding:10px 14px; font-size:13px; }
+        .etapas-pedido { padding:10px 14px; margin-bottom:10px; min-height:52px; }
+        .etapa span { width:25px; height:25px; }
+        .pedido-layout { grid-template-columns:minmax(0,1fr) 330px; gap:12px; }
+        .pedido-conteudo { gap:10px; }
+        .card-formulario, .card-resumo { padding:14px 16px; border-radius:12px; }
+        .card-titulo { margin-bottom:11px; gap:9px; }
+        .card-titulo h2 { font-size:16px; }
+        .card-titulo p { display:none; }
+        .card-icone { width:30px; height:30px; flex-basis:30px; }
+        .grid-dados-cliente { display:grid; grid-template-columns:1.15fr 1fr .8fr; gap:10px; align-items:end; }
+        .form-group, .form-group-cliente { margin:0; }
+        label { margin-bottom:5px; font-size:12px; }
+        input[type="text"], input[type="number"], input[type="date"], select, textarea { min-height:38px; padding:8px 10px; font-size:13px; border-radius:8px; }
+        textarea { min-height:70px; }
+        .btn-copiar-discreto { min-height:38px; padding:0 10px; font-size:11px; }
+        .cabecalho-itens { grid-template-columns:2.3fr .7fr .9fr .75fr 30px; padding:0 8px 5px; }
+        .item-linha { grid-template-columns:2.3fr .7fr .9fr .75fr 30px; padding:7px 8px; }
+        .itens-lista { gap:6px; margin-bottom:7px; }
+        .btn-add-item { padding:7px 11px; font-size:12px; }
+        .dupla-inferior { display:grid; grid-template-columns:.9fr 1.1fr; gap:10px; }
+        .card-compacto .grid-financeiro { gap:8px; margin-bottom:8px; }
+        .card-compacto .form-group { margin-bottom:0; }
+        .pedido-resumo { top:78px; }
+        .card-resumo .totais-container { margin:0 0 10px; padding:12px; line-height:1.65; max-height:210px; overflow:auto; }
+        .card-resumo .total-destaque { font-size:17px; }
+        .grupo-botoes-acao { gap:7px; }
+        .grupo-botoes-acao button { padding:11px 8px; }
+        .resumo-aviso { margin-top:10px; padding:9px; }
+
+        @media (max-width: 1180px) {
+            .marca-texto { display:none; }
+            .marca-sistema { min-width:auto; }
+            .barra-busca-universal { max-width:300px; min-width:220px; }
+        }
+        @media (max-width: 980px) {
+            .menu-sistema { flex-wrap:wrap; padding:10px; }
+            .menu-links { order:2; width:100%; justify-content:center; }
+            .barra-busca-universal { order:1; max-width:none; flex:1; }
+            .pedido-layout { grid-template-columns:1fr; }
+            .pedido-resumo { position:static; }
+            .grid-dados-cliente { grid-template-columns:1fr 1fr; }
+            .grid-dados-cliente .form-group:last-child { grid-column:1/-1; }
+            .dupla-inferior { grid-template-columns:1fr; }
+        }
+</style>
+                
+<style>
+/* ORÇAMENTO NO MESMO ESQUEMA FIXO DO PEDIDO */
+#tela-orcamento.orcamento-moderno {
+    background: transparent !important;
+    padding: 0 20px !important;
+    max-width: 1220px !important;
+    margin: 14px auto 0 !important;
+    height: calc(100vh - var(--altura-cabecalho-fixo) - 14px) !important;
+    overflow: hidden !important;
+}
+#tela-orcamento .orcamento-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 18px;
+    height: 100%;
+    min-height: 0;
+    align-items: stretch;
+}
+#tela-orcamento .orcamento-conteudo {
+    min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    background: #fff;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    padding: 22px;
+    box-sizing: border-box;
+}
+#tela-orcamento .orcamento-resumo {
+    min-height: 0;
+    height: 100%;
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: hidden;
+}
+#tela-orcamento .orcamento-lateral-topo .bloco-codigo-linha {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin: 0;
+}
+#tela-orcamento .orcamento-lateral-topo .codigo-os-destaque,
+#tela-orcamento .orcamento-lateral-topo .btn-novo-registro-preto {
+    width: 100%;
+    min-height: 44px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+#tela-orcamento .orcamento-card-resumo {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden !important;
+    display: flex;
+    flex-direction: column;
+    padding: 16px !important;
+}
+#tela-orcamento .orcamento-card-resumo .totais-container {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden !important;
+    margin: 0 0 12px !important;
+}
+#tela-orcamento .orcamento-card-resumo .grupo-botoes-acao {
+    flex: 0 0 auto;
+    margin-top: auto;
+}
+/* Cabeçalho: busca e lupa na mesma linha e altura dos botões */
+.menu-sistema {
+    display: grid !important;
+    grid-template-columns: auto 1fr minmax(260px, 360px) !important;
+    align-items: center !important;
+    min-height: var(--altura-cabecalho-fixo) !important;
+}
+.menu-links { align-self: center !important; }
+.barra-busca-universal {
+    position: relative !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    align-self: center !important;
+}
+.barra-busca-universal .input-busca {
+    width: 100% !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    line-height: normal !important;
+    padding: 0 44px 0 14px !important;
+    margin: 0 !important;
+}
+.icone-busca {
+    position: absolute !important;
+    top: 50% !important;
+    right: 14px !important;
+    margin: 0 !important;
+    transform: translateY(-50%) !important;
+}
+@media (max-width: 900px) {
+    #tela-orcamento.orcamento-moderno {
+        height: auto !important;
+        overflow: visible !important;
+        padding: 0 12px !important;
+    }
+    #tela-orcamento .orcamento-layout { grid-template-columns: 1fr; height: auto; }
+    #tela-orcamento .orcamento-conteudo { overflow: visible; }
+    #tela-orcamento .orcamento-resumo { position: static; height: auto; overflow: visible; }
+    #tela-orcamento .orcamento-card-resumo { overflow: visible !important; }
+    .menu-sistema { grid-template-columns: 1fr !important; }
+}
+</style>
+
+<style>
+/* AJUSTE FINAL — ORÇAMENTO: informações no painel lateral e rolagem somente nelas */
+#tela-orcamento .orcamento-card-resumo {
+    overflow: hidden !important;
+}
+#tela-orcamento .orcamento-card-resumo .totais-container {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    padding-right: 5px;
+}
+#tela-orcamento .orcamento-card-resumo .grupo-botoes-acao {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box;
+}
+#tela-orcamento .orcamento-card-resumo .grupo-botoes-acao button {
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+}
+#tela-orcamento .orcamento-card-resumo .grupo-botoes-acao .btn-converter {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    justify-self: stretch !important;
+}
+</style>
+</head>
                 <body>
                     ${estruturaLayout}
                     <script>
@@ -2155,64 +3181,102 @@
             janelaImpressao.document.close();
         }
 
-        // ==========================================
-        // NOVA FUNÇÃO: LÓGICA DO LEITOR DE CÂMERA
-        // ==========================================
-        function iniciarCamera() {
-            document.getElementById('resultado-leitura').style.display = 'none';
-            
-            if (!leitorCamera) {
-                leitorCamera = new Html5Qrcode("area-leitor-camera");
+
+        function atualizarIndicadoresHistorico(qtdExibida) {
+            const validos = cacheNuvemGlobal.filter(p => p.status !== "Excluído");
+            const andamento = validos.filter(p => p.status === "Aberto" || p.status === "Produção" || p.status === "Definir Status" || !p.status).length;
+            const concluidos = validos.filter(p => p.status === "Concluído").length;
+            const cancelados = validos.filter(p => p.status === "Cancelado").length;
+            const setTxt = (id, valor) => { const el = document.getElementById(id); if(el) el.textContent = valor; };
+            setTxt('histTotal', validos.length);
+            setTxt('histAndamento', andamento);
+            setTxt('histConcluidos', concluidos);
+            setTxt('histCancelados', cancelados);
+            setTxt('resultadoHistorico', `${qtdExibida} ${qtdExibida === 1 ? 'registro exibido' : 'registros exibidos'}`);
+        }
+
+        function campoPagamentoFoiUsado() {
+            const entrada = document.getElementById('valorEntradaOS');
+            const forma = document.getElementById('formaPagamentoOS');
+            const desconto = document.getElementById('descontoOS');
+            const parcelas = document.getElementById('parcelasOS');
+
+            const houveInteracao = [entrada, forma, desconto, parcelas].some(el => el && el.dataset.interagido === 'true');
+            const possuiDadoPreenchido =
+                !!(entrada && entrada.value.trim() !== '') ||
+                !!(forma && forma.value !== '') ||
+                !!(desconto && (parseFloat(desconto.value) || 0) > 0) ||
+                !!(forma && forma.value === 'Crédito' && parcelas && parcelas.value !== '');
+
+            return houveInteracao || possuiDadoPreenchido;
+        }
+
+        function atualizarLinhaDoTempoPedido() {
+            const cliente = document.getElementById('clienteOS');
+            const etapa1Completa = !!(cliente && cliente.value.trim());
+
+            const descricoes = [...document.querySelectorAll('#conteudoItensOS .ipt-desc')];
+            const etapa2Completa = descricoes.some(el => el.value.trim());
+
+            const status = document.getElementById('statusDoPedidoForm');
+            const data = document.getElementById('dataEntregaOS');
+            const obs = document.getElementById('obsOS');
+            const etapa4Completa = !!((status && status.value !== 'Definir Status') || (data && data.value) || (obs && obs.value.trim()));
+            const etapa3Completa = campoPagamentoFoiUsado() || etapa4Completa;
+
+            const estados = [etapa1Completa, etapa2Completa, etapa3Completa, etapa4Completa];
+            estados.forEach((completa, indice) => {
+                const etapa = document.getElementById(`etapaPedido${indice + 1}`);
+                if (!etapa) return;
+                etapa.classList.toggle('concluida', completa);
+                etapa.classList.remove('atual');
+            });
+
+            const primeiraPendente = estados.findIndex(v => !v);
+            if (primeiraPendente >= 0) {
+                document.getElementById(`etapaPedido${primeiraPendente + 1}`)?.classList.add('atual');
             }
-            
-            if (!isCameraOn) {
-                leitorCamera.start(
-                    { facingMode: "environment" }, // Usa a câmera de trás
-                    { fps: 10, qrbox: { width: 250, height: 250 } },
-                    (textoDecodificado) => {
-                        // O que acontece quando lê o QR Code com sucesso
-                        document.getElementById('resultado-leitura').innerText = "✅ Código Lido: " + textoDecodificado;
-                        document.getElementById('resultado-leitura').style.display = 'block';
-                        pararCamera();
-                        
-                        // Envia para buscar no banco de dados local da nuvem
-                        buscarEAbrirPeloQRCode(textoDecodificado);
-                    },
-                    (erro) => { /* Ignora os erros enquanto foca na imagem */ }
-                ).then(() => {
-                    isCameraOn = true;
-                }).catch(err => {
-                    alert("Erro ao acessar a câmera. Verifique se deu permissão ao navegador.");
-                });
+
+            const tudoCompleto = estados.every(Boolean);
+            const finalizar = document.getElementById('btnFinalizarPedido');
+            if (finalizar) {
+                finalizar.disabled = !tudoCompleto;
+                finalizar.classList.toggle('liberado', tudoCompleto);
+                finalizar.setAttribute('aria-disabled', String(!tudoCompleto));
             }
         }
 
-        function pararCamera() {
-            if (leitorCamera && isCameraOn) {
-                leitorCamera.stop().then(() => {
-                    isCameraOn = false;
-                    leitorCamera.clear();
-                }).catch(err => console.log("Erro ao desligar a câmera:", err));
-            }
+        function configurarLinhaDoTempoPedido() {
+            const tela = document.getElementById('tela-entrada');
+            if (!tela || tela.dataset.timelineConfigurada === 'true') return;
+            tela.dataset.timelineConfigurada = 'true';
+
+            tela.addEventListener('input', event => {
+                if (['valorEntradaOS','descontoOS'].includes(event.target.id)) event.target.dataset.interagido = 'true';
+                atualizarLinhaDoTempoPedido();
+            });
+            tela.addEventListener('change', event => {
+                if (['formaPagamentoOS','parcelasOS'].includes(event.target.id)) event.target.dataset.interagido = 'true';
+                atualizarLinhaDoTempoPedido();
+            });
+            atualizarLinhaDoTempoPedido();
         }
 
-        function buscarEAbrirPeloQRCode(codigoLido) {
-            let codigoBusca = codigoLido.trim().toUpperCase();
-            
-            if(!codigoBusca.startsWith('ART')) {
-                codigoBusca = 'ART' + codigoBusca;
-            }
-
-            let registrosFiltrados = cacheNuvemGlobal.filter(p => p.codigo === codigoBusca && p.status !== "Excluído");
-            
-            if(registrosFiltrados.length > 0) {
-                let registroEncontrado = registrosFiltrados[registrosFiltrados.length - 1];
-                
-                gerarEVisualizarFichaA6Flutuante(registroEncontrado.codigo, registroEncontrado.dataHora);
-            } else {
-                alert("Pedido " + codigoBusca + " não encontrado no banco de dados. Tente atualizar a aba Histórico primeiro.");
-            }
-        }
+        document.addEventListener('DOMContentLoaded', configurarLinhaDoTempoPedido);
     </script>
+
+<style id="correcao-final-orcamento-lateral">
+#tela-orcamento .orcamento-resumo,#tela-orcamento .orcamento-card-resumo{overflow:hidden!important;min-height:0!important}
+#tela-orcamento #painelTotaisOrcamento{flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain;scrollbar-width:thin;padding:2px 6px 10px 2px!important;margin:0 0 12px!important}
+#tela-orcamento .orcamento-card-resumo>.grupo-botoes-acao{flex:0 0 auto!important;display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;width:100%!important;margin-top:auto!important}
+#tela-orcamento .orcamento-card-resumo>.grupo-botoes-acao button{width:100%!important;min-width:0!important;margin:0!important;box-sizing:border-box!important}
+#tela-orcamento .orcamento-card-resumo>.grupo-botoes-acao .btn-salvar,#tela-orcamento .orcamento-card-resumo>.grupo-botoes-acao .btn-converter{grid-column:1/-1!important}
+#tela-orcamento .orcamento-card-resumo>.grupo-botoes-acao .btn-converter{display:flex!important;align-items:center!important;justify-content:center!important}
+.orc-resumo-dados{display:flex;flex-direction:column;gap:9px}.orc-resumo-linha{display:flex;justify-content:space-between;gap:12px;padding-bottom:8px;border-bottom:1px solid #ececec}.orc-resumo-linha span,.orc-resumo-observacao span{color:#666;font-size:12px;font-weight:700;text-transform:uppercase}.orc-resumo-linha strong{text-align:right;overflow-wrap:anywhere}.orc-resumo-secao{display:flex;flex-direction:column;gap:7px;padding:4px 0}.orc-resumo-item{display:flex;justify-content:space-between;gap:10px;font-size:13px}.orc-resumo-item span{min-width:0;overflow-wrap:anywhere}.orc-resumo-item small{color:#777}.orc-resumo-item strong{white-space:nowrap}.orc-resumo-observacao p{margin:5px 0 0;font-size:13px;line-height:1.35;overflow-wrap:anywhere}.orc-resumo-financeiro{border-top:2px solid #111;margin-top:12px;padding-top:10px;display:flex;flex-direction:column;gap:7px}.orc-resumo-financeiro>div{display:flex;justify-content:space-between;gap:12px}.orc-resumo-financeiro .total-destaque{font-size:17px;font-weight:800}
+@media(max-width:900px){#tela-orcamento #painelTotaisOrcamento{overflow:visible!important}}
+</style>
+<script id="atualizacao-automatica-resumo-orcamento">
+(function(){function atualizar(){if(typeof calcularGenerico==='function'&&document.getElementById('painelTotaisOrcamento'))calcularGenerico('orcamento')}document.addEventListener('input',function(e){if(e.target.closest&&e.target.closest('#tela-orcamento'))atualizar()});document.addEventListener('change',function(e){if(e.target.closest&&e.target.closest('#tela-orcamento'))atualizar()});document.addEventListener('DOMContentLoaded',atualizar)})();
+</script>
 </body>
 </html>
