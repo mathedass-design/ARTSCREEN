@@ -1618,6 +1618,40 @@ select.status-cancelado {
 }
 </style>
 
+
+<style id="correcao-mobile-imagem">
+#modalVisualizadorFichaA6 .conteudo-visualizador-imagem {
+    max-height: calc(100dvh - 24px) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+#imagemRenderizadaFichaA6 {
+    display: block;
+    width: auto !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: 52dvh !important;
+    margin: 12px auto !important;
+    object-fit: contain;
+    -webkit-user-select: auto;
+    user-select: auto;
+    -webkit-touch-callout: default;
+}
+#btnCopiarImagemVisualizador,
+#btnCompartilharImagemVisualizador {
+    margin-top: 10px !important;
+}
+@media (max-width: 600px) {
+    #modalVisualizadorFichaA6 { padding: 8px !important; }
+    #modalVisualizadorFichaA6 .conteudo-visualizador-imagem {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 14px !important;
+        border-radius: 14px !important;
+    }
+    #imagemRenderizadaFichaA6 { max-height: 46dvh !important; }
+}
+</style>
 </head>
 <body>
 <div class="menu-sistema">
@@ -1949,7 +1983,9 @@ select.status-cancelado {
 <div class="conteudo-visualizador-imagem">
 <h3 id="tituloVisualizadorFichaA6" style="margin-top:0; font-size:16px; text-transform:uppercase; color:#000;">Visualizar Registro</h3>
 <img alt="Carregando visualização gráfica..." class="bloco-render-imagem-a6" id="imagemRenderizadaFichaA6"/>
-<button class="btn-modal-opcao b-pedido" id="btnDownloadPeloVisualizador" style="margin-bottom:0;">Baixar Arquivo</button>
+<button class="btn-modal-opcao b-pedido" id="btnDownloadPeloVisualizador" style="margin-bottom:0;">Baixar imagem</button>
+<button class="btn-modal-opcao b-status" id="btnCopiarImagemVisualizador" type="button">Copiar imagem</button>
+<button class="btn-modal-opcao" id="btnCompartilharImagemVisualizador" type="button">Compartilhar / Salvar</button>
 <button class="btn-modal-opcao b-fechar" onclick="fecharVisualizadorFichaA6(null)" style="margin-top:10px;">Fechar</button>
 </div>
 </div>
@@ -2494,6 +2530,71 @@ select.status-cancelado {
             document.getElementById('modalEscolhaImpressao').style.display = 'flex';
         }
 
+        function canvasParaBlob(canvas) {
+            return new Promise((resolve, reject) => {
+                canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("Não foi possível gerar a imagem.")), 'image/png', 1);
+            });
+        }
+
+        async function baixarImagemCompativel(canvas, nomeArquivo) {
+            try {
+                const blob = await canvasParaBlob(canvas);
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = nomeArquivo;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                setTimeout(() => {
+                    URL.revokeObjectURL(url);
+                    link.remove();
+                }, 1500);
+            } catch (erro) {
+                console.error(erro);
+                alert('Não foi possível baixar a imagem neste navegador. Use o botão “Compartilhar / Salvar”.');
+            }
+        }
+
+        async function copiarImagemCompativel(canvas) {
+            try {
+                if (!navigator.clipboard || typeof ClipboardItem === 'undefined') {
+                    throw new Error('Clipboard de imagem indisponível');
+                }
+                const blob = await canvasParaBlob(canvas);
+                await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                alert('Imagem copiada! Agora você pode colar no WhatsApp, Instagram ou outro aplicativo.');
+            } catch (erro) {
+                console.warn(erro);
+                alert('Seu navegador não permite copiar a imagem diretamente. Use “Compartilhar / Salvar”.');
+            }
+        }
+
+        async function compartilharImagemCompativel(canvas, nomeArquivo) {
+            try {
+                const blob = await canvasParaBlob(canvas);
+                const arquivo = new File([blob], nomeArquivo, { type: 'image/png' });
+                if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [arquivo] }))) {
+                    await navigator.share({ files: [arquivo], title: nomeArquivo });
+                    return;
+                }
+                await baixarImagemCompativel(canvas, nomeArquivo);
+            } catch (erro) {
+                if (erro && erro.name === 'AbortError') return;
+                console.error(erro);
+                alert('Não foi possível compartilhar. Tente baixar a imagem.');
+            }
+        }
+
+        function configurarAcoesImagemVisualizador(canvas, nomeArquivo) {
+            const btnBaixar = document.getElementById('btnDownloadPeloVisualizador');
+            const btnCopiar = document.getElementById('btnCopiarImagemVisualizador');
+            const btnCompartilhar = document.getElementById('btnCompartilharImagemVisualizador');
+            btnBaixar.onclick = () => baixarImagemCompativel(canvas, nomeArquivo);
+            btnCopiar.onclick = () => copiarImagemCompativel(canvas);
+            btnCompartilhar.onclick = () => compartilharImagemCompativel(canvas, nomeArquivo);
+        }
+
         function salvarEVisualizarImediatamenteForm(tipo) {
             const clienteVal = (tipo === 'orcamento') ? document.getElementById('cliente').value.trim() : document.getElementById('clienteOS').value.trim();
             if (!clienteVal) { alert("Por favor, digite o nome do cliente."); return; }
@@ -2514,12 +2615,10 @@ select.status-cancelado {
                     const urlImagemBase64 = canvas.toDataURL('image/png');
                     imgModal.src = urlImagemBase64; 
                     
-                    btnBaixarModal.onclick = () => {
-                        const link = document.createElement('a');
-                        link.download = `${tipo.toUpperCase()}_${numTextoFormatado}_COMPROVANTE.png`;
-                        link.href = urlImagemBase64;
-                        link.click();
-                    };
+                    configurarAcoesImagemVisualizador(
+                        canvas,
+                        `${tipo.toUpperCase()}_${numTextoFormatado}_COMPROVANTE.png`
+                    );
                     document.getElementById('modalVisualizadorFichaA6').style.display = 'flex';
                 });
             }, 150);
@@ -2540,10 +2639,7 @@ select.status-cancelado {
 
             setTimeout(() => {
                 html2canvas(alvo, { scale: 2, useCORS: true, allowTaint: true }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = `${nomeDoArquivoFinal}.png`;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
+                    baixarImagemCompativel(canvas, `${nomeDoArquivoFinal}.png`);
                     if (tipo === 'entrada' && codigoEmConversaoFixado !== null) codigoEmConversaoFixado = null;
                     atualizarCodigosVisiveisDinamicos();
                 });
@@ -2801,16 +2897,17 @@ select.status-cancelado {
                 setTimeout(() => {
                     html2canvas(alvo, { scale: 2, useCORS: true, allowTaint: true }).then(canvas => {
                         imgModal.src = canvas.toDataURL('image/png');
-                        document.getElementById('btnDownloadPeloVisualizador').onclick = () => {
-                            const link = document.createElement('a'); link.download = `${p.tipo.toUpperCase()}_${p.codigo}.png`; link.href = canvas.toDataURL('image/png'); link.click();
-                        };
+                        configurarAcoesImagemVisualizador(
+                            canvas,
+                            `${p.tipo.toUpperCase()}_${p.codigo}.png`
+                        );
                         document.getElementById('modalVisualizadorFichaA6').style.display = 'flex';
                     });
                 }, 150);
             } else {
                 setTimeout(() => {
                     html2canvas(alvo, { scale: 2, useCORS: true, allowTaint: true }).then(canvas => {
-                        const link = document.createElement('a'); link.download = `${p.tipo.toUpperCase()}_${p.codigo}_REEMITIDO.png`; link.href = canvas.toDataURL('image/png'); link.click();
+                        baixarImagemCompativel(canvas, `${p.tipo.toUpperCase()}_${p.codigo}_REEMITIDO.png`);
                     });
                 }, 150);
             }
