@@ -30,6 +30,14 @@
             background-size: cover;
         }
 
+        /* Fundo personalizado somente no computador */
+        @media (max-width: 900px) {
+            body {
+                background-image: none !important;
+                background-attachment: scroll !important;
+            }
+        }
+
         /* Menu Superior Padronizado - Preto com Letras Amarelas */
         .menu-sistema {
             display: flex;
@@ -1971,8 +1979,9 @@ select.status-cancelado {
 <button class="btn-modal-opcao b-pedido" id="btnModalEditarTudo">Editar Pedido Completo</button>
 <button class="btn-modal-opcao b-status" id="btnModalEditarStatus">Editar Apenas Status</button>
 <div id="subPainelSelecaoStatusRapido" style="display: none; margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 15px;">
-<h4 style="margin-top:0; margin-bottom:12px; font-size:14px; text-transform:uppercase;">Escolha o Novo Status:</h4>
-<button class="btn-modal-opcao b-status b-status-item status-producao" onclick="executarMudancaStatusDiretaNuvem('Produção')">Em Produção</button>
+<h4 id="tituloSelecaoStatusRapido" style="margin-top:0; margin-bottom:12px; font-size:14px; text-transform:uppercase;">Escolha o Novo Status:</h4>
+<button class="btn-modal-opcao b-pedido b-status-item" id="btnVirouPedido" onclick="converterOrcamentoEmPedidoPeloHistorico()" style="display:none; background:#111 !important; color:#ffcc00 !important; border-color:#111 !important;">VIROU PEDIDO</button>
+<button class="btn-modal-opcao b-status b-status-item status-producao" id="btnStatusProducaoRapido" onclick="executarMudancaStatusDiretaNuvem('Produção')">Em Produção</button>
 <button class="btn-modal-opcao b-status b-status-item status-concluido" onclick="executarMudancaStatusDiretaNuvem('Concluído')">Concluído</button>
 <button class="btn-modal-opcao b-status b-status-item status-cancelado" onclick="executarMudancaStatusDiretaNuvem('Cancelado')">Cancelado</button>
 </div>
@@ -2744,18 +2753,47 @@ select.status-cancelado {
         }
 
         function cancelarRegistroNaNuvem(codigo, dataHora) {
-            if(!confirm(`Deseja realmente apagar o registro #${codigo}?\n\nEle será ocultado da lista imediatamente.`)) return;
-            
-            cacheNuvemGlobal = cacheNuvemGlobal.filter(p => !(p.codigo === codigo && p.dataHora === dataHora));
+            if(!confirm(`Deseja realmente apagar o registro #${codigo}?\n\nEle será ocultado permanentemente do histórico.`)) return;
+
+            const item = cacheNuvemGlobal.find(p => p.codigo === codigo && p.dataHora === dataHora);
+            if(!item) return;
+
+            const itemAnterior = { ...item };
+            item.status = "Excluído";
             filtrarTabelaHistoricoLocal();
 
-            const payload = { acao: "excluir", codigo: codigo, dataHora: dataHora, status: "Excluído", origemEdicao: true };
+            const payload = {
+                acao: "salvar",
+                tipo: item.tipo,
+                codigo: item.codigo,
+                dataHora: item.dataHora,
+                cliente: item.cliente,
+                contato: item.contato,
+                itens: item.itens,
+                desconto: item.desconto,
+                entrada: item.entrada,
+                formaPagamento: item.formaPagamento,
+                previsaoEntrega: item.previsaoEntrega,
+                observacoes: item.observacoes,
+                status: "Excluído",
+                totalGeral: item.totalGeral,
+                origemEdicao: true,
+                atendente: item.atendente
+            };
+
             fetch(GOOGLE_API_URL, {
                 method: "POST",
                 mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify(payload)
-            }).catch(e => console.error("Falha ao apagar na nuvem", e));
+            }).then(() => {
+                setTimeout(puxarDadosDaNuvem, 800);
+            }).catch(e => {
+                Object.assign(item, itemAnterior);
+                filtrarTabelaHistoricoLocal();
+                alert("Não foi possível apagar o registro. Verifique sua conexão e tente novamente.");
+                console.error("Falha ao apagar na nuvem", e);
+            });
         }
 
         function verificarAntesDeEditar(codigo, dataHora) {
@@ -2773,8 +2811,13 @@ select.status-cancelado {
                 carregarFormularioCompletoEdicao(itemSelecionadoParaEdicaoModal);
             };
             document.getElementById('btnModalEditarStatus').onclick = () => {
-                if(itemSelecionadoParaEdicaoModal.tipo === "Orçamento") { alert("Orçamentos não possuem status de produção."); return; }
+                const ehOrcamento = itemSelecionadoParaEdicaoModal.tipo === "Orçamento";
                 document.getElementById('subPainelSelecaoStatusRapido').style.display = 'block';
+                document.getElementById('btnVirouPedido').style.display = ehOrcamento ? 'block' : 'none';
+                document.getElementById('btnStatusProducaoRapido').style.display = ehOrcamento ? 'none' : 'block';
+                document.querySelector('#subPainelSelecaoStatusRapido .status-concluido').style.display = ehOrcamento ? 'none' : 'block';
+                document.querySelector('#subPainelSelecaoStatusRapido .status-cancelado').style.display = ehOrcamento ? 'none' : 'block';
+                document.getElementById('tituloSelecaoStatusRapido').innerText = ehOrcamento ? 'Converter orçamento:' : 'Escolha o novo status:';
             };
         }
 
@@ -2787,6 +2830,52 @@ select.status-cancelado {
             if (!event || event.target === document.getElementById('modalVisualizadorFichaA6') || event.target.classList.contains('b-fechar')) {
                 document.getElementById('modalVisualizadorFichaA6').style.display = 'none';
             }
+        }
+
+        function converterOrcamentoEmPedidoPeloHistorico() {
+            const item = itemSelecionadoParaEdicaoModal;
+            if(!item || item.tipo !== "Orçamento") return;
+            if(!confirm(`Converter o orçamento #${item.codigo} em pedido?\n\nEle passará a aparecer e funcionar como PEDIDO em todo o sistema.`)) return;
+
+            fecharModalEscolhaEdicao();
+
+            const pacoteConversao = {
+                acao: "salvar",
+                tipo: "Pedido",
+                codigo: item.codigo,
+                dataHora: item.dataHora,
+                cliente: item.cliente,
+                contato: (item.contato && item.contato !== "Não aplicável") ? item.contato : "Não informado",
+                itens: item.itens,
+                desconto: item.desconto,
+                entrada: Number(item.entrada) || 0,
+                formaPagamento: item.formaPagamento,
+                previsaoEntrega: item.previsaoEntrega,
+                observacoes: item.observacoes,
+                status: "Definir Status",
+                totalGeral: item.totalGeral,
+                origemEdicao: true,
+                atendente: item.atendente
+            };
+
+            item.tipo = "Pedido";
+            item.status = "Definir Status";
+            item.contato = pacoteConversao.contato;
+            filtrarTabelaHistoricoLocal();
+
+            fetch(GOOGLE_API_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(pacoteConversao)
+            }).then(() => {
+                alert("Orçamento convertido em pedido com sucesso!");
+                setTimeout(puxarDadosDaNuvem, 800);
+            }).catch(e => {
+                console.error("Falha ao converter orçamento em pedido", e);
+                alert("Não foi possível concluir a conversão. Verifique sua conexão.");
+                puxarDadosDaNuvem();
+            });
         }
 
         function executarMudancaStatusDiretaNuvem(statusMapeado) {
