@@ -1662,60 +1662,131 @@ select.status-cancelado {
 </style>
 
 <style id="historico-lista-operacional-2026">
-/* Histórico em lista: alterações isoladas nesta tela */
+/* Histórico em lista compacta: alterações isoladas nesta tela */
 #tela-historico .historico-indicadores-operacionais .indicador-historico {
     appearance:none; width:100%; text-align:left; cursor:pointer; font-family:inherit;
 }
-#tela-historico .historico-indicadores-operacionais .indicador-historico:hover { transform:translateY(-1px); box-shadow:0 8px 20px rgba(15,23,42,.08); }
+#tela-historico .historico-indicadores-operacionais .indicador-historico:hover {
+    transform:translateY(-1px); box-shadow:0 8px 20px rgba(15,23,42,.08);
+}
 #tela-historico .indicador-historico.urgente { border-left:4px solid #dc2626; }
 #tela-historico .indicador-historico.hoje { border-left:4px solid #f97316; }
 #tela-historico .indicador-historico.proximo { border-left:4px solid #eab308; }
 #tela-historico .btn-status-filtro.f-orcamentos.ativo { background:#7c3aed !important; color:#fff !important; }
-#tela-historico .lista-historico { display:flex; flex-direction:column; gap:8px; margin-top:0; }
-#tela-historico .linha-registro-historico {
-    --cor-prazo:#3b82f6;
-    display:grid; grid-template-columns:150px minmax(240px,1fr) 135px auto; align-items:center; gap:14px;
-    min-height:76px; padding:10px 12px 10px 15px; background:#fff; border:1px solid #e2e5e9;
-    border-left:5px solid var(--cor-prazo); border-radius:11px; box-shadow:0 3px 12px rgba(15,23,42,.035);
+
+#tela-historico .lista-historico {
+    display:flex; flex-direction:column; gap:5px; margin-top:0;
 }
-#tela-historico .linha-registro-historico:hover { box-shadow:0 7px 20px rgba(15,23,42,.08); }
-#tela-historico .linha-registro-historico.atrasado { --cor-prazo:#dc2626; background:#fff7f7; }
-#tela-historico .linha-registro-historico.vence-hoje { --cor-prazo:#ef4444; background:#fff5f5; }
-#tela-historico .linha-registro-historico.vence-amanha { --cor-prazo:#f97316; background:#fff8f1; }
-#tela-historico .linha-registro-historico.vence-proximo { --cor-prazo:#eab308; background:#fffdf2; }
-#tela-historico .linha-registro-historico.no-prazo { --cor-prazo:#3b82f6; }
-#tela-historico .linha-registro-historico.sem-prazo { --cor-prazo:#94a3b8; }
-#tela-historico .linha-registro-historico.linha-orcamento { --cor-prazo:#7c3aed; background:#faf8ff; }
-#tela-historico .prazo-historico { display:flex; flex-direction:column; gap:2px; min-width:0; }
-#tela-historico .prazo-historico strong { color:var(--cor-prazo); font-size:12px; text-transform:uppercase; line-height:1.2; }
-#tela-historico .prazo-historico small { color:#6b7280; font-size:11px; }
-#tela-historico .dados-principais-historico { border:0; background:transparent; padding:0; text-align:left; cursor:pointer; min-width:0; font-family:inherit; }
-#tela-historico .codigo-lista { display:inline-block; margin-right:9px; color:#111827; font-weight:850; font-size:14px; }
-#tela-historico .cliente-lista { color:#1f2937; font-weight:750; font-size:14px; }
-#tela-historico .dados-principais-historico small { display:block; margin-top:4px; color:#6b7280; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-#tela-historico .status-lista-historico { display:flex; flex-direction:column; align-items:flex-start; gap:5px; }
-#tela-historico .status-lista-historico span { padding:5px 8px; border-radius:999px; background:#eef1f5; color:#475569; font-size:10px; font-weight:800; text-transform:uppercase; }
-#tela-historico .status-lista-historico small { color:#111827; font-weight:800; }
-#tela-historico .acoes-lista-historico { display:flex; align-items:center; justify-content:flex-end; gap:5px; }
-#tela-historico .acoes-lista-historico button { width:34px; height:34px; border:1px solid #dfe3e8; border-radius:8px; background:#f7f8fa; cursor:pointer; display:grid; place-items:center; padding:0; font-size:14px; }
-#tela-historico .acoes-lista-historico button:hover { background:#e9edf2; }
-#tela-historico .acoes-lista-historico .acao-excluir-lista { background:#fff1f2; border-color:#fecdd3; }
-#tela-historico .historico-vazio { padding:34px 20px; text-align:center; border:1px dashed #cfd5dc; border-radius:11px; color:#6b7280; background:#fff; }
+#tela-historico .linha-registro-historico {
+    --fundo-linha:#dbeafe;
+    --borda-linha:#2563eb;
+    display:grid;
+    grid-template-columns:145px minmax(0,1fr) 118px 222px;
+    align-items:center;
+    gap:12px;
+    min-height:54px;
+    padding:6px 10px;
+    background:var(--fundo-linha);
+    border:1px solid var(--borda-linha);
+    border-radius:9px;
+    box-shadow:0 2px 7px rgba(15,23,42,.06);
+}
+#tela-historico .linha-registro-historico:hover {
+    filter:brightness(.985); box-shadow:0 5px 13px rgba(15,23,42,.11);
+}
+/* A linha inteira recebe cor viva conforme a urgência */
+#tela-historico .linha-registro-historico.atrasado {
+    --fundo-linha:#fecaca; --borda-linha:#ef4444;
+}
+#tela-historico .linha-registro-historico.vence-hoje {
+    --fundo-linha:#fdba74; --borda-linha:#f97316;
+}
+#tela-historico .linha-registro-historico.vence-amanha {
+    --fundo-linha:#fde68a; --borda-linha:#eab308;
+}
+#tela-historico .linha-registro-historico.vence-proximo {
+    --fundo-linha:#fef08a; --borda-linha:#ca8a04;
+}
+#tela-historico .linha-registro-historico.no-prazo {
+    --fundo-linha:#bfdbfe; --borda-linha:#3b82f6;
+}
+#tela-historico .linha-registro-historico.sem-prazo {
+    --fundo-linha:#e2e8f0; --borda-linha:#94a3b8;
+}
+#tela-historico .linha-registro-historico.linha-orcamento {
+    --fundo-linha:#ddd6fe; --borda-linha:#7c3aed;
+}
+#tela-historico .prazo-historico {
+    display:grid; grid-template-rows:auto auto; align-content:center; gap:1px; min-width:0;
+}
+#tela-historico .prazo-historico strong {
+    color:#991b1b; font-size:11px; text-transform:uppercase; line-height:1.15; white-space:nowrap;
+}
+#tela-historico .vence-hoje .prazo-historico strong { color:#9a3412; }
+#tela-historico .vence-amanha .prazo-historico strong,
+#tela-historico .vence-proximo .prazo-historico strong { color:#854d0e; }
+#tela-historico .no-prazo .prazo-historico strong { color:#1e3a8a; }
+#tela-historico .sem-prazo .prazo-historico strong { color:#334155; }
+#tela-historico .linha-orcamento .prazo-historico strong { color:#4c1d95; }
+#tela-historico .prazo-historico small { color:#374151; font-size:10px; line-height:1.1; }
+#tela-historico .dados-principais-historico {
+    border:0; background:transparent; padding:0; text-align:left; cursor:pointer; min-width:0; font-family:inherit;
+}
+#tela-historico .codigo-lista {
+    display:inline-block; margin-right:8px; color:#111827; font-weight:900; font-size:13px;
+}
+#tela-historico .cliente-lista { color:#111827; font-weight:800; font-size:13px; }
+#tela-historico .dados-principais-historico small {
+    display:block; margin-top:2px; color:#374151; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+#tela-historico .status-lista-historico {
+    display:grid; grid-template-rows:auto auto; align-content:center; justify-items:start; gap:3px; min-width:0;
+}
+#tela-historico .status-lista-historico span {
+    max-width:100%; padding:3px 7px; border-radius:999px; background:rgba(255,255,255,.68); color:#334155;
+    font-size:9px; font-weight:850; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+#tela-historico .status-lista-historico small {
+    color:#111827; font-size:12px; line-height:1; font-weight:900; white-space:nowrap;
+}
+#tela-historico .acoes-lista-historico {
+    display:grid; grid-template-columns:repeat(6,32px); align-items:center; justify-content:end; gap:4px;
+}
+#tela-historico .acoes-lista-historico button {
+    width:32px; height:32px; border:1px solid rgba(51,65,85,.22); border-radius:7px;
+    background:rgba(255,255,255,.72); cursor:pointer; display:grid; place-items:center; padding:0; font-size:13px;
+}
+#tela-historico .acoes-lista-historico button:hover { background:#fff; }
+#tela-historico .acoes-lista-historico .acao-excluir-lista { background:rgba(255,255,255,.72); border-color:#ef4444; }
+#tela-historico .historico-vazio {
+    padding:34px 20px; text-align:center; border:1px dashed #cfd5dc; border-radius:11px; color:#6b7280; background:#fff;
+}
+@media (max-width:1050px) {
+    #tela-historico .linha-registro-historico { grid-template-columns:130px minmax(0,1fr) 105px 184px; gap:8px; }
+    #tela-historico .acoes-lista-historico { grid-template-columns:repeat(6,28px); gap:3px; }
+    #tela-historico .acoes-lista-historico button { width:28px; height:29px; font-size:12px; }
+}
 @media (max-width:900px) {
-    #tela-historico .linha-registro-historico { grid-template-columns:125px minmax(0,1fr) auto; }
+    #tela-historico .linha-registro-historico { grid-template-columns:115px minmax(0,1fr) 178px; }
     #tela-historico .status-lista-historico { display:none; }
 }
 @media (max-width:650px) {
     #tela-historico .historico-indicadores-operacionais { grid-template-columns:1fr 1fr !important; }
     #tela-historico .historico-abas-separadas .menu-status-historico { grid-template-columns:1fr 1fr !important; }
     #tela-historico .historico-abas-separadas .btn-atualizar-historico { grid-column:1/-1; }
-    #tela-historico .linha-registro-historico { grid-template-columns:92px minmax(0,1fr); gap:10px; padding:10px; min-height:0; }
-    #tela-historico .prazo-historico strong { font-size:10px; }
+    #tela-historico .lista-historico { gap:6px; }
+    #tela-historico .linha-registro-historico {
+        grid-template-columns:82px minmax(0,1fr); gap:7px; padding:7px 8px; min-height:0;
+    }
+    #tela-historico .prazo-historico strong { font-size:9px; white-space:normal; }
     #tela-historico .prazo-historico small { font-size:9px; }
-    #tela-historico .codigo-lista, #tela-historico .cliente-lista { display:block; margin:0; font-size:13px; }
-    #tela-historico .dados-principais-historico small { font-size:11px; }
-    #tela-historico .acoes-lista-historico { grid-column:1/-1; justify-content:stretch; padding-top:8px; border-top:1px dashed #e5e7eb; }
-    #tela-historico .acoes-lista-historico button { flex:1; width:auto; min-height:36px; }
+    #tela-historico .codigo-lista, #tela-historico .cliente-lista { display:block; margin:0; font-size:12px; }
+    #tela-historico .dados-principais-historico small { font-size:10px; }
+    #tela-historico .acoes-lista-historico {
+        grid-column:1/-1; grid-template-columns:repeat(6,minmax(0,1fr)); justify-content:stretch;
+        padding-top:5px; border-top:1px solid rgba(51,65,85,.18); gap:4px;
+    }
+    #tela-historico .acoes-lista-historico button { width:100%; height:31px; }
 }
 </style>
 
@@ -2835,9 +2906,22 @@ select.status-cancelado {
             const itensOrdenados = [...listaFiltrada].sort((a, b) => {
                 const pa = analisarPrazoHistorico(a.previsaoEntrega);
                 const pb = analisarPrazoHistorico(b.previsaoEntrega);
-                const da = pa.dias === null ? 999999 : pa.dias;
-                const db = pb.dias === null ? 999999 : pb.dias;
-                if (da !== db) return da - db;
+
+                // Pedidos atuais e futuros aparecem primeiro, do prazo mais próximo para o mais distante.
+                // Pedidos atrasados ficam no final; entre eles, o atraso mais recente aparece primeiro.
+                // Registros sem data ficam por último.
+                const grupoPrazo = (prazo) => {
+                    if (prazo.dias === null) return 2;
+                    if (prazo.dias < 0) return 1;
+                    return 0;
+                };
+                const grupoA = grupoPrazo(pa);
+                const grupoB = grupoPrazo(pb);
+                if (grupoA !== grupoB) return grupoA - grupoB;
+
+                if (grupoA === 0 && pa.dias !== pb.dias) return pa.dias - pb.dias;
+                if (grupoA === 1 && pa.dias !== pb.dias) return pb.dias - pa.dias;
+
                 return String(b.codigo || '').localeCompare(String(a.codigo || ''), 'pt-BR', { numeric: true });
             });
 
