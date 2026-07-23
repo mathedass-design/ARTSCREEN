@@ -1716,6 +1716,19 @@ select.status-cancelado {
 #tela-historico .linha-registro-historico.linha-orcamento {
     --fundo-linha:#ddd6fe; --borda-linha:#7c3aed;
 }
+/* Status encerrado sempre vence a regra de prazo */
+#tela-historico .linha-registro-historico.finalizado {
+    --fundo-linha:#86efac; --borda-linha:#16a34a;
+}
+#tela-historico .linha-registro-historico.finalizado .prazo-historico strong {
+    color:#14532d;
+}
+#tela-historico .linha-registro-historico.cancelado-lista {
+    --fundo-linha:#fca5a5; --borda-linha:#dc2626;
+}
+#tela-historico .linha-registro-historico.cancelado-lista .prazo-historico strong {
+    color:#7f1d1d;
+}
 #tela-historico .prazo-historico {
     display:grid; grid-template-rows:auto auto; align-content:center; gap:1px; min-width:0;
 }
@@ -2832,10 +2845,23 @@ select.status-cancelado {
             return String(tipo || '').trim().toLowerCase();
         }
 
+        function normalizarStatusRegistro(status) {
+            return String(status || '')
+                .trim()
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '');
+        }
+
         function ehPedidoAtivo(p) {
             const tipo = normalizarTipoRegistro(p.tipo);
-            const status = String(p.status || '').trim();
-            return tipo === 'pedido' && !['Concluído', 'Cancelado', 'Excluído'].includes(status);
+            const status = normalizarStatusRegistro(p.status);
+            const ehOrcamento = tipo === 'orçamento' || tipo === 'orcamento';
+            const encerrado = ['concluido', 'cancelado', 'excluido'].includes(status);
+
+            // Tudo que não for orçamento e não estiver encerrado permanece em Pedidos ativos,
+            // inclusive registros sem data, sem status ou com o tipo antigo em branco.
+            return !ehOrcamento && !encerrado;
         }
 
         function analisarPrazoHistorico(valor) {
@@ -2872,8 +2898,9 @@ select.status-cancelado {
                 const tipo = normalizarTipoRegistro(p.tipo);
                 if (filtroStatusSelecionado === 'andamento') return ehPedidoAtivo(p);
                 if (filtroStatusSelecionado === 'orcamentos') return tipo === 'orçamento' || tipo === 'orcamento';
-                if (filtroStatusSelecionado === 'concluido') return tipo === 'pedido' && p.status === 'Concluído';
-                if (filtroStatusSelecionado === 'cancelado') return p.status === 'Cancelado';
+                const statusNormalizado = normalizarStatusRegistro(p.status);
+                if (filtroStatusSelecionado === 'concluido') return !['orçamento', 'orcamento'].includes(tipo) && statusNormalizado === 'concluido';
+                if (filtroStatusSelecionado === 'cancelado') return statusNormalizado === 'cancelado';
                 return ehPedidoAtivo(p);
             });
 
@@ -2933,15 +2960,38 @@ select.status-cancelado {
             itensOrdenados.forEach(p => {
                 const prazo = analisarPrazoHistorico(p.previsaoEntrega);
                 const tipo = normalizarTipoRegistro(p.tipo);
+                const statusNormalizado = normalizarStatusRegistro(p.status);
                 const ehOrcamento = tipo === 'orçamento' || tipo === 'orcamento';
+                const ehConcluido = statusNormalizado === 'concluido';
+                const ehCancelado = statusNormalizado === 'cancelado';
                 const primeiroItem = String(p.itens || 'Serviço não informado').split('|')[0].trim();
                 const linha = document.createElement('article');
-                linha.className = `linha-registro-historico ${prazo.classe} ${ehOrcamento ? 'linha-orcamento' : 'linha-pedido'}`;
+
+                // Status encerrado sempre prevalece sobre o prazo:
+                // concluído fica verde/finalizado e jamais aparece como atrasado.
+                const classeVisual = ehConcluido
+                    ? 'finalizado'
+                    : (ehCancelado ? 'cancelado-lista' : (ehOrcamento ? 'linha-orcamento' : prazo.classe));
+                const tituloPrazo = ehConcluido
+                    ? 'FINALIZADO'
+                    : (ehCancelado ? 'CANCELADO' : (ehOrcamento ? 'ORÇAMENTO' : prazo.texto));
+                const subtituloPrazo = ehConcluido
+                    ? 'Pedido concluído'
+                    : (ehCancelado
+                        ? 'Pedido cancelado'
+                        : (ehOrcamento
+                            ? (p.status || 'Aberto')
+                            : (p.previsaoEntrega && p.previsaoEntrega !== 'Não informada'
+                                ? formatarDataVisivel(p.previsaoEntrega)
+                                : 'Data não definida')));
+                const statusExibido = p.status && String(p.status).trim() ? p.status : 'Definir status';
+
+                linha.className = `linha-registro-historico ${classeVisual} ${ehOrcamento ? 'linha-orcamento' : 'linha-pedido'}`;
                 linha.innerHTML = `
                     <div class="prazo-historico">
                         <span class="sinal-prazo"></span>
-                        <strong>${ehOrcamento ? 'ORÇAMENTO' : prazo.texto}</strong>
-                        <small>${ehOrcamento ? (p.status || 'Aberto') : (p.previsaoEntrega && p.previsaoEntrega !== 'Não informada' ? formatarDataVisivel(p.previsaoEntrega) : 'Data não definida')}</small>
+                        <strong>${tituloPrazo}</strong>
+                        <small>${subtituloPrazo}</small>
                     </div>
                     <button class="dados-principais-historico" type="button" onclick="gerarEVisualizarFichaA6Flutuante('${p.codigo}', '${p.dataHora}')">
                         <span class="codigo-lista">#${p.codigo}</span>
@@ -2949,7 +2999,7 @@ select.status-cancelado {
                         <small>${primeiroItem}</small>
                     </button>
                     <div class="status-lista-historico">
-                        <span>${p.status || 'Aberto'}</span>
+                        <span>${statusExibido}</span>
                         <small>${formatarMoeda(p.totalGeral)}</small>
                     </div>
                     <div class="acoes-lista-historico">
