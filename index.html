@@ -1660,6 +1660,65 @@ select.status-cancelado {
     #imagemRenderizadaFichaA6 { max-height: 46dvh !important; }
 }
 </style>
+
+<style id="historico-lista-operacional-2026">
+/* Histórico em lista: alterações isoladas nesta tela */
+#tela-historico .historico-indicadores-operacionais .indicador-historico {
+    appearance:none; width:100%; text-align:left; cursor:pointer; font-family:inherit;
+}
+#tela-historico .historico-indicadores-operacionais .indicador-historico:hover { transform:translateY(-1px); box-shadow:0 8px 20px rgba(15,23,42,.08); }
+#tela-historico .indicador-historico.urgente { border-left:4px solid #dc2626; }
+#tela-historico .indicador-historico.hoje { border-left:4px solid #f97316; }
+#tela-historico .indicador-historico.proximo { border-left:4px solid #eab308; }
+#tela-historico .btn-status-filtro.f-orcamentos.ativo { background:#7c3aed !important; color:#fff !important; }
+#tela-historico .lista-historico { display:flex; flex-direction:column; gap:8px; margin-top:0; }
+#tela-historico .linha-registro-historico {
+    --cor-prazo:#3b82f6;
+    display:grid; grid-template-columns:150px minmax(240px,1fr) 135px auto; align-items:center; gap:14px;
+    min-height:76px; padding:10px 12px 10px 15px; background:#fff; border:1px solid #e2e5e9;
+    border-left:5px solid var(--cor-prazo); border-radius:11px; box-shadow:0 3px 12px rgba(15,23,42,.035);
+}
+#tela-historico .linha-registro-historico:hover { box-shadow:0 7px 20px rgba(15,23,42,.08); }
+#tela-historico .linha-registro-historico.atrasado { --cor-prazo:#dc2626; background:#fff7f7; }
+#tela-historico .linha-registro-historico.vence-hoje { --cor-prazo:#ef4444; background:#fff5f5; }
+#tela-historico .linha-registro-historico.vence-amanha { --cor-prazo:#f97316; background:#fff8f1; }
+#tela-historico .linha-registro-historico.vence-proximo { --cor-prazo:#eab308; background:#fffdf2; }
+#tela-historico .linha-registro-historico.no-prazo { --cor-prazo:#3b82f6; }
+#tela-historico .linha-registro-historico.sem-prazo { --cor-prazo:#94a3b8; }
+#tela-historico .linha-registro-historico.linha-orcamento { --cor-prazo:#7c3aed; background:#faf8ff; }
+#tela-historico .prazo-historico { display:flex; flex-direction:column; gap:2px; min-width:0; }
+#tela-historico .prazo-historico strong { color:var(--cor-prazo); font-size:12px; text-transform:uppercase; line-height:1.2; }
+#tela-historico .prazo-historico small { color:#6b7280; font-size:11px; }
+#tela-historico .dados-principais-historico { border:0; background:transparent; padding:0; text-align:left; cursor:pointer; min-width:0; font-family:inherit; }
+#tela-historico .codigo-lista { display:inline-block; margin-right:9px; color:#111827; font-weight:850; font-size:14px; }
+#tela-historico .cliente-lista { color:#1f2937; font-weight:750; font-size:14px; }
+#tela-historico .dados-principais-historico small { display:block; margin-top:4px; color:#6b7280; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#tela-historico .status-lista-historico { display:flex; flex-direction:column; align-items:flex-start; gap:5px; }
+#tela-historico .status-lista-historico span { padding:5px 8px; border-radius:999px; background:#eef1f5; color:#475569; font-size:10px; font-weight:800; text-transform:uppercase; }
+#tela-historico .status-lista-historico small { color:#111827; font-weight:800; }
+#tela-historico .acoes-lista-historico { display:flex; align-items:center; justify-content:flex-end; gap:5px; }
+#tela-historico .acoes-lista-historico button { width:34px; height:34px; border:1px solid #dfe3e8; border-radius:8px; background:#f7f8fa; cursor:pointer; display:grid; place-items:center; padding:0; font-size:14px; }
+#tela-historico .acoes-lista-historico button:hover { background:#e9edf2; }
+#tela-historico .acoes-lista-historico .acao-excluir-lista { background:#fff1f2; border-color:#fecdd3; }
+#tela-historico .historico-vazio { padding:34px 20px; text-align:center; border:1px dashed #cfd5dc; border-radius:11px; color:#6b7280; background:#fff; }
+@media (max-width:900px) {
+    #tela-historico .linha-registro-historico { grid-template-columns:125px minmax(0,1fr) auto; }
+    #tela-historico .status-lista-historico { display:none; }
+}
+@media (max-width:650px) {
+    #tela-historico .historico-indicadores-operacionais { grid-template-columns:1fr 1fr !important; }
+    #tela-historico .historico-abas-separadas .menu-status-historico { grid-template-columns:1fr 1fr !important; }
+    #tela-historico .historico-abas-separadas .btn-atualizar-historico { grid-column:1/-1; }
+    #tela-historico .linha-registro-historico { grid-template-columns:92px minmax(0,1fr); gap:10px; padding:10px; min-height:0; }
+    #tela-historico .prazo-historico strong { font-size:10px; }
+    #tela-historico .prazo-historico small { font-size:9px; }
+    #tela-historico .codigo-lista, #tela-historico .cliente-lista { display:block; margin:0; font-size:13px; }
+    #tela-historico .dados-principais-historico small { font-size:11px; }
+    #tela-historico .acoes-lista-historico { grid-column:1/-1; justify-content:stretch; padding-top:8px; border-top:1px dashed #e5e7eb; }
+    #tela-historico .acoes-lista-historico button { flex:1; width:auto; min-height:36px; }
+}
+</style>
+
 </head>
 <body>
 <div class="menu-sistema">
@@ -1867,23 +1926,23 @@ select.status-cancelado {
 </div>
 </div>
 <div class="container historico-moderno" id="tela-historico">
-<div class="historico-indicadores">
-<div class="indicador-historico"><span>Total</span><strong id="histTotal">0</strong></div>
-<div class="indicador-historico andamento"><span>Em andamento</span><strong id="histAndamento">0</strong></div>
-<div class="indicador-historico concluido"><span>Concluídos</span><strong id="histConcluidos">0</strong></div>
-<div class="indicador-historico cancelado"><span>Cancelados</span><strong id="histCancelados">0</strong></div>
+<div class="historico-indicadores historico-indicadores-operacionais">
+<button class="indicador-historico urgente" onclick="aplicarFiltroPrazoHistorico('atrasado')" type="button"><span>Atrasados</span><strong id="histAtrasados">0</strong></button>
+<button class="indicador-historico hoje" onclick="aplicarFiltroPrazoHistorico('hoje')" type="button"><span>Entrega hoje</span><strong id="histHoje">0</strong></button>
+<button class="indicador-historico proximo" onclick="aplicarFiltroPrazoHistorico('proximos')" type="button"><span>Próximos 3 dias</span><strong id="histProximos">0</strong></button>
+<button class="indicador-historico andamento" onclick="aplicarFiltroPrazoHistorico('todos')" type="button"><span>Pedidos ativos</span><strong id="histAndamento">0</strong></button>
 </div>
-<div class="historico-filtros">
+<div class="historico-filtros historico-abas-separadas">
 <div class="menu-status-historico">
-<button class="btn-status-filtro f-todos ativo" onclick="mudarFiltroStatusHistorico('todos')">Todos</button>
-<button class="btn-status-filtro f-andamento" onclick="mudarFiltroStatusHistorico('andamento')">Em andamento</button>
+<button class="btn-status-filtro f-andamento ativo" onclick="mudarFiltroStatusHistorico('andamento')">Pedidos ativos</button>
+<button class="btn-status-filtro f-orcamentos" onclick="mudarFiltroStatusHistorico('orcamentos')">Orçamentos</button>
 <button class="btn-status-filtro f-concluido" onclick="mudarFiltroStatusHistorico('concluido')">Concluídos</button>
 <button class="btn-status-filtro f-cancelado" onclick="mudarFiltroStatusHistorico('cancelado')">Cancelados</button>
 <button class="btn-atualizar-historico" onclick="puxarDadosDaNuvem()" type="button">↻ Atualizar lista</button>
 </div>
 <span class="resultado-historico" id="resultadoHistorico">0 registros exibidos</span>
 </div>
-<div class="grade-historico-cards" id="gradeHistoricoCards"></div>
+<div class="lista-historico" id="gradeHistoricoCards"></div>
 </div>
 <div class="container" id="tela-edicao-avancada">
 <h1 style="color:#0056b3;">EDIÇÃO AVANÇADA</h1>
@@ -2197,15 +2256,29 @@ select.status-cancelado {
             if(val === "Cancelado") selectElement.classList.add("status-cancelado");
         }
 
-        function mudarFiltroStatusHistorico(statusRef) {
-            document.querySelectorAll('.btn-status-filtro').forEach(b => b.classList.remove('ativo'));
-            filtroStatusSelecionado = statusRef;
-            
-            if(statusRef === 'todos') document.querySelector('.btn-status-filtro.f-todos').classList.add('ativo');
-            if(statusRef === 'andamento') document.querySelector('.btn-status-filtro.f-andamento').classList.add('ativo');
-            if(statusRef === 'concluido') document.querySelector('.btn-status-filtro.f-concluido').classList.add('ativo');
-            if(statusRef === 'cancelado') document.querySelector('.btn-status-filtro.f-cancelado').classList.add('ativo');
+        let filtroPrazoHistorico = 'todos';
 
+        function mudarFiltroStatusHistorico(statusRef) {
+            document.querySelectorAll('#tela-historico .btn-status-filtro').forEach(b => b.classList.remove('ativo'));
+            filtroStatusSelecionado = statusRef;
+            filtroPrazoHistorico = 'todos';
+
+            const mapa = {
+                andamento: '.btn-status-filtro.f-andamento',
+                orcamentos: '.btn-status-filtro.f-orcamentos',
+                concluido: '.btn-status-filtro.f-concluido',
+                cancelado: '.btn-status-filtro.f-cancelado'
+            };
+            const botao = document.querySelector(`#tela-historico ${mapa[statusRef] || mapa.andamento}`);
+            if (botao) botao.classList.add('ativo');
+            filtrarTabelaHistoricoLocal();
+        }
+
+        function aplicarFiltroPrazoHistorico(tipoPrazo) {
+            filtroStatusSelecionado = 'andamento';
+            filtroPrazoHistorico = tipoPrazo || 'todos';
+            document.querySelectorAll('#tela-historico .btn-status-filtro').forEach(b => b.classList.remove('ativo'));
+            document.querySelector('#tela-historico .btn-status-filtro.f-andamento')?.classList.add('ativo');
             filtrarTabelaHistoricoLocal();
         }
 
@@ -2684,71 +2757,126 @@ select.status-cancelado {
                 });
         }
 
+        function normalizarTipoRegistro(tipo) {
+            return String(tipo || '').trim().toLowerCase();
+        }
+
+        function ehPedidoAtivo(p) {
+            const tipo = normalizarTipoRegistro(p.tipo);
+            const status = String(p.status || '').trim();
+            return tipo === 'pedido' && !['Concluído', 'Cancelado', 'Excluído'].includes(status);
+        }
+
+        function analisarPrazoHistorico(valor) {
+            if (!valor || valor === 'Não informada' || valor === 'Não definido') return { classe: 'sem-prazo', texto: 'Sem prazo', dias: null };
+            let data;
+            const texto = String(valor).trim();
+            if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) {
+                const [a, m, d] = texto.split('-').map(Number);
+                data = new Date(a, m - 1, d);
+            } else if (/^\d{2}\/\d{2}\/\d{4}/.test(texto)) {
+                const [d, m, a] = texto.slice(0, 10).split('/').map(Number);
+                data = new Date(a, m - 1, d);
+            } else {
+                data = new Date(texto);
+            }
+            if (Number.isNaN(data.getTime())) return { classe: 'sem-prazo', texto: 'Sem prazo', dias: null };
+
+            const hoje = new Date();
+            hoje.setHours(0,0,0,0);
+            data.setHours(0,0,0,0);
+            const dias = Math.round((data - hoje) / 86400000);
+            if (dias < 0) return { classe: 'atrasado', texto: `Atrasado ${Math.abs(dias)}d`, dias };
+            if (dias === 0) return { classe: 'vence-hoje', texto: 'Entrega hoje', dias };
+            if (dias === 1) return { classe: 'vence-amanha', texto: 'Amanhã', dias };
+            if (dias <= 3) return { classe: 'vence-proximo', texto: `Faltam ${dias} dias`, dias };
+            return { classe: 'no-prazo', texto: formatarDataVisivel(texto), dias };
+        }
+
         function filtrarTabelaHistoricoLocal() {
             const termoBusca = document.getElementById('campoBuscaNuvem').value.toLowerCase().trim();
-            
-            let dadosFiltradosStatus = cacheNuvemGlobal.filter(p => {
-                if(p.status === "Excluído") return false; 
+            const validos = cacheNuvemGlobal.filter(p => p.status !== 'Excluído');
 
-                if (filtroStatusSelecionado === 'todos') return p.status !== "Cancelado"; 
-                if (filtroStatusSelecionado === 'andamento') return p.status === "Aberto" || p.status === "Produção" || p.status === "Definir Status" || !p.status;
-                if (filtroStatusSelecionado === 'concluido') return p.status === "Concluído";
-                if (filtroStatusSelecionado === 'cancelado') return p.status === "Cancelado";
-                return true;
+            let dadosFiltradosStatus = validos.filter(p => {
+                const tipo = normalizarTipoRegistro(p.tipo);
+                if (filtroStatusSelecionado === 'andamento') return ehPedidoAtivo(p);
+                if (filtroStatusSelecionado === 'orcamentos') return tipo === 'orçamento' || tipo === 'orcamento';
+                if (filtroStatusSelecionado === 'concluido') return tipo === 'pedido' && p.status === 'Concluído';
+                if (filtroStatusSelecionado === 'cancelado') return p.status === 'Cancelado';
+                return ehPedidoAtivo(p);
             });
 
-            if (termoBusca) {
-                dadosFiltradosStatus = dadosFiltradosStatus.filter(p => p.codigo.toLowerCase().includes(termoBusca) || p.cliente.toLowerCase().includes(termoBusca));
+            if (filtroStatusSelecionado === 'andamento' && filtroPrazoHistorico !== 'todos') {
+                dadosFiltradosStatus = dadosFiltradosStatus.filter(p => {
+                    const prazo = analisarPrazoHistorico(p.previsaoEntrega);
+                    if (filtroPrazoHistorico === 'atrasado') return prazo.dias !== null && prazo.dias < 0;
+                    if (filtroPrazoHistorico === 'hoje') return prazo.dias === 0;
+                    if (filtroPrazoHistorico === 'proximos') return prazo.dias !== null && prazo.dias >= 1 && prazo.dias <= 3;
+                    return true;
+                });
             }
+
+            if (termoBusca) {
+                dadosFiltradosStatus = dadosFiltradosStatus.filter(p =>
+                    String(p.codigo || '').toLowerCase().includes(termoBusca) ||
+                    String(p.cliente || '').toLowerCase().includes(termoBusca) ||
+                    String(p.itens || '').toLowerCase().includes(termoBusca)
+                );
+            }
+
             atualizarIndicadoresHistorico(dadosFiltradosStatus.length);
             renderizarGradeCardsFinal(dadosFiltradosStatus);
         }
 
         function renderizarGradeCardsFinal(listaFiltrada) {
             const grade = document.getElementById('gradeHistoricoCards');
-            grade.innerHTML = "";
-            const itensOrdenados = [...listaFiltrada].reverse();
+            grade.innerHTML = '';
 
-            if(itensOrdenados.length === 0) {
-                grade.innerHTML = `<div style="grid-column: span 3; text-align:center; padding:20px;">Nenhum registro encontrado nesta seção.</div>`;
+            const itensOrdenados = [...listaFiltrada].sort((a, b) => {
+                const pa = analisarPrazoHistorico(a.previsaoEntrega);
+                const pb = analisarPrazoHistorico(b.previsaoEntrega);
+                const da = pa.dias === null ? 999999 : pa.dias;
+                const db = pb.dias === null ? 999999 : pb.dias;
+                if (da !== db) return da - db;
+                return String(b.codigo || '').localeCompare(String(a.codigo || ''), 'pt-BR', { numeric: true });
+            });
+
+            if (itensOrdenados.length === 0) {
+                grade.innerHTML = `<div class="historico-vazio">Nenhum registro encontrado nesta seção.</div>`;
                 return;
             }
 
             itensOrdenados.forEach(p => {
-                let corFundoCard = p.status === "Concluído" ? "#d4edda" : (p.status === "Cancelado" ? "#f8d7da" : "#fff3cd"); 
-                let corTextoCard = p.status === "Concluído" ? "#155724" : (p.status === "Cancelado" ? "#721c24" : "#856404");
-
-                let dataDisplay = formatarDataVisivel(p.dataHora);
-
-                let card = document.createElement('div');
-                card.className = "card-registro card-registro-moderno";
-                const statusClasse = p.status === "Concluído" ? "status-card-concluido" : (p.status === "Cancelado" ? "status-card-cancelado" : "status-card-andamento");
-                card.classList.add(statusClasse);
-
-                card.innerHTML = `
-                    <div>
-                        <div class="card-header-tipo"><span>${p.tipo.toUpperCase()}</span><span class="badge-status-card">${p.status || "Aberto"}</span></div>
-                        <div class="card-title-codigo">
-                            <span>#${p.codigo}</span>
-                            ${(p.contato && p.contato !== 'Não aplicável' && p.contato !== 'Não informado') ? `<button class="btn-copiar-linha" style="padding:2px 6px; font-size:10px;" onclick="copiarWhatsAppDiretoDoCard('${p.contato}')">Copiar Zap</button>` : ''}
-                        </div>
-                        <div class="card-body-info">
-                            <b>Cliente:</b> ${p.cliente}<br>
-                            <b>Data:</b> ${dataDisplay}<br>
-                            <b>Total:</b> ${formatarMoeda(p.totalGeral)}
-                        </div>
+                const prazo = analisarPrazoHistorico(p.previsaoEntrega);
+                const tipo = normalizarTipoRegistro(p.tipo);
+                const ehOrcamento = tipo === 'orçamento' || tipo === 'orcamento';
+                const primeiroItem = String(p.itens || 'Serviço não informado').split('|')[0].trim();
+                const linha = document.createElement('article');
+                linha.className = `linha-registro-historico ${prazo.classe} ${ehOrcamento ? 'linha-orcamento' : 'linha-pedido'}`;
+                linha.innerHTML = `
+                    <div class="prazo-historico">
+                        <span class="sinal-prazo"></span>
+                        <strong>${ehOrcamento ? 'ORÇAMENTO' : prazo.texto}</strong>
+                        <small>${ehOrcamento ? (p.status || 'Aberto') : (p.previsaoEntrega && p.previsaoEntrega !== 'Não informada' ? formatarDataVisivel(p.previsaoEntrega) : 'Data não definida')}</small>
                     </div>
-                    <div class="card-footer-acoes">
-                        <button class="btn-tabela btn-tab-editar" onclick="verificarAntesDeEditar('${p.codigo}', '${p.dataHora}')">✏️</button>
-                        <button class="btn-tabela btn-tab-ver" onclick="gerarEVisualizarFichaA6Flutuante('${p.codigo}', '${p.dataHora}')">👁️</button>
-                        <button class="btn-tabela btn-tab-baixar" onclick="baixarComprovanteDiretoDoHistorial('${p.codigo}', '${p.dataHora}')">📥</button>
-                        
-                        <button class="btn-tabela" style="background-color: #6f42c1;" title="Imprimir em A5" onclick="imprimirComprovanteA5('${p.codigo}', '${p.dataHora}')">🖨️</button>
-                        
-                        ${p.status !== 'Cancelado' ? `<button class="btn-tabela btn-tab-excluir" title="Apagar/Ocultar Registro" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')">🗑️</button>` : ''}
+                    <button class="dados-principais-historico" type="button" onclick="gerarEVisualizarFichaA6Flutuante('${p.codigo}', '${p.dataHora}')">
+                        <span class="codigo-lista">#${p.codigo}</span>
+                        <span class="cliente-lista">${p.cliente || 'Cliente não informado'}</span>
+                        <small>${primeiroItem}</small>
+                    </button>
+                    <div class="status-lista-historico">
+                        <span>${p.status || 'Aberto'}</span>
+                        <small>${formatarMoeda(p.totalGeral)}</small>
                     </div>
-                `;
-                grade.appendChild(card);
+                    <div class="acoes-lista-historico">
+                        ${(p.contato && p.contato !== 'Não aplicável' && p.contato !== 'Não informado') ? `<button title="Copiar WhatsApp" onclick="copiarWhatsAppDiretoDoCard('${p.contato}')">☏</button>` : ''}
+                        <button title="Editar ou alterar status" onclick="verificarAntesDeEditar('${p.codigo}', '${p.dataHora}')">✏️</button>
+                        <button title="Visualizar" onclick="gerarEVisualizarFichaA6Flutuante('${p.codigo}', '${p.dataHora}')">👁️</button>
+                        <button title="Baixar" onclick="baixarComprovanteDiretoDoHistorial('${p.codigo}', '${p.dataHora}')">📥</button>
+                        <button title="Imprimir em A5" onclick="imprimirComprovanteA5('${p.codigo}', '${p.dataHora}')">🖨️</button>
+                        ${p.status !== 'Cancelado' ? `<button class="acao-excluir-lista" title="Apagar/Ocultar" onclick="cancelarRegistroNaNuvem('${p.codigo}', '${p.dataHora}')">🗑️</button>` : ''}
+                    </div>`;
+                grade.appendChild(linha);
             });
         }
 
@@ -3937,15 +4065,16 @@ select.status-cancelado {
 
 
         function atualizarIndicadoresHistorico(qtdExibida) {
-            const validos = cacheNuvemGlobal.filter(p => p.status !== "Excluído");
-            const andamento = validos.filter(p => p.status === "Aberto" || p.status === "Produção" || p.status === "Definir Status" || !p.status).length;
-            const concluidos = validos.filter(p => p.status === "Concluído").length;
-            const cancelados = validos.filter(p => p.status === "Cancelado").length;
+            const ativos = cacheNuvemGlobal.filter(ehPedidoAtivo);
+            const prazos = ativos.map(p => analisarPrazoHistorico(p.previsaoEntrega));
+            const atrasados = prazos.filter(p => p.dias !== null && p.dias < 0).length;
+            const hoje = prazos.filter(p => p.dias === 0).length;
+            const proximos = prazos.filter(p => p.dias !== null && p.dias >= 1 && p.dias <= 3).length;
             const setTxt = (id, valor) => { const el = document.getElementById(id); if(el) el.textContent = valor; };
-            setTxt('histTotal', validos.length);
-            setTxt('histAndamento', andamento);
-            setTxt('histConcluidos', concluidos);
-            setTxt('histCancelados', cancelados);
+            setTxt('histAtrasados', atrasados);
+            setTxt('histHoje', hoje);
+            setTxt('histProximos', proximos);
+            setTxt('histAndamento', ativos.length);
             setTxt('resultadoHistorico', `${qtdExibida} ${qtdExibida === 1 ? 'registro exibido' : 'registros exibidos'}`);
         }
 
